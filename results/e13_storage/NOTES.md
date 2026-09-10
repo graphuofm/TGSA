@@ -33,11 +33,24 @@ structure-insensitivity cost is bounded around 2x -- paid once, for streaming.
 
 ## Finding 2 -- time-windowed traversal ordering flips with degree
 
-twbfs (BFS restricted to a time window): at mean degree 20, `ucsr` beats barry
-on pure contiguity (0.7 vs 1.3 ms); at degree 337 barry has caught it (0.7 vs
-0.7 ms at wf=0.05; ahead at wf=0.005) because sorted-bucket pruning skips what
-ucsr must scan. `tcsr` leads throughout and cannot ingest. LANL (degree 59,517)
-run pending -- the expected completion of the crossover curve.
+twbfs (BFS restricted to a time window), the completed degree curve:
+
+| mean degree | ucsr | barry | barry vs ucsr |
+|---|---|---|---|
+| 20 (mathoverflow) | 0.7 ms | 1.3 ms | 0.5x (behind) |
+| 337 (email-Eu) | 0.7 ms | 0.7 ms | parity |
+| **59,517 (LANL)** | **435.3 ms** | **4.2 ms** | **104x ahead** |
+
+The crossover completes exactly where the provenance workload lives: at
+endpoint-scale degrees, the arrival-order store must scan ~59K entries per
+expansion while sorted-bucket pruning touches only the window. `tcsr` still
+leads (0.5 ms) and still cannot ingest -- and E12 prices that. Checksums
+identical across engines at every point.
+
+Structure-only BFS at LANL scale (685M edge deliveries): storage-read
+csr 0.87 s / tcsr 1.18 / ucsr 1.18 / barry 1.23 -- **the structural concession
+shrinks to 1.4x at scale** (long bucket chains amortize; small-graph pilots
+showed 1.7-2.1x).
 
 ## Finding 3 -- payload resolution costs 4-5x, and we know why
 

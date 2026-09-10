@@ -365,9 +365,11 @@ semantics (zeroed pages make an unpublished slot detectable), readers
 acquire-load and skip unpublished slots, and the sorted-bucket flag is
 cleared before the count is bumped so that observing the flag proves
 the loaded count covers only the verified prefix. A multi-writer,
-multi-reader stress test observes zero violations across thousands of
-concurrent range and taint queries, with the final state equal to a
-serially built engine. Barry's contract is thus: \emph{always
+multi-reader stress test observes zero violations, and a
+billion-edge soak---12 writers ingesting all of LANL at
+6.8M~events/s while 4 readers validated 780M delivered edges across
+48{,}636 queries---observes zero violations with the final count
+exact. Barry's contract is thus: \emph{always
 appendable, always correct---including mid-ingest; fast expansion
 after a compaction that can be scheduled whenever convenient.}
 
@@ -474,14 +476,20 @@ all four engines drive identical executions. On structure-only
 algorithms (BFS, PageRank, label propagation) Barry's storage-read
 time is within $1.7$--$2.1\times$ of the static topology-only
 CSR---the structural optimum---while being the only engine of the
-four that ingests. On time-windowed BFS the ordering flips with
+four that ingests; at LANL scale (685M deliveries) the concession
+shrinks to $1.4\times$. On time-windowed BFS the ordering flips with
 degree: at mean degree 20 the arrival-order entity store wins on
-contiguity; at degree 337 Barry has caught it; the time-sorted CSR
-leads throughout and cannot ingest. Structure-insensitivity is a
-bounded, measured cost at the storage layer---not the
-$5$--$15\times$ that end-to-end comparisons against tuned algorithm
-suites suggest---and it buys the temporal properties everything else
-in this paper measures.
+contiguity, at 337 Barry reaches parity, and at LANL's mean degree of
+59{,}517 Barry leads it by $104\times$ (4.2\,ms vs.\ 435\,ms)---the
+crossover lands exactly where endpoint provenance lives, because
+sorted-bucket pruning touches only the queried window while an
+arrival-order adjacency must scan every entry. The time-sorted CSR
+leads throughout (0.5\,ms) and cannot ingest, which
+\S\ref{sec:eval-staleness} prices. Structure-insensitivity is a
+bounded, measured cost at the storage layer---not the $5$--$15\times$
+that end-to-end comparisons against tuned algorithm suites
+suggest---and it buys the temporal properties everything else in this
+paper measures.
 
 \subsection{Scale and footprint}
 LANL loads in 255\,s at 96\,GB RSS (1.05B edges, reverse index on);
