@@ -1,0 +1,23 @@
+{
+  "experiment": "e5_memory",
+  "label": "2026-04-30T06_overnight_full_tier",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e5_memory/e5.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.715054Z",
+  "tier": "full",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal",
+    "cit-Patents",
+    "sx-stackoverflow",
+    "soc-LiveJournal1",
+    "temporal-reddit-reply"
+  ],
+  "note": "Full memory sweep including reddit-1B from overnight Phase 1. Both vidx={0,1}."
+}

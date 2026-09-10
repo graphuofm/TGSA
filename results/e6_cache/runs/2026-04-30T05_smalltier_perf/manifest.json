@@ -1,0 +1,10 @@
+{
+  "experiment": "e6_cache",
+  "label": "2026-04-30T05_smalltier_perf",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e6_cache/e6_perf.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.715576Z",
+  "tier": "small",
+  "note": "perf-stat counter output (likely empty: perf not installed/permitted on host)."
+}

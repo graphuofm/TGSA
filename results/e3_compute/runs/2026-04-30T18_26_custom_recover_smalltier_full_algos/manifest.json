@@ -1,0 +1,35 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T18_26_custom_recover_smalltier_full_algos",
+  "tier": "custom",
+  "started_utc": "2026-04-30T18:26:43.969706Z",
+  "ended_utc": "2026-04-30T18:28:14.409252Z",
+  "command": "/home/jding/Barry/scripts/run_all.py e3 --datasets CollegeMsg email-Eu-core-temporal sx-mathoverflow act-mooc sx-askubuntu sx-superuser wiki-talk-temporal --threads 16 --trials 3 --note recover_smalltier_full_algos",
+  "git_sha": "",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal"
+  ],
+  "threads": 16,
+  "trials": 3,
+  "timeout": null,
+  "note": "recover_smalltier_full_algos",
+  "algos": [
+    "bfs",
+    "pr",
+    "tc",
+    "sssp",
+    "cc",
+    "kcore"
+  ],
+  "systems": [
+    "barry",
+    "csr"
+  ],
+  "status": "ok"
+}

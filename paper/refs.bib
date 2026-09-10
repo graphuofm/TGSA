@@ -1,0 +1,226 @@
+% Bibliography for Barry. Subset of /home/jding/Barry/docs/10_REFERENCES.md
+% trimmed to entries actually cited by main.tex.
+
+% --- temporal / dynamic graph storage systems ---
+
+@inproceedings{shen2026dcsr,
+  title={DCSR: A Fast Data Structure with Leaf-Oriented Locks for
+         Streaming Graph Processing},
+  author={Shen, Yue and Zhang, Jie and Cao, Huawei and Zhang, Yuan and
+          An, Xuejun},
+  booktitle={EDBT},
+  year={2026}
+}
+
+@article{hou2024aeong,
+  title={AeonG: An Efficient Built-in Temporal Support in Graph
+         Databases},
+  author={Hou, Jiamin and Zhao, Zhanhao and Wang, Zhouyu and Lu, Wei
+          and Jin, Guodong and Wen, Dong and Du, Xiaoyong},
+  journal={PVLDB},
+  volume={17}, number={6}, year={2024}
+}
+
+@article{deleo2021teseo,
+  title={Teseo and the analysis of structural dynamic graphs},
+  author={De Leo, Dean and Boncz, Peter},
+  journal={PVLDB},
+  volume={14}, number={6}, year={2021}
+}
+
+@inproceedings{zhu2020livegraph,
+  title={LiveGraph: A transactional graph storage system with purely
+         sequential adjacency list scans},
+  author={Zhu, Xiaowei and others},
+  booktitle={PVLDB}, year={2020}
+}
+
+@inproceedings{dhulipala2019aspen,
+  title={Low-latency graph streaming using compressed purely-functional
+         trees},
+  author={Dhulipala, Laxman and Blelloch, Guy E. and Shun, Julian},
+  booktitle={PLDI}, year={2019}
+}
+
+@inproceedings{qi2024lsgraph,
+  title={LSGraph: A locality-centric high-performance streaming graph
+         engine},
+  author={Qi, Hao and Wu, Yiyang and others},
+  booktitle={EuroSys}, year={2024}
+}
+
+@article{fuchs2023sortledton,
+  title={Sortledton: A universal graph data structure},
+  author={Fuchs, Per and Margan, Domagoj and Giceva, Jana},
+  journal={ACM SIGMOD Record}, year={2023}
+}
+
+@article{kumar2020graphone,
+  title={GraphOne: A data store for real-time analytics on evolving
+         graphs},
+  author={Kumar, Pradeep and Huang, H Howie},
+  journal={ACM Trans. Storage}, year={2020}
+}
+
+@inproceedings{ediger2012stinger,
+  title={Stinger: High performance data structure for streaming graphs},
+  author={Ediger, David and McColl, Rob and Riedy, Jason and Bader,
+          David A.},
+  booktitle={IEEE HPEC}, year={2012}
+}
+
+@inproceedings{fan2025cuckoograph,
+  title={Cuckoograph: A scalable and space-time efficient data
+         structure for large-scale dynamic graphs},
+  author={Fan, Zhuochen and others},
+  booktitle={ICDE}, year={2025}
+}
+
+% --- PMA family ---
+
+@inproceedings{wheatman2021ppcsr,
+  title={A parallel packed memory array to store dynamic graphs},
+  author={Wheatman, Brian and Xu, Helen},
+  booktitle={ALENEX}, year={2021}
+}
+
+@inproceedings{wheatman2024cpma,
+  title={CPMA: An efficient batch-parallel compressed set without
+         pointers},
+  author={Wheatman, Brian and Burns, Randal and Buluc, Aydin and Xu,
+          Helen},
+  booktitle={PPoPP}, year={2024}
+}
+
+@inproceedings{dhulipala2022pactree,
+  title={Pac-trees: Supporting parallel and compressed purely-functional
+         collections},
+  author={Dhulipala, Laxman and Blelloch, Guy E. and Gu, Yan and Sun,
+          Yihan},
+  booktitle={PLDI}, year={2022}
+}
+
+@inproceedings{pandey2021terrace,
+  title={Terrace: A hierarchical graph container for skewed dynamic
+         graphs},
+  author={Pandey, Prashant and Wheatman, Brian and Xu, Helen and
+          Buluc, Aydin},
+  booktitle={SIGMOD}, year={2021}
+}
+
+@inproceedings{islam2022vcsr,
+  title={VCSR: Mutable CSR graph format using vertex-centric packed
+         memory array},
+  author={Islam, Abdullah Al Raqibul and Dai, Dong and Cheng, Dazhao},
+  booktitle={CCGrid}, year={2022}
+}
+
+% --- temporal graph theory & algorithms ---
+
+@article{holme2012temporal,
+  title={Temporal networks},
+  author={Holme, Petter and Saram\"aki, Jari},
+  journal={Physics Reports}, year={2012}
+}
+
+@inproceedings{wu2014pathproblems,
+  title={Path problems in temporal graphs},
+  author={Wu, Huanhuan and others},
+  booktitle={PVLDB}, year={2014}
+}
+
+@inproceedings{paranjape2017motifs,
+  title={Motifs in temporal networks},
+  author={Paranjape, Ashwin and Benson, Austin R. and Leskovec, Jure},
+  booktitle={WSDM}, year={2017}
+}
+
+% --- hardware / OS ---
+
+@inproceedings{talluri1994tlb,
+  title={Surpassing the TLB performance barrier with large pages},
+  author={Talluri, Madhusudhan and Hill, Mark D.},
+  booktitle={ASPLOS}, year={1994}
+}
+
+@misc{linux_hugetlb,
+  title={Linux HugeTLB Documentation},
+  howpublished={\url{https://www.kernel.org/doc/html/latest/admin-guide/mm/hugetlbpage.html}}
+}
+
+@misc{linux_mmap,
+  title={mmap(2) Linux manual page},
+  howpublished={\url{https://man7.org/linux/man-pages/man2/mmap.2.html}}
+}
+
+% --- benchmarks / surveys ---
+
+@article{wheatman2024byo,
+  title={BYO: A Unified Framework for Benchmarking Large-Scale Graph
+         Containers},
+  author={Wheatman, Brian and Dong, Xiaojun and Shen, Zheqi and
+          Dhulipala, Laxman and L\k{a}cki, Jakub and Pandey, Prashant
+          and Xu, Helen},
+  journal={PVLDB}, year={2024}
+}
+
+@article{besta2023streaming,
+  title={Practice of Streaming Processing of Dynamic Graphs: Concepts,
+         Models, and Systems},
+  author={Besta, Maciej and others},
+  journal={IEEE TPDS}, year={2023}
+}
+
+@article{besta2023graphdb,
+  title={Demystifying graph databases: Analysis and taxonomy of data
+         organization, system designs, and graph queries},
+  author={Besta, Maciej and others},
+  journal={Comput. Surv.}, year={2023}
+}
+
+@misc{snap,
+  title={SNAP Datasets: Stanford Large Network Dataset Collection},
+  author={Leskovec, Jure and Krevl, Andrej},
+  year={2014},
+  howpublished={\url{http://snap.stanford.edu/data}}
+}
+
+% --- application motivation ---
+
+@inproceedings{altman2024aml,
+  title={Realistic Synthetic Financial Transactions for Anti-Money
+         Laundering Models},
+  author={Altman, Erik and others},
+  booktitle={NeurIPS Datasets}, year={2024}
+}
+
+@inproceedings{dhankhad2018fraud,
+  title={Supervised machine learning algorithms for credit card
+         fraudulent transaction detection},
+  author={Dhankhad, Sahil and Mohammed, Emad and Far, Behrouz},
+  booktitle={IEEE IRI}, year={2018}
+}
+
+@inproceedings{sharma2016graphjet,
+  title={GraphJet: Real-time content recommendations at Twitter},
+  author={Sharma, Aneesh and Jiang, Jerry and Bommannavar, Praveen
+          and Larson, Brian and Lin, Jimmy},
+  booktitle={PVLDB}, year={2016}
+}
+
+@InProceedings{akent-2015-enterprise-data,
+   author    = {Alexander D. Kent},
+   title     = {{Cybersecurity Data Sources for Dynamic Network Research}},
+   year      = 2015,
+   booktitle = {Dynamic Networks in Cybersecurity},
+   month     = jun,
+   publisher = {Imperial College Press}
+}
+
+@Misc{kent-2015-cyberdata1,
+  author       = {Alexander D. Kent},
+  title        = {{Comprehensive, Multi-Source Cyber-Security Events}},
+  year         = {2015},
+  howpublished = {Los Alamos National Laboratory},
+  doi          = {10.17021/1179829}
+}

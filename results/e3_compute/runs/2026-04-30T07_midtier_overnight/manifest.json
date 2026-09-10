@@ -1,0 +1,28 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T07_midtier_overnight",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/e3.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.712760Z",
+  "tier": "mid",
+  "datasets": [
+    "cit-Patents",
+    "wiki-talk-temporal",
+    "sx-stackoverflow",
+    "soc-LiveJournal1"
+  ],
+  "systems": [
+    "barry",
+    "csr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc",
+    "sssp",
+    "cc",
+    "kcore"
+  ],
+  "note": "midtier sweep from overnight Phase 5; uses our naive CSR not BYO_CSR"
+}

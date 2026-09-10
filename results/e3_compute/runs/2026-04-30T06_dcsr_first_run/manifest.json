@@ -1,0 +1,30 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T06_dcsr_first_run",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/dcsr_byo.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.714092Z",
+  "tier": "small",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal",
+    "cit-Patents"
+  ],
+  "systems": [
+    "dcsr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc",
+    "cc",
+    "kcore"
+  ],
+  "note": "First DCSR-only sweep, manually generated immediately after the BYO build."
+}

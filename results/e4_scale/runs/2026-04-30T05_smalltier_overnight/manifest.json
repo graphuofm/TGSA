@@ -1,0 +1,13 @@
+{
+  "experiment": "e4_scale",
+  "label": "2026-04-30T05_smalltier_overnight",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e4_scale/e4.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.714624Z",
+  "tier": "small",
+  "datasets": [
+    "sx-stackoverflow"
+  ],
+  "note": "Initial scalability sweep on sx-stackoverflow at thread counts {1,2,4,8,16,20}."
+}

@@ -1,0 +1,30 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T06_smalltier_byo_baselines",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/byo_baselines.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.713568Z",
+  "tier": "small",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal",
+    "cit-Patents"
+  ],
+  "systems": [
+    "csr",
+    "dcsr",
+    "ppcsr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc"
+  ],
+  "note": "BYO-framework baselines on small-tier datasets via run_csr/run_dcsr/run_ppcsr binaries."
+}

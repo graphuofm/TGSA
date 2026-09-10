@@ -1,0 +1,31 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T05_smalltier_post_L0_pre_new_algos",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/e3_v2_old.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.713312Z",
+  "tier": "small",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal"
+  ],
+  "systems": [
+    "barry",
+    "csr",
+    "byo_csr",
+    "dcsr",
+    "ppcsr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc"
+  ],
+  "note": "Barry AFTER L0 optimization, BEFORE adding sssp/cc/kcore. Includes BYO baselines from manual sweep."
+}

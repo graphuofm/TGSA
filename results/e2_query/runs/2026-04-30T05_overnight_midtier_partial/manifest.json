@@ -1,0 +1,15 @@
+{
+  "experiment": "e2_query",
+  "label": "2026-04-30T05_overnight_midtier_partial",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e2_query/e2.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.712468Z",
+  "tier": "mid",
+  "datasets": [
+    "cit-Patents",
+    "wiki-talk-temporal",
+    "sx-stackoverflow"
+  ],
+  "note": "midtier sweep from overnight Phase 4; small-tier wiped"
+}

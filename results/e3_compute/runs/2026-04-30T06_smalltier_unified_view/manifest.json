@@ -1,0 +1,31 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T06_smalltier_unified_view",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/e3_unified.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.714345Z",
+  "tier": "small",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal"
+  ],
+  "systems": [
+    "barry",
+    "csr",
+    "byo_csr",
+    "dcsr",
+    "ppcsr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc"
+  ],
+  "note": "Wide-format unified comparison table built from e3_v2_old + byo_baselines. Derived view, not raw runs."
+}

@@ -1,0 +1,2 @@
+policy,param,classes,trial,edges_in_scope,edges_kept,reduction_ratio,gt_hosts,gt_edges_present,gt_edges_kept,gt_edge_survival,taint_size,taint_frac,fwd_recall,fwd_latency_us,back_size,back_recall,back_latency_us,num_vertices,rss_MB,load_sec
+full,0,1,10,1038590151,1038590151,1,305,699,699,1,5121,0.289878863,0.97704918,17106880.4,14670,0.996721311,10692897.1,17666,95978.9752,289.651742

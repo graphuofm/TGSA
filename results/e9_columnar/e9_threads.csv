@@ -1,0 +1,7 @@
+dataset,trial,query,system,num_samples,window_frac,hops,duck_index,median_us,p95_us,mean_us,avg_result,load_sec,total_edges
+email-Eu-core-temporal,7,traverse,barry,30,0.1,64,0,3456.11572,4191.76817,2243.23273,408.566667,0.0517296791,332334
+email-Eu-core-temporal,7,traverse,tcsr,30,0.1,64,0,534.057617,857.698917,427.92956,408.566667,0.00741744041,332334
+email-Eu-core-temporal,7,traverse,duckdb,30,0.1,64,0,524533.272,1872433.87,643126.059,408.566667,0.0396287441,332334
+email-Eu-core-temporal,7,traverse,barry,30,0.1,64,0,1356.60172,3510.91623,1165.63638,408.566667,0.0192694664,332334
+email-Eu-core-temporal,7,traverse,tcsr,30,0.1,64,0,537.514687,2123.5466,549.801191,408.566667,0.00564694405,332334
+email-Eu-core-temporal,7,traverse,duckdb,30,0.1,64,0,529003.024,1864485.38,653422.928,408.566667,0.0336794853,332334

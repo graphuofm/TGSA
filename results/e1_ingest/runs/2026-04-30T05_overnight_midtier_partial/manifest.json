@@ -1,0 +1,16 @@
+{
+  "experiment": "e1_ingest",
+  "label": "2026-04-30T05_overnight_midtier_partial",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e1_ingest/e1.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.712057Z",
+  "tier": "mid",
+  "datasets": [
+    "cit-Patents",
+    "wiki-talk-temporal",
+    "sx-stackoverflow",
+    "soc-LiveJournal1"
+  ],
+  "note": "midtier sweep from overnight Phase 3; small-tier was wiped by reset_csv before this"
+}

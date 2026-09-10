@@ -1,0 +1,2 @@
+graph,trial,alert_source,alerts,window_frac,sweep_sec,qps,traceable_per_day,median_us,p95_us,p99_us,max_us,mean_us,avg_ancestors,max_ancestors,total_edges,num_vertices,rss_MB,load_sec
+lanl-auth,0,redteam,749,0.01,46.4645402,16.1198195,1392752.4,24.5571136,353330.803,423798.59,451595.545,61977.0758,2313.50334,11465,1051430459,17666,75890.8928,249.36854

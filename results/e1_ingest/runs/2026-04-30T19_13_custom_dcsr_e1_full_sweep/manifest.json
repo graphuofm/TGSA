@@ -1,0 +1,34 @@
+{
+  "experiment": "e1_ingest",
+  "label": "2026-04-30T19_13_custom_dcsr_e1_full_sweep",
+  "tier": "custom",
+  "started_utc": "2026-04-30T19:13:03.233643Z",
+  "ended_utc": "2026-04-30T19:26:12.406527Z",
+  "command": "/home/jding/Barry/scripts/run_all.py e1_dcsr --datasets CollegeMsg email-Eu-core-temporal sx-mathoverflow act-mooc sx-askubuntu sx-superuser wiki-talk-temporal cit-Patents sx-stackoverflow soc-LiveJournal1 --threads 16 --trials 3 --note dcsr_e1_full_sweep",
+  "git_sha": "",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal",
+    "cit-Patents",
+    "sx-stackoverflow",
+    "soc-LiveJournal1"
+  ],
+  "threads": 16,
+  "trials": 3,
+  "timeout": null,
+  "note": "dcsr_e1_full_sweep",
+  "batches": [
+    10,
+    1000,
+    100000,
+    10000000
+  ],
+  "system": "dcsr",
+  "binary": "baselines/BYO/bazel-bin/benchmarks/run_structures/run_dcsr_ingest",
+  "status": "ok"
+}

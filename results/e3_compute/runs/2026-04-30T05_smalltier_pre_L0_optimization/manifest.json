@@ -1,0 +1,28 @@
+{
+  "experiment": "e3_compute",
+  "label": "2026-04-30T05_smalltier_pre_L0_optimization",
+  "started_utc": "pre-refactor (estimated)",
+  "ended_utc": "pre-refactor (estimated)",
+  "migrated_from": "results/e3_compute/e3_v1.csv",
+  "migrated_at_utc": "2026-04-30T18:23:31.713033Z",
+  "tier": "small",
+  "datasets": [
+    "CollegeMsg",
+    "email-Eu-core-temporal",
+    "sx-mathoverflow",
+    "act-mooc",
+    "sx-askubuntu",
+    "sx-superuser",
+    "wiki-talk-temporal"
+  ],
+  "systems": [
+    "barry",
+    "csr"
+  ],
+  "algos": [
+    "bfs",
+    "pr",
+    "tc"
+  ],
+  "note": "Barry BFS BEFORE the L0 dst-cached EdgeRef optimization. Snapshot for ablation."
+}
