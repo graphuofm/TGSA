@@ -15,8 +15,8 @@ result set, `B` block capacity.
 | Operation | Barry (compacted) | Barry (uncompacted) | time-sorted CSR | entity CSR (arrival order) |
 |---|---|---|---|---|
 | append one edge | **O(1) amortized** | **O(1) amortized** | O(E) (rebuild) | O(1) amortized |
-| point query `query_at(t)` | O(1) + \|R\| | same | O(V log d) | O(E) scan |
-| range `query_range(lo,hi)` | O(W_range + \|R\|) | same | O(V log d + \|R\|) | O(E) scan |
+| point query `query_at(t)` | O(mu + \|R\|), mu = window occupancy, < 4*target by Thm 3 | same | O(V log d) | O(E) scan |
+| range `query_range(lo,hi)` | O(W_range + mu + \|R\|), boundary windows filtered, interior bulk-copied | same | O(V log d + \|R\|) | O(E) scan |
 | neighbor expansion in `[t_u, hi]` | O(log d(v) + k) | O(d(v)) | O(log d(v) + k) | O(d(v)) |
 | forward/backward taint | O(Σ log d + \|R\| log \|R\| + k_total) | O(Σ d + ...) | same as compacted | O(Σ d + ...) |
 | retention `evict_before(t)` | O(W_evicted + blocks) | same | O(E) rebuild | O(E) delete+compact |
