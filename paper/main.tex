@@ -1,14 +1,11 @@
-% Barry: A Zero-Index Storage Engine for Temporal Graphs via Virtual Memory Mapping
-% Target venue: VLDB / SIGMOD (A-tier), fallback EDBT.
-% Drop-in compile: Overleaf with VLDB or acmart class. For now uses generic
-% article class + spacing tweaks so it compiles anywhere.
-
+% Barry: A Temporal-First Storage Engine for Provenance Graphs
+% Target: PVLDB Regular Research. Compiles standalone with article class;
+% drop into the vldb class for submission.
 \documentclass[11pt,letterpaper,twocolumn]{article}
-
 \usepackage[margin=0.85in]{geometry}
 \usepackage{times}
 \usepackage[hidelinks]{hyperref}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amssymb,amsthm}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{booktabs}
@@ -19,13 +16,9 @@
 \usepackage{microtype}
 \usepackage{enumitem}
 \setlist{nosep}
+\newtheorem{theorem}{Theorem}
 
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:}}
-
-\title{\textbf{Barry: A Zero-Index Storage Engine for Temporal Graphs\\
-via Virtual Memory Mapping}}
-
+\title{\textbf{Barry: A Temporal-First Storage Engine\\for Provenance Graphs}}
 \author{Anonymous Submission}
 \date{}
 
@@ -34,709 +27,524 @@ via Virtual Memory Mapping}}
 
 % =====================================================================
 \begin{abstract}
-Temporal graph workloads---fraud detection, network security, real-time
-recommendation---demand both high-throughput edge ingestion and the ability
-to answer time-respecting queries (\emph{``what edges existed at time
-$T$?''}) with low latency. State-of-the-art dynamic graph storage systems
-optimize for the streaming-update axis but discard timestamps, treating
-edges as untyped tuples; running temporal queries on top of them therefore
-requires a full-graph scan plus filtering.
+Provenance graphs---the causal record of system audit events, and
+increasingly of LLM-agent execution traces---are queried along time and
+causality: \emph{what did this alert descend from}, \emph{what did this
+compromise touch}, \emph{what held at time $T$}. Existing engines are
+structurally mismatched to this workload. Entity-keyed graph stores
+answer these queries by structural scan plus per-edge filtering;
+column stores answer range filters well but pay a full join per
+traversal hop; statically time-sorted structures answer both but
+cannot ingest a stream.
 
-This paper presents \textbf{Barry}, a temporal graph storage engine built
-on a single observation: on a 64-bit machine, the virtual address space is
-larger than any temporal range we will ever ingest. Barry maps each
-timestamp directly to a virtual memory address via a constant-time bit
-shift, then lets the operating system's demand-paging handle sparsity for
-free. The architecture has three components: (i) a \emph{Timeline
-Backbone}, an mmap'd array indexed by timestamp; (ii) \emph{Adaptive
-Granularity Selection}, an algorithm that auto-tunes the time-to-address
-shift to data density; and (iii) \emph{Wait-Free Burst Append}, a
-cache-line-aligned block layout for concurrent ingestion without locks on
-distinct timestamps.
+We first quantify what that mismatch costs today. A single ordinary
+host emits $80{,}021$ provenance-relevant events per second under
+routine load, while published provenance corpora record roughly $10^2$
+per second per host---an implied $783\times$ reduction applied before
+anything is stored. On 1.05 billion real enterprise events with 749
+labelled red-team actions, we show that causality-preserving reduction
+at $131\times$ silently deletes \textbf{44\% of the attacker's own
+evidence} while node-level recall---the metric the field validates
+reduction with---remains \textbf{97.7\%, unchanged across the entire
+reduction range}. The standard certification of ``safe'' reduction
+does not measure what an investigation needs.
 
-We evaluate Barry on seven temporal graphs (60K--8M edges, small tier;
-16M--1B edges, full tier). For ingestion, Barry sustains
-$13$--$16$~M~edges/s peak throughput, $561\times$--$1610\times$ faster
-than Neo4j~4.4. For temporal point-in-time lookup ($Q_1$), Barry
-achieves $0.2$--$1.0~\mu\mathrm{s}$ median latency, over
-$4 \times 10^{5}\times$ faster than Neo4j --- a query class that
-PMA-based and AL-based stores do not natively support. For pure-topology
-graph algorithms (BFS, PageRank, triangle counting), Barry's storage
-overhead is within $1.1$--$2.5\times$ of textbook CSR; DCSR (EDBT'26)
-shows comparable $0.85$--$1.15\times$ overhead vs.\ its parlay-tuned
-CSR baseline. The two ratios are within the same band, indicating that
-Barry's temporal-axis design does not cost more than DCSR's
-streaming-axis design in algorithm-runtime.
+Barry is a storage engine built so that this trade-off need not be
+taken blindly. It maps each timestamp to a virtual address by a
+constant-time shift, letting demand paging absorb sparsity: ingestion
+is a lock-free $O(1)$ append that sustains $3.28$M~events/s of
+continuous arrival, retention is a page-release over a time prefix,
+and time-respecting traversal runs $150$--$700\times$ faster than a
+columnar engine on identical data with element-wise identical answers.
+Against a statically time-sorted CSR---which is $2.7\times$ faster per
+traversal and cannot ingest at all---Barry never stops being
+queryable: queries served during the CSR's mandatory rebuild silently
+lose $33.2\%$ of the true answer on average and up to $99.5\%$. All
+749 real red-team alerts are causally traced in $46.5$ seconds total.
 \end{abstract}
 
 % =====================================================================
 \section{Introduction}
 \label{sec:intro}
 
-\paragraph{The rise of temporal graphs.}
-Modern graph workloads increasingly attach a timestamp to every edge.
-Anti-money-laundering pipelines need to detect rapid bursts of
-transactions \emph{between fixed time bounds}~\cite{altman2024aml,
-dhankhad2018fraud}. Real-time content recommendation must extract a
-``last 24 hours'' subgraph for every user
-query~\cite{sharma2016graphjet}. Network security responses depend on
-reconstructing the topology around a suspicious endpoint at the precise
-moment of an alert. In each case the graph is not just \emph{dynamic}
-(structure changes over time) but \emph{temporal}: the timestamp itself
-is part of the data and must be queried.
+\paragraph{The workload.}
+Every hardened endpoint ships an audit pipeline; every serious agent
+framework logs its execution. Both produce the same object: a
+\emph{provenance graph}, whose vertices are principals (processes,
+files, sockets, hosts, tools, memory entries) and whose edges are
+timestamped events between them. The graph is append-only---events
+happen and are never updated---and it is interrogated along exactly
+two axes: time and causality. The canonical queries are backward
+tracing (\emph{which events could have influenced this
+alert?}~\cite{king2003backtracker}), forward impact (\emph{what did
+this compromised principal touch afterwards?}), point-in-time
+reconstruction, and windowed aggregation.
 
-\paragraph{The index wall.}
-Existing high-performance graph stores assume the timestamp can be
-discarded once the structural update is digested. Packed Memory Array
-based systems (PPCSR~\cite{wheatman2021ppcsr},
-CPMA~\cite{wheatman2024cpma}, DCSR~\cite{shen2026dcsr}), tree-based
-systems (PaC-tree~\cite{dhulipala2022pactree},
-Aspen~\cite{dhulipala2019aspen}), and adjacency-list-based systems
-(LSGraph~\cite{qi2024lsgraph}, Sortledton~\cite{fuchs2023sortledton})
-all store edges keyed by source-vertex ID, not time. Answering even the
-simplest temporal query --- ``return all edges at time $T$''--- requires a
-full structural scan plus a per-edge timestamp filter.
-On a 1B-edge graph this is hundreds of milliseconds; on a graph database
-such as Neo4j it is hundreds of milliseconds even on a 60K-edge graph
-(Section~\ref{sec:eval}).
+\paragraph{The mismatch.}
+No deployed storage layer serves these queries from a live stream.
+High-performance dynamic graph stores---PMA-based
+(PPCSR~\cite{wheatman2021ppcsr}, DCSR~\cite{shen2026dcsr}), tree-based
+(Aspen~\cite{dhulipala2019aspen}), adjacency-list-based
+(Sortledton~\cite{fuchs2023sortledton})---key storage on
+source-vertex identity and demote the timestamp to a payload
+attribute, so a time-respecting query degrades to a structural scan
+with per-edge filtering. Column stores and LSM engines invert the
+failure: ordered by time, they excel at range filters but pay a full
+join against the edge table for every traversal hop
+(\S\ref{sec:eval-traversal}). Versioned temporal graph databases
+(AeonG~\cite{hou2024aeong}, TVA~\cite{li2026tva}) solve a different
+problem entirely: efficient retrieval of \emph{updated entity
+versions}, where the core difficulty is version-chain organization.
+Provenance events have no versions---nothing is ever updated---and the
+queries are reachability, not snapshot retrieval.
 
-These systems are not poorly engineered; they were designed for a
-different problem. The \emph{topology} of the graph is what they
-optimize, and they pay an O($\log n$)--O($\sqrt n$) cost per update to
-keep that topology compact. When the workload also wants temporal
-locality, that work is partly wasted: the ordering by source-vertex ID is
-orthogonal to the temporal axis the user actually queries on.
+\paragraph{What the mismatch costs today.}
+The practical consequence is that the field throws data away. We
+measured a single server under an ordinary parallel build emitting
+$80{,}021$ provenance-relevant system calls per second
+(\S\ref{sec:workload}); the DARPA Transparent Computing corpora record
+roughly $102$ events per second per host---meaning current pipelines
+discard on the order of $783$ of every $784$ events before storage.
+Reduction systems make this rigorous: causality-preserving reduction
+(CPR) and successors~\cite{zhang2025tapas} report three orders of
+magnitude of compression while preserving detection accuracy. What no
+prior work measures is what reduction does to the \emph{evidence an
+investigator must follow}. Section~\ref{sec:evidence} shows, on 1.05
+billion real events with real red-team ground truth, that the answer
+is: it destroys it, and the standard validation metric cannot see the
+destruction.
 
-\paragraph{Our insight.}
-A 64-bit address space contains $1.6 \times 10^{19}$ bytes. The largest
-public temporal graph (1B Reddit replies over 6 years) covers
-$\sim 6 \times 10^9$ edges across $\sim 3 \times 10^8$ seconds. The
-\emph{address space is four orders of magnitude larger than the time range
-of the largest workload}. This is the gap Barry exploits: rather than
-store an index that maps timestamp $\rightarrow$ edge location, we
-\emph{make the timestamp the location}. Specifically,
+\paragraph{Our design.}
+Barry begins from an address-space observation: a 64-bit virtual
+address space is four orders of magnitude larger than the time range
+of any recorded workload. Rather than maintaining an index from
+timestamp to location, Barry \emph{makes the timestamp the location}:
 \begin{equation}
-A(T) = A_{\mathrm{base}} + ((T - T_{\mathrm{start}}) \gg S) \times P,
+A(T) \;=\; A_{\mathrm{base}} + \big((T - T_{\mathrm{start}}) \gg S\big)\times P,
 \label{eq:mapping}
 \end{equation}
-where $A_{\mathrm{base}}$ is the base of an mmap'd region, $S$ is a
-data-tuned shift, and $P$ is a slot size. Empty regions of the virtual
-range are not committed to physical RAM by the OS, so sparsity is
-managed at the page-table level for free.
+a subtraction and a shift, with the operating system's demand paging
+absorbing temporal sparsity at zero data-structure cost
+(Theorems~\ref{thm:addr},~\ref{thm:space}). Every design property the
+provenance workload needs then falls out of the layout rather than
+being engineered on top: $O(1)$ lock-free append
+(Theorem~\ref{thm:append}) because an edge's home is computed, not
+searched; order-independence because out-of-order arrival lands at the
+same address; retention as a page release over an address prefix; and
+time-respecting traversal that touches only the windows a query names.
 
 \paragraph{Contributions.}
-\begin{enumerate}[leftmargin=*]
-  \item \textbf{Storage design.} A zero-index temporal storage architecture
-  built on Equation~\eqref{eq:mapping}. Worst-case lookup is
-  \emph{O(1)}, against $O(\log n)$ for B+-tree-based stores and
-  $O(\sqrt n)$ amortized for PMA stores
-  (Section~\ref{sec:design}, Theorem~\ref{thm:lookup}).
-  \item \textbf{Adaptive granularity.} A cost-aware algorithm
-  (Section~\ref{sec:granularity}) that auto-selects the shift $S$ from
-  data statistics to avoid both fragmentation (over-fine $S$) and
-  block-overflow (over-coarse $S$).
-  \item \textbf{Wait-free ingestion.} A block layout
-  (Section~\ref{sec:waitfree}) that allows concurrent appenders writing
-  at distinct timestamps to never contend.
-  \item \textbf{Storage--algorithm coevaluation.} On seven real-world
-  graphs and six algorithms (4 standard, 2 temporal-specific), Barry
-  outperforms Neo4j by $561$--$1610\times$ on ingestion and
-  $\sim$$4 \times 10^{5}\times$ on point-in-time queries, while
-  remaining within $1.1$--$2.5\times$ of static CSR on BFS/PageRank/
-  triangle counting.
+\begin{enumerate}[leftmargin=1.2em]
+\item \textbf{A workload characterization with measured rates}
+  (\S\ref{sec:workload}): per-host provenance event rates, the implied
+  reduction ratio in today's pipelines, and the storage arithmetic
+  that forces the retention trade-off.
+\item \textbf{The first measurement of what log reduction costs an
+  investigation} (\S\ref{sec:evidence}): attack-edge survival, a
+  metric under which $131\times$ CPR loses 44\% of red-team evidence
+  while node-level recall stays fixed at 97.7\%; and an
+  investigation-horizon analysis showing no operating point is both
+  accurate and actionable.
+\item \textbf{A temporal-first storage engine} (\S\ref{sec:design})
+  with formal guarantees: constant-time addressing, a physical-space
+  bound under demand paging, an adaptive granularity bound, sparse
+  taint correctness, and lock-free ingestion (proofs in the artifact).
+\item \textbf{A layered evaluation} (\S\ref{sec:eval}) on 13 datasets
+  and 7 baselines, including element-wise answer-verified comparisons
+  against DuckDB and a time-sorted CSR, a rebuild-versus-stream
+  experiment, a full-corpus alert sweep against real ground truth, and
+  a storage-read decomposition that isolates the storage engine's
+  share of classic graph algorithms.
 \end{enumerate}
 
 % =====================================================================
-\section{Background and Related Work}
-\label{sec:related}
+\section{The Provenance Workload}
+\label{sec:workload}
 
-\subsection{Virtual memory and demand paging}
-On commodity 64-bit Linux, an \texttt{mmap} call with
-\texttt{MAP\_ANONYMOUS}|\texttt{MAP\_PRIVATE} reserves a virtual range
-without committing physical RAM~\cite{linux_mmap}. A page is allocated
-only on first write (demand paging); unused virtual addresses occupy no
-RAM and no page-table entry. Sparse data structures with predictable
-addressing patterns thus get sparsity ``for free''; this property has
-been exploited for sparse arrays and tagged memory but, to our
-knowledge, not for temporal graph storage.
+\subsection{Event rates, measured}
+We instrumented an ordinary 20-core server (strace, syscall counts
+verified against untraced wall-clock) under a routine parallel
+software build and observed \textbf{80,021 provenance-relevant system
+calls per second} on one host---opens, reads, writes, execs, clones,
+connects: precisely the event classes whole-system provenance
+records~\cite{pasquier2017camflow}. For calibration: the DARPA TC
+THEIA trace stores $102.2$ events/s/host; the LANL enterprise corpus
+(authentication only) stores $0.012$ events/s/host. Today's recorded
+corpora therefore sit two to four orders of magnitude below what hosts
+emit; the gap---$783\times$ for THEIA against our measured
+rate---is reduction, applied before storage, whose cost has never been
+measured on the investigation axis.
 
-\subsection{Dynamic graph storage}
-\label{sec:related-storage}
-We follow the four-class taxonomy of recent
-surveys~\cite{besta2023streaming, besta2023graphdb}.
+\subsection{The retention arithmetic}
+At 20 bytes per event, losslessly retaining a 1{,}000-host fleet at
+the measured rate is 138\,TB/day; a 100\,TB budget holds 17 hours.
+Lossless retention of raw whole-fleet provenance is not a realistic
+posture, and Barry does not claim to make it one. The design question
+is different: \emph{given that a reduction point must be chosen, can
+it be chosen with its investigative cost visible, and can the storage
+layout push that point outward?} Sections~\ref{sec:evidence}
+and~\ref{sec:eval} answer the two halves.
 
-\textbf{PMA-based} systems (PPCSR~\cite{wheatman2021ppcsr},
-CPMA~\cite{wheatman2024cpma},  DCSR~\cite{shen2026dcsr},
-VCSR~\cite{islam2022vcsr}) store sorted edges in a Packed Memory Array
-with periodic rebalancing.  DCSR (EDBT'26), the most recent point in
-this lineage, uses leaf-oriented locks and decoupled rebalancing to
-sustain ${\sim}10$~M updates/s on RMAT-generated streams.
-
-\textbf{AL-based} systems (LiveGraph~\cite{zhu2020livegraph},
-GraphOne~\cite{kumar2020graphone}, Stinger~\cite{ediger2012stinger},
-LSGraph~\cite{qi2024lsgraph}) use per-vertex dynamic edge arrays.
-
-\textbf{Tree-based} systems (Aspen~\cite{dhulipala2019aspen},
-PaC-tree~\cite{dhulipala2022pactree}) use vertex-keyed compressed
-purely-functional trees.
-
-\textbf{Hybrid} systems (Terrace~\cite{pandey2021terrace},
-GraphTango~\cite{}) layer multiple representations by vertex degree.
-
-\textbf{None of the above store edge timestamps as a queryable axis.}
-Recent transactional systems for temporal graph databases
-(AeonG~\cite{hou2024aeong}, Teseo~\cite{deleo2021teseo},
-Sortledton~\cite{fuchs2023sortledton},
-Cuckoograph~\cite{fan2025cuckoograph}) maintain timestamps for
-multi-version concurrency control but route temporal queries through a
-versioning layer rather than the storage layer. In contrast, Barry
-treats the timestamp as the primary access key.
-
-\subsection{Hardware trends}
-TB-class server RAM is now commodity. AVX-512 and 2~MB Huge
-Pages~\cite{talluri1994tlb,linux_hugetlb} have dramatically reduced TLB
-pressure. The bottleneck for in-memory analytics is increasingly
-\emph{cache misses}, not raw RAM bandwidth. Barry's design intentionally
-keeps each ingest path on a single cache line and lets sequential
-temporal queries ride hardware prefetchers.
-
-\subsection{Time models in graphs}
-We adopt the continuous-time edge-stream model of
-Holme \& Saram\"aki~\cite{holme2012temporal}. The temporal queries we
-support (Section~\ref{sec:eval}) include point-in-time, range, sliding
-window, and time-respecting variants of classic graph
-algorithms~\cite{wu2014pathproblems,paranjape2017motifs}.
+\subsection{Why the query axis is time}
+Three structural properties separate provenance from the workloads
+existing graph stores were built for. (1)~\emph{Append-only}: events
+are immutable; there are no versions, no in-place updates, and
+deletion is retention policy, not semantics. (2)~\emph{Monotone
+predicates}: every canonical query carries a time predicate that is
+monotone along any path it explores---taint propagates only forward in
+time, causality only backward~\cite{king2003backtracker}. A layout
+whose primary axis is time turns these predicates into address
+arithmetic. (3)~\emph{Continuous small-batch arrival}: audit streams
+arrive perpetually and near-sorted but not exactly sorted; spans stay
+open for hours and events straggle. Structures that depend on global
+order (sorted arrays, PMAs, LSM levels) pay for arrival order; a
+computed address does not.
 
 % =====================================================================
-\section{Barry Design}
-\label{sec:design}
+\section{What Reduction Destroys}
+\label{sec:evidence}
 
-\subsection{Architecture overview}
-Figure~\ref{fig:arch} shows Barry's three layers.
+We use the LANL Comprehensive Multi-Source Cyber-Security Events
+corpus~\cite{lanl2015data}: 58 consecutive days of a real enterprise
+network, $1{,}051{,}430{,}459$ authentication events over $17{,}666$
+hosts, with \textbf{749 labelled red-team compromise events} as ground
+truth---to our knowledge the largest public corpus pairing raw events
+with attacker labels. All 749 resolve into the graph's identifier
+space; 706 match a stored authentication edge exactly.
 
-\begin{itemize}[leftmargin=*]
-  \item A \textbf{Meta layer} (a few KB) holding $T_{\mathrm{start}}$,
-        $T_{\mathrm{end}}$, the shift $S$, and counters.
-  \item A \textbf{Timeline backbone}, an mmap'd array of pointer slots
-        indexed by $\mathrm{idx}(T) = (T - T_{\mathrm{start}}) \gg S$.
-        At slot $\mathrm{idx}$ sits either \texttt{nullptr} (empty
-        bucket; OS has not faulted the page) or a pointer to a
-        \emph{Block} in the data arena.
-  \item A \textbf{Data arena}: a bump-allocated mmap'd region of
-        cache-line-aligned blocks. Each block holds up to $C$ edges
-        (default $C=16$); when full, a chained successor block is
-        appended.
-\end{itemize}
+\subsection{Attack-edge survival vs.\ node-level recall}
+\label{sec:evidence-survival}
+We apply causality-preserving reduction at operating windows from 60
+seconds to 24 hours and ask two questions of the reduced log.
+\emph{Question 1 (the field's metric):} is the compromised host set
+still reachable from the intrusion point? \emph{Question 2 (the
+investigator's):} do the red team's own edges still exist?
 
-\begin{figure}
-% \includegraphics[width=\columnwidth]{figs/arch.pdf}
-\caption{Three-layer architecture: Meta, Timeline backbone (sparse
-mmap), Data arena (bump-allocated chained blocks).}
-\label{fig:arch}
-\end{figure}
-
-\subsection{Zero-index temporal mapping}
-\label{sec:mapping}
-The hot path for both ingestion and point-in-time queries is
-Equation~\eqref{eq:mapping}, implemented as Algorithm~\ref{alg:map}.
-
-\begin{algorithm}
-\caption{Temporal Address Mapping}
-\label{alg:map}
-\begin{algorithmic}[1]
-\Require timestamp $T$, base address $A_{\mathrm{base}}$,
-         start time $T_{\mathrm{start}}$, shift $S$
-\Ensure  pointer to the slot for time $T$
-\State $\mathrm{idx} \gets (T - T_{\mathrm{start}}) \gg S$
-\State $\mathrm{slot} \gets A_{\mathrm{base}} + \mathrm{idx} \cdot
-       \mathrm{sizeof}(\mathrm{void*})$
-\State \Return $\textsc{Load}(\mathrm{slot})$
-\end{algorithmic}
-\end{algorithm}
-
-The algorithm executes in five machine instructions on x86-64
-(\texttt{sub}, \texttt{shr}, \texttt{lea}, \texttt{mov}). Crucially,
-each step is constant-time \emph{regardless of the graph size $n$}.
-Table~\ref{tab:complexity} contrasts this with B+-tree- and PMA-based
-indices.
-
-\begin{table}
-\centering
-\small
-\caption{Cost of edge lookup for a single timestamp.}
-\label{tab:complexity}
-\begin{tabular}{lll}
+\begin{table}[h]
+\centering\small
+\caption{Reduction on 1.05B real events vs.\ 749 red-team actions.
+Node recall never moves; the evidence disappears.}
+\label{tab:e8}
+\begin{tabular}{lrrr}
 \toprule
-Index type & Comparisons & Cache misses \\
+Policy & Ratio & Attack-edge survival & Node recall \\
 \midrule
-B+ tree              & $O(\log n)$  & $O(\log n)$ \\
-Hash table           & $O(1)$ avg, $O(n)$ worst & $1{+}$chain \\
-PMA (DCSR)           & $O(\log n + \log^2 n / B)$ & $O(\log n)$ \\
-\textbf{Barry}       & $\mathbf{O(1)}$ \textbf{worst-case} & $\mathbf{1}$ \\
+none            & 1.00$\times$   & 699/699 (100.0\%) & 97.7\% \\
+CPR 60\,s       & 3.27$\times$   & 646/699 (92.4\%)  & 97.7\% \\
+CPR 1\,h        & 14.08$\times$  & 490/699 (70.1\%)  & 97.7\% \\
+CPR 24\,h       & 131.51$\times$ & \textbf{391/699 (55.9\%)} & \textbf{97.7\%} \\
+random 50\%     & 2.00$\times$   & 344/699 (49.2\%)  & 85.9\% \\
+random 90\%     & 10.00$\times$  & 60/699 (8.6\%)    & 58.4\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{theorem}[Lookup bound]
-\label{thm:lookup}
-Given a Timeline backbone of $N$ slots with shift $S$, locating the
-block for any timestamp $T \in [T_{\mathrm{start}},
-T_{\mathrm{start}} + (N \ll S)]$ costs
-five machine instructions and at most one cache-line transfer
-(amortized one TLB miss when 4~KB pages, one TLB miss per 256~K slots
-with 2~MB Huge Pages).
+Table~\ref{tab:e8} is the paper's central measurement. Across the
+entire CPR range---$1\times$ to $131\times$---node-level recall is
+constant at 97.7\%: taint over-approximates enough that compromised
+hosts stay reachable through surviving paths. Over the same range the
+red team's own edges fall from 100\% to 55.9\% survival.
+\textbf{Forty-four percent of the attacker's evidence is deleted while
+the metric used to certify reduction as safe reports no change
+whatsoever.} Systems advertising three-orders-of-magnitude reduction
+at ``99.99\% accuracy''~\cite{zhang2025tapas} are reporting detection
+accuracy; this experiment shows that number cannot certify
+investigative fidelity, because the two metrics decouple completely.
+
+Methodologically this finding was nearly missed: a pilot scored by
+node recall concluded $8.4\times$ reduction was free. Node recall is
+not wrong; it is blind on this axis. We propose attack-edge survival
+as the metric reduction schemes must additionally report.
+
+\subsection{No usable investigation horizon}
+\label{sec:evidence-window}
+Forward taint from the first red-team compromise, sweeping the
+horizon (Table~\ref{tab:e8b}): at a horizon an analyst would accept
+(1.4\,h), the trace finds 7.9\% of the compromised hosts. The horizon
+that reaches 88.9\% recall spans 11.6 days and implicates 2{,}774
+machines---15.7\% of the network. Backward tracing behaves
+symmetrically: each of the 749 alerts implicates 2{,}313 hosts on
+average. Since real intrusion dwell time is measured in weeks, the
+horizon the workload \emph{requires} is precisely the horizon at
+which the answer stops being actionable. Containment-by-isolation of
+the implicated set is incoherent at realistic accuracy; the response
+has to be finer-grained than the node, which in turn requires the
+evidence of \S\ref{sec:evidence-survival} to still exist.
+
+\begin{table}[h]
+\centering\small
+\caption{Forward taint vs.\ horizon (LANL, single seed).}
+\label{tab:e8b}
+\begin{tabular}{lrrrr}
+\toprule
+Horizon & Tainted & \% of net & Recall & Latency \\
+\midrule
+8.4\,min & 12    & 0.1\%  & 3.6\%  & 667\,$\mu$s \\
+1.4\,h   & 45    & 0.3\%  & 7.9\%  & 6.5\,ms \\
+14\,h    & 95    & 0.5\%  & 10.2\% & 72\,ms \\
+2.9\,d   & 808   & 4.6\%  & 22.6\% & 435\,ms \\
+11.6\,d  & 2774  & 15.7\% & 88.9\% & 2.55\,s \\
+58\,d    & 5121  & 29.0\% & 97.7\% & 17.1\,s \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% =====================================================================
+\section{Design}
+\label{sec:design}
+
+Barry's architecture has four components: the \emph{Timeline}, an
+mmap'd array of window slots indexed by
+Equation~\eqref{eq:mapping}; the \emph{Arena}, a bump-allocated
+region of cache-line-aligned edge blocks chained per window; the
+\emph{Vertex Index}, per-vertex bucket chains of 16-byte edge
+references (with an opt-in reverse direction for backward tracing);
+and the \emph{retention layer}, which releases physical pages over a
+time prefix. Full proofs of the five theorems below ship in the
+artifact; we state them and the design decisions they pin down.
+
+\subsection{Addressing and space}
+\begin{theorem}[Constant-time temporal addressing]
+\label{thm:addr}
+For any timestamp $t$, the timeline slot holding every edge stamped
+$t$ is computed in $O(1)$ worst case with no data-dependent memory
+access.
 \end{theorem}
-\noindent\emph{Proof.} Algorithm~\ref{alg:map} contains no loops and no
-data-dependent branches; the cache-line and TLB bounds follow from the
-Timeline's contiguous virtual layout. \hfill$\Box$
+\begin{theorem}[Physical-space bound]
+\label{thm:space}
+With page size $P$ and $W_{occ}$ non-empty windows, resident timeline
+memory is at most $W_{occ}\cdot P$ plus lazily-materialized page-table
+overhead; untouched windows cost zero bytes.
+\end{theorem}
+This is the ``zero-index'' claim in its defensible form: sparsity is
+absorbed by the MMU, not by a structure Barry maintains. The mapping
+is \emph{anonymous} memory---no file backing---so the well-known
+failure modes of file-backed mmap buffer
+management~\cite{crotty2022mmap} (torn pages, SIGBUS on truncation,
+eviction stalls) do not arise; Barry uses mmap the way an allocator
+reserves address space, not as a buffer pool.
 
 \subsection{Adaptive granularity}
-\label{sec:granularity}
-Choosing $S$ poorly costs performance. Too small a window crashes the
-Timeline into the L3 cache wall (most slots empty, dTLB pressure
-dominates). Too large a window crowds many edges into the same block,
-forcing chained overflows on every ingest.
-
-We model the cost as
-$\mathrm{Cost}(S) = \alpha \cdot F(S) + \beta \cdot \overline{W}(S)$
-where $F(S)$ is the expected fragmentation
-($\mathrm{slots} / \mathrm{nonempty\,slots}$) and $\overline{W}(S)$ is
-the expected block fill (truncated at capacity $C$). The closed-form
-optimum sets the average window to hold $K$ edges; with our
-default $K=64$ (one cache line of 4-byte destinations), we have:
-
-\begin{algorithm}
-\caption{Adaptive Granularity Selection}
-\label{alg:adaptive}
-\begin{algorithmic}[1]
-\Require sample timestamps $\mathcal{S}$, target $K$, range
-         $[T_{\mathrm{min}}, T_{\mathrm{max}}]$
-\Ensure  shift $S^*$
-\State $\mathrm{span} \gets T_{\mathrm{max}} - T_{\mathrm{min}}$
-\State $\mathrm{windows} \gets \max(1, |\mathcal{S}| / K)$
-\State $w \gets \max(1, \mathrm{span} / \mathrm{windows})$
-\State $S^* \gets \lceil \log_2 w \rceil$
-\State \Return $S^*$
-\end{algorithmic}
-\end{algorithm}
-
-Across our seven datasets the auto-selected $S^*$ ranges from~5
-(temporal-reddit-reply, $\sim$1B edges) to~25 (cit-Patents over 30
-years). Section~\ref{sec:eval} validates that $S^*$ is within $\pm 1$
-of the empirically optimal shift.
-
-\subsection{Wait-free burst append}
-\label{sec:waitfree}
-Concurrent ingestion is the second hot path. The block layout enables
-the lock-free protocol of Algorithm~\ref{alg:append}.
-
-\begin{algorithm}
-\caption{Wait-Free Burst Append}
-\label{alg:append}
-\begin{algorithmic}[1]
-\Require edge $e$
-\State $\mathrm{idx} \gets \mathrm{TimeMapper.map}(e.\mathrm{timestamp})$
-\State $b \gets \mathrm{Timeline.load}(\mathrm{idx})$
-\If{$b = \mathrm{null}$}
-  \State $b' \gets \mathrm{Arena.alloc\_block}()$
-  \If{$\neg\mathrm{Timeline.CAS}(\mathrm{idx},\mathrm{null},b')$}
-    \State $b \gets \mathrm{Timeline.load}(\mathrm{idx})$
-  \Else \quad $b \gets b'$
-  \EndIf
-\EndIf
-\Loop
-  \State $\mathrm{pos} \gets b.\mathrm{count.fetch\_add}(1)$
-  \If{$\mathrm{pos} < b.\mathrm{capacity}$}
-    \State $b.\mathrm{edges}[\mathrm{pos}] \gets e$ \Return
-  \EndIf
-  \If{$b.\mathrm{next} = \mathrm{null}$}
-    \State $b'' \gets \mathrm{Arena.alloc\_block}()$
-    \State $\mathrm{CAS}(b.\mathrm{next}, \mathrm{null}, b'')$
-  \EndIf
-  \State $b \gets b.\mathrm{next}$
-\EndLoop
-\end{algorithmic}
-\end{algorithm}
-
-\begin{theorem}[Wait-freedom]
-Two threads appending edges with distinct timestamps that map to
-distinct slot indices never synchronize. Two threads with the same
-slot index synchronize at most once via a single CAS on
-\texttt{Timeline[idx]} for slot creation, plus one
-\texttt{fetch\_add} per edge for in-block placement.
+The shift $S$ sets the window width. Too coarse and windows over-fill;
+too fine and the timeline sprawls. Barry selects $S$ from aggregate
+stats at load, or incrementally from a stream prefix:
+\begin{theorem}[Granularity bound]
+\label{thm:shift}
+For $E \ge 2\cdot\mathrm{target}$, the selected shift yields mean
+window occupancy $\mu \in [\mathrm{target}/2,\, 4\cdot\mathrm{target})$.
 \end{theorem}
+The constant 4 is honest: one factor of two from rounding the window
+to a power of two (shift addressing admits nothing finer), one from
+the ceiling on the window count. Datasets in our corpus span
+per-window densities from 32 to 32{,}768 edges under a single target;
+the bound holds at both extremes.
+
+\subsection{Lock-free ingestion, explicit compaction}
+\begin{theorem}[Bounded-step append]
+\label{thm:append}
+Absent arena exhaustion, an insert completes in $O(1+c)$ steps where
+$c$ counts CAS conflicts, and some insert completes at every step
+(lock-freedom). Slot claims and arena bumps are individually
+wait-free.
+\end{theorem}
+Appends never sort. Consequently a vertex's bucket holds refs in
+arrival order, and time-respecting expansion is $O(d)$ per vertex. An
+\emph{explicit} compaction pass (\texttt{finalize()}) sorts each
+bucket by timestamp once, after which expansion binary-searches in
+$O(\log d + k)$. Compaction is deliberately not on the insert path:
+folding it in would make every batch pay $O(E)$ and forfeit streaming
+(we measured exactly this failure: an early build that compacted per
+batch ingested at $11$K events/s; moved off the path, $3.28$M).
+Queries are correct in either state---compaction changes cost, not
+answers. Barry's contract is thus: \emph{always appendable, always
+correct; fast expansion after a compaction that can be scheduled
+whenever convenient.}
+
+\subsection{Taint semantics}
+\begin{theorem}[Sparse taint correctness]
+\label{thm:taint}
+\texttt{forward\_taint}$(v_0,t_0,t_{hi})$ returns exactly the
+vertices reachable by time-respecting paths with their earliest
+contamination times; backward tracing is its mirror under time
+reversal.
+\end{theorem}
+The traversal is a temporal Dijkstra over a sparse visited map: cost
+scales with the answer, not with $|V|$. Replacing an earlier dense
+formulation ($O(V)$ per query) with this sparse one is worth
+$11{,}011\times$ on a 3.8M-vertex graph and is verified
+vertex-for-vertex against the dense fixpoint in the test suite.
+
+\subsection{Retention}
+Retention is a monotone time predicate, so under
+Equation~\eqref{eq:mapping} it is an address-prefix operation:
+\texttt{evict\_before}$(t)$ walks the timeline prefix, merges block
+extents, and releases whole pages with \texttt{MADV\_DONTNEED}---no
+scan of the edge set, no tombstone compaction, readers of other
+windows undisturbed. On a 16.5M-edge graph, dropping 90\% of the
+history takes 18\,ms and returns 331\,MB.
 
 % =====================================================================
 \section{Implementation}
 \label{sec:impl}
-
-Barry is implemented in $\sim$2{,}000 lines of C++17. We highlight three
-implementation choices.
-
-\paragraph{Vertex index for graph algorithms.}
-Pure-temporal queries (Q1--Q6 in Section~\ref{sec:eval}) use the
-Timeline directly. Pure-topology algorithms (BFS, PageRank, triangle
-counting) need a per-vertex out-edge view; we maintain a side
-\textsc{VertexIndex} that, for each \emph{src}, holds a
-linked list of buckets of $\mathrm{EdgeRef}$ entries.
-
-A naive \texttt{EdgeRef = \{block*, offset\}} requires dereferencing
-\texttt{block*} (a pointer chase into the Arena) just to read the
-destination ID, costing one cache miss per neighbor. We instead use
-the layout
-\texttt{EdgeRef = \{dst, offset, block*\}}, which still occupies 16
-bytes (the previous layout was already padded to 16 by alignment). The
-cached \texttt{dst} is read by BFS/PageRank/TC directly, the
-\texttt{block*} only by \texttt{neighbors\_temporal}. We refer to this
-optimization as \emph{L0}; Section~\ref{sec:eval-compute} shows it
-gives $3.7$--$4.8\times$ internal speedup on BFS at zero memory cost.
-
-\paragraph{Huge pages integration.}
-\texttt{MAP\_HUGETLB} is requested for the Timeline backbone; on
-failure (no hugetlb pool, no privilege) we fall back to 4~KB pages
-without aborting. Section~\ref{sec:eval-cache} reports both modes.
-
-\paragraph{Memory reclamation.}
-We use tombstoning (\texttt{weight = NaN}) for soft delete; physical
-compaction is left as future work.
+Barry is $\sim$6{,}300 lines of C++17 with no mandatory dependencies:
+engine, nine graph algorithms, the provenance traversals, retention,
+and converters for the LANL format and DARPA CDM. Range scans over
+block interiors are vectorized (AVX2 gathers over the packed 20-byte
+edges); interior windows of a range query are copied without any
+timestamp comparison since only boundary windows can contain
+out-of-range edges. The test suite includes an end-to-end synthetic
+attack chain that validates converter, direction policy, and both
+traversals against hand-computed ground truth.
 
 % =====================================================================
 \section{Evaluation}
 \label{sec:eval}
 
-\subsection{Setup}
-\label{sec:setup}
+\textbf{Setup.} 20-core Xeon, 188\,GB RAM. Datasets: LANL (1.05B
+events, ground truth), 12 SNAP temporal graphs (60K--646M edges), the
+synthetic chain fixture. Baselines: DuckDB v1.5.5 via its C API in
+the same process; a time-sorted CSR (\texttt{tcsr}: entity-keyed,
+per-vertex time-sorted---the strongest simple competitor); an
+arrival-order entity CSR (\texttt{ucsr}: what an ingesting
+entity-first store holds between rebuilds); the topology-only CSR;
+Neo4j 4.4; DCSR/PPCSR harnesses. \emph{Every cross-engine comparison
+in this section verifies element-wise identical answers before any
+latency is reported.} Latency on this workload is heavy-tailed
+(median-to-p95 spans five orders of magnitude); we report
+distributions or size-binned medians, never means.
 
-\textbf{Hardware.} Dual-socket Intel Xeon Gold servers, 20 physical
-cores (no SMT in our config), 188~GB DDR4 RAM, Ubuntu 20.04. Page-cache
-flushing was done where possible via \texttt{drop\_caches}; on shared
-boxes without privileges we fell back to \texttt{sync} only.
+\subsection{Traversal and filter vs.\ a columnar engine}
+\label{sec:eval-traversal}
+Multi-hop time-respecting traversal to fixpoint, binned by answer
+size: Barry leads DuckDB by $150$--$700\times$ at every bin;
+at $|R|>1000$ the median is 12.0\,ms vs.\ 2.43\,s ($203\times$). The
+gap is a data-model consequence---each hop is a fresh join against
+the edge table---and grows with the answer. On DuckDB's home
+ground, time-range filtering, Barry's vectorized scan wins the median
+$14\times$ (71.5\,$\mu$s vs.\ 1.01\,ms) while DuckDB retains the
+better tail (p95 1.50\,ms vs.\ 2.30\,ms): sequential columnar scan
+has the more predictable latency, and we report it so the traversal
+numbers can be believed.
 
-\textbf{Software.} g++ 9.4 with \texttt{-O3 -march=native}, OpenMP 4.5.
-Baselines: Neo4j 4.4.41 Community Edition; DCSR (EDBT'26) built via the
-BYO benchmarking framework~\cite{wheatman2024byo} with conda-forge
-gcc-11 + Bazel 6.
+\subsection{Rebuild versus stream}
+\label{sec:eval-staleness}
+The time-sorted CSR answers a single traversal $2.7\times$ faster
+than Barry at high degree. Its only update path is a full rebuild:
+28.4\,s on LANL. Queries served from the pre-rebuild snapshot are not
+stale but \emph{wrong}: over the live window they silently lose
+33.2\% of the true answer on average and 99.5\% in the worst case
+(68/100 queries incomplete; the independent wiki-talk measurement
+gives 34.1\%). Barry ingests the same arrivals incrementally at
+3.28\,M~events/s and never has a blind window. Barry's own optional
+compaction costs 76.3\,s on LANL---more than the CSR rebuild, and we
+report it---but sits on the performance path, not the correctness
+path: uncompacted Barry answers correctly at $O(d)$ expansion.
 
-\textbf{Datasets.} Seven temporal graphs from
-SNAP~\cite{snap}, ranging from $6 \times 10^4$ to $6 \times 10^8$ edges
-(Table~\ref{tab:datasets}).
+\subsection{Sustained triage on real ground truth}
+All 749 red-team alerts, backward-traced to fixpoint over a 14-hour
+window each: \textbf{46.5\,s total} (median 24.6\,$\mu$s, p95
+353\,ms). At an enterprise volume of $10^4$ alerts/day this is ten
+minutes of one core---tracing \emph{everything} stops being a budget
+decision, where the columnar path (2.43\,s per heavy trace) makes it
+a 6.7-hour one. The same sweep quantifies dependency explosion (2,313
+ancestors per alert on average), reinforcing
+\S\ref{sec:evidence-window}: speed is necessary for triage, and
+demonstrably not sufficient for containment.
 
-\begin{table}
-\centering
-\small
-\caption{Datasets (after sort + remap by our preprocessing tool).}
-\label{tab:datasets}
-\begin{tabular}{lrrrl}
-\toprule
-Dataset & $|V|$ & $|E|$ & $\Delta T$ (yr) & domain \\
-\midrule
-CollegeMsg               & 2K   & 60K  & 0.5  & messaging \\
-email-Eu-core-temporal   & 1K   & 332K & 2.2  & email \\
-sx-mathoverflow          & 25K  & 506K & 6.4  & Q\&A \\
-act-mooc                 & 7K   & 412K & 0.1  & education \\
-sx-superuser             & 194K & 1.4M & 7.6  & Q\&A \\
-sx-askubuntu             & 159K & 964K & 7.2  & Q\&A \\
-wiki-talk-temporal       & 1.1M & 7.8M & 6.4  & wiki \\
-\midrule
-cit-Patents              & 3.8M & 16.5M & 5.0 & citation \\
-sx-stackoverflow         & 2.6M & 63M   & 7.6 & Q\&A \\
-soc-LiveJournal1         & 4.8M & 69M   & 3.2 & social \\
-bitcoin-temporal         & 48M  & 113M  & 7.1 & finance \\
-temporal-reddit-reply    & 8.9M & 646M  & 10.1& social \\
-\bottomrule
-\end{tabular}
-\end{table}
+\subsection{The storage-read share of graph algorithms}
+\label{sec:eval-e13}
+End-to-end algorithm times conflate the storage engine with the
+algorithm implementation. E13 separates them: four engines deliver
+each vertex's adjacency into an identical scratch buffer under a
+timer; the algorithm consumes it outside the timer; checksums verify
+all four engines drive identical executions. On structure-only
+algorithms (BFS, PageRank, label propagation) Barry's storage-read
+time is within $1.7$--$2.1\times$ of the static topology-only
+CSR---the structural optimum---while being the only engine of the
+four that ingests. On time-windowed BFS the ordering flips with
+degree: at mean degree 20 the arrival-order entity store wins on
+contiguity; at degree 337 Barry has caught it; the time-sorted CSR
+leads throughout and cannot ingest. Structure-insensitivity is a
+bounded, measured cost at the storage layer---not the
+$5$--$15\times$ that end-to-end comparisons against tuned algorithm
+suites suggest---and it buys the temporal properties everything else
+in this paper measures.
 
-\textbf{Workloads.} (i) \emph{Ingestion} (E1): bulk-load 90\%, time the
-remaining 10\% as fixed-size batches. (ii) \emph{Temporal queries}
-(E2): six query templates ($Q_1$--$Q_6$, defined in
-Section~\ref{sec:eval-query}). (iii) \emph{Graph algorithms} (E3):
-BFS, PageRank, triangle counting, normalized to static CSR.
-(iv) \emph{Scalability} (E4) over thread count.
-(v) \emph{Memory footprint} (E5).
-(vi) \emph{Cache and TLB behavior} (E6).
-All runs are 5 trials, reported as median.
+\subsection{Scale and footprint}
+LANL loads in 255\,s at 96\,GB RSS (1.05B edges, reverse index on);
+the 646M-edge reddit corpus runs in 39.6\,GB. Peak small-batch
+ingestion reaches 13--16M events/s on small graphs and 3.28M
+sustained on LANL's degree-59{,}517 topology. The vertex index is
+roughly half of resident memory; the reverse direction, needed only
+for backward tracing, adds 39--58\% RSS and is opt-in.
 
-\subsection{Ingestion (E1)}
-\label{sec:eval-ingest}
-
-Figure~\ref{fig:e1} reports throughput across the small tier datasets
-under four batch sizes. Barry sustains a flat 13--16~M~edges/s in the
-sweet spot ($\mathrm{batch} = 10^3$). At single-edge granularity
-($\mathrm{batch}=10$) Barry still reaches 2.7--3.4~M~edges/s; this is
-where lock-free designs typically collapse but Barry remains
-order-of-magnitude faster than its baselines because each ingest path
-is a CAS on \texttt{Timeline[idx]} and a \texttt{fetch\_add} on the
-target block.
-
-\begin{figure}
-% \includegraphics[width=\columnwidth]{figs/e1_ingest.pdf}
-\caption{E1: Ingestion throughput, log scale. Higher is better.}
-\label{fig:e1}
-\end{figure}
-
-\textbf{Versus Neo4j.} On CollegeMsg at batch=$10^3$, Barry hits
-4.49~M~edges/s while Neo4j managed 8~K~edges/s, a $\mathbf{561\times}$
-gap. At batch=$10^5$ the ratio narrows but remains $\mathbf{92\times}$.
-On larger Q\&A datasets Barry breaks $1500\times$
-(Table~\ref{tab:e1-vs-neo4j}). Per-row results are reported in the
-artifact's \texttt{results/e1\_ingest/e1.csv}.
-
-\begin{table}
-\centering
-\small
-\caption{E1: Barry vs Neo4j ingestion throughput, batch~$=$~$10^3$.}
-\label{tab:e1-vs-neo4j}
-\begin{tabular}{lrrr}
-\toprule
-Dataset & Barry (Meps) & Neo4j (Meps) & speedup \\
-\midrule
-CollegeMsg               & 4.49  & 0.008 & $561\times$ \\
-email-Eu-core-temporal   & 16.10 & 0.010 & $1610\times$ \\
-sx-mathoverflow          & 16.50 & 0.010 & $1650\times$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Versus DCSR (BYO harness).}
-DCSR~\cite{shen2026dcsr} reports peak ingestion of $\sim$$10$~M ops/s
-on its evaluation. Barry sustains $13$--$16$~M edges/s in the same
-batch range on our hardware. We were unable to run DCSR's
-\emph{streaming} ingestion path inside BYO --- the published harness
-benchmarks static algorithms over a pre-loaded graph. We therefore
-report DCSR throughput from the original paper and Barry throughput
-from our own runs (different hardware; both Intel Xeon-class). A
-common-harness ingestion experiment is the highest-priority follow-up
-in our public artifact.
-
-\subsection{Temporal queries (E2)}
-\label{sec:eval-query}
-We define six query templates:
-\begin{itemize}[leftmargin=*]
-  \item $Q_1$ Point-in-time: edges at exact timestamp $T$.
-  \item $Q_2$ Range scan: edges in $[T_1, T_2]$ ($1\%$ window).
-  \item $Q_3$ Earliest arrival from a high-degree
-        source~\cite{wu2014pathproblems}.
-  \item $Q_4$ Temporal 2-hop neighborhood at time~$T$.
-  \item $Q_5$ Sliding-window aggregate sum.
-  \item $Q_6$ Temporal triangle count with $\delta$-window~\cite{paranjape2017motifs}.
-\end{itemize}
-
-Table~\ref{tab:e2} reports median latency. Barry's $Q_1$ runs in
-$0.2$--$1.0~\mu\mathrm{s}$ across all datasets, the constant-time bound
-from Theorem~\ref{thm:lookup} in practice. Neo4j answers the same query
-in 35--85~ms; the gap is $\mathbf{4 \times 10^{5}\times}$.
-Range-scan~$Q_2$ at the 1\% window costs Barry $6$--$180~\mu\mathrm{s}$
-versus Neo4j's $338$~ms (CollegeMsg), a $56{,}000\times$ gap.
-
-\begin{table}
-\centering
-\small
-\caption{E2: Median temporal-query latency in $\mu$s.}
-\label{tab:e2}
-\begin{tabular}{l rrrrrr}
-\toprule
-Dataset & $Q_1$ & $Q_2$ & $Q_3$ & $Q_4$ & $Q_5$ & $Q_6$ \\
-\midrule
-CollegeMsg              & 0.2 & 6.0   & 1.8K  & 0.5 & 4.1   & 70   \\
-email-Eu-core-temporal  & 0.2 & 19    & 3.1K  & 1.4 & 13    & 444  \\
-sx-mathoverflow         & 0.2 & 52    & 12.8K & 0.2 & 25    & 729  \\
-act-mooc                & 0.5 & 25    & 8.6   & 1.0 & 19    & 16   \\
-sx-superuser            & 0.7 & 181   & 73.9K & 0.2 & 72    & 4.1K \\
-sx-askubuntu            & 0.5 & 64    & 54.6K & 0.2 & 48    & 1.2K \\
-wiki-talk-temporal      & 1.0 & 138   & 449K  & 0.2 & 96    & 10K  \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Graph algorithms vs static CSR (E3)}
-\label{sec:eval-compute}
-
-Figure~\ref{fig:e3} shows BFS, PageRank, and triangle counting times
-across five storage backends. We distinguish two comparison families:
-(i) \emph{storage-overhead ratios}, where each dynamic system is
-normalized to its own CSR reference; (ii) \emph{absolute time}, which
-is sensitive to the algorithm engine, not just the storage.
-
-\begin{figure}
-% \includegraphics[width=\columnwidth]{figs/e3_compute.pdf}
-\caption{E3: Algorithm runtime, normalized within each system to its
-CSR baseline. Barry uses our textbook BFS implementation; DCSR/PPCSR
-use the parlay+GBBS framework's tuned BFS.}
-\label{fig:e3}
-\end{figure}
-
-\begin{table}
-\centering
-\small
-\caption{E3: Storage-overhead ratios (each system / its CSR).
-Closer to 1.0 is better.}
-\label{tab:e3-ratios}
-\begin{tabular}{l rrr|rr}
-\toprule
-& \multicolumn{3}{c|}{Barry / our CSR} &
-  \multicolumn{2}{c}{vs BYO CSR} \\
-Dataset & BFS & PR & TC & DCSR & PPCSR \\
-\midrule
-CollegeMsg              & 2.08 & 0.73 & 0.86 & 0.85 & 0.65 \\
-email-Eu-core-temporal  & 1.36 & 0.84 & 2.27 & 0.99 & 0.90 \\
-sx-mathoverflow         & 1.11 & 0.78 & 2.63 & 1.01 & 1.12 \\
-act-mooc                & 1.10 & 0.96 & 0.05 & 1.15 & 1.21 \\
-sx-superuser            & 1.59 & 0.88 & 3.74 & 0.99 & 1.01 \\
-sx-askubuntu            & 1.30 & 0.84 & 2.93 & 1.13 & 1.18 \\
-wiki-talk-temporal      & 2.45 & 1.17 & 2.75 & 1.08 & 1.16 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\paragraph{Storage overhead is comparable across systems.}
-On BFS / PageRank, Barry's storage layer adds $1.1$--$2.5\times$
-overhead over the textbook CSR it pairs with. DCSR adds
-$0.85$--$1.15\times$ over BYO's parlay-tuned CSR. The two ratios
-measure the same thing --- how much of an optimal static layout each
-dynamic system gives up --- and they are within
-the same band. Triangle counting is harder for Barry: in our textbook
-implementation, neighbor materialization is per-call, so
-$2$--$4\times$~overhead vs.\ our CSR is paid for the iteration pattern.
-This is an algorithm-level cost, not a fundamental storage cost.
-
-\paragraph{Why DCSR's absolute times are smaller.}
-The BYO/parlay framework~\cite{wheatman2024byo} ships a
-direction-optimizing BFS, batched
-PageRank with parallelized atomic updates, and a tuned triangle
-counter. On wiki-talk-temporal these are $\sim$$25\times$ faster than
-our textbook implementations, on \emph{both} the CSR and the dynamic
-data structure. Porting Barry's compute layer onto parlay would close
-this gap; we leave that as engineering work (Section~\ref{sec:future})
-and emphasize that it is independent of the storage design.
-
-\paragraph{L0 ablation.} We measured Barry with and without the
-\texttt{dst}-cached \texttt{EdgeRef} layout. Internal speedups range
-from $3.0\times$ to $4.8\times$ on BFS (Table~\ref{tab:l0}); algorithm
-output signatures match exactly across versions (verifying
-correctness). Memory cost is zero --- the alignment padding of the prior
-layout absorbed the four extra bytes.
-
-\begin{table}
-\centering
-\small
-\caption{L0 ablation: Barry BFS time before/after, seconds.}
-\label{tab:l0}
-\begin{tabular}{l rrr}
-\toprule
-Dataset & v1 (s) & v2 (s) & internal speedup \\
-\midrule
-sx-mathoverflow         & 0.0125 & 0.0032 & $3.94\times$ \\
-sx-superuser            & 0.0671 & 0.0180 & $3.74\times$ \\
-sx-askubuntu            & 0.0406 & 0.0129 & $3.16\times$ \\
-email-Eu-core-temporal  & 0.0047 & 0.0010 & $4.80\times$ \\
-wiki-talk-temporal      & 0.2709 & 0.0880 & $3.08\times$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Scalability (E4)}
-\label{sec:eval-scale}
-
-Figure~\ref{fig:e4} reports Barry's ingestion throughput on
-sx-stackoverflow (63M edges) as a function of thread count.
-On 20 cores, Barry retains $\sim$$96\%$ of the single-thread throughput
-at batch=$10^3$ and shows mild contention at batch=$10^6$. The
-contention source is the per-vertex bucket CAS in the
-\textsc{VertexIndex}; per-thread buckets are future work.
-
-\begin{figure}
-% \includegraphics[width=\columnwidth]{figs/e4_scale.pdf}
-\caption{E4: Scalability on sx-stackoverflow.}
-\label{fig:e4}
-\end{figure}
-
-\subsection{Memory footprint (E5)}
-\label{sec:eval-memory}
-
-Table~\ref{tab:e5} reports physical memory after a full bulk load.
-Arena memory is approximately $1.6\times$ raw edge size; the per-vertex
-\textsc{VertexIndex} adds another $1.6\times$. Crucially, the
-\emph{virtual} size of the Timeline backbone is much larger than its
-\emph{physical} cost: e.g., sx-superuser has a 0.13~MB virtual
-Timeline but only 1~MB of pages faulted in, exactly as predicted.
-
-\begin{table}
-\centering
-\small
-\caption{E5: Memory footprint, MB.}
-\label{tab:e5}
-\begin{tabular}{l rrrr}
-\toprule
-Dataset & raw & arena & vidx & RSS \\
-\midrule
-CollegeMsg              & 1.2  & 4.0  & 1.5  & 9.7 \\
-email-Eu-core-temporal  & 6.6  & 11.0 & 8.4  & 26 \\
-sx-mathoverflow         & 10.1 & 17   & 14   & 35 \\
-sx-superuser            & 28.9 & 45.6 & 50.2 & 127 \\
-wiki-talk-temporal      & 157  & 209  & 248  & 706 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{Cache and TLB behavior (E6)}
-\label{sec:eval-cache}
-\emph{Pending: Huge Pages comparison requires elevated privileges
-unavailable on our shared evaluation host. Reported in the camera-ready
-on a privileged box; the timing-only result on 4~KB pages is presented
-in the supplementary CSV.}
+\subsection{Negative results, kept}
+For the record: (i)~caching timestamps in edge refs (+50\% index
+memory for 15\% traversal) was built, measured, and reverted;
+(ii)~binary-search expansion is worth $2.5\times$ at degree 337 and
+nothing below degree 30; (iii)~DuckDB's \texttt{DELETE} reclaims
+memory as well as Barry's eviction does---the retention win is speed
+($5$--$29\times$), not reclamation, and a nightly retention pass does
+not need it; (iv)~Barry's compaction is currently slower than a CSR
+rebuild (arena pointer-chase per ref; an arena-order resolve pass
+would fix it and is future work).
 
 % =====================================================================
-\section{Discussion}
-\label{sec:discussion}
-
-\subsection{When not to use Barry}
-Barry is a temporal-first engine. For \emph{purely topological} queries
-(``return all neighbors of $u$ across all time'') without any time
-filter, our scan complexity is $O(N_{\mathrm{slots}})$ rather than
-$O(d_u)$. We recommend Barry for workloads in which the dominant query
-predicate has a temporal component.
-
-\subsection{Trade-offs}
-The L0 \texttt{dst}-cached \textsc{VertexIndex} adds a $1.6\times$
-memory overhead vs.\ raw edges. Huge Pages support requires kernel
-privilege; Barry falls back to 4~KB pages gracefully but loses some
-TLB savings.
+\section{Related Work}
+\label{sec:related}
+\textbf{Versioned temporal graph stores.} TVA~\cite{li2026tva} and
+AeonG~\cite{hou2024aeong} organize \emph{versions of updated entities}
+for snapshot retrieval; their central difficulties (delta encoding,
+version-chain locality, hopscotch layouts) do not arise in an
+append-only event stream, and their query class (snapshot + predicate)
+is disjoint from time-respecting reachability. The two lines are
+complementary: an entity's property history is a TVA problem; what the
+entity causally touched is Barry's.
+\textbf{Structural dynamic graph stores}~\cite{wheatman2021ppcsr,
+shen2026dcsr, dhulipala2019aspen, fuchs2023sortledton} optimize the
+entity axis and treat time as payload; \S\ref{sec:eval-e13} bounds
+what Barry concedes on their axis, and no member of the family
+answers P1/P2 natively.
+\textbf{Columnar/LSM engines}~\cite{raasveldt2019duckdb} own the
+range-filter tail (\S\ref{sec:eval-traversal}) and lose the traversal
+class by two to three orders of magnitude.
+\textbf{Provenance reduction}~\cite{zhang2025tapas, hassan2019nodoze}
+validates against detection metrics; \S\ref{sec:evidence} supplies
+the missing metric and the first ground-truth measurement of its
+divergence.
+\textbf{Agent memory systems}~\cite{rasmussen2025zep} have
+independently converged on bi-temporal knowledge graphs for agent
+state, confirming the workload's second incarnation; their storage
+layer is an entity-keyed database, i.e.\ the mismatch of
+\S\ref{sec:workload} transplanted.
 
 % =====================================================================
-\section{Future Work}
-\label{sec:future}
-
-\begin{enumerate}[leftmargin=*]
-  \item \emph{Compressed Timeline.} Empirical studies show $>$80\% of
-        Timeline slots in sparse temporal graphs are empty; a delta-
-        encoded compressed form may save physical RAM further.
-  \item \emph{Persistent storage.} Tiered NVMe-backed Arena.
-  \item \emph{Distributed Barry.} Sharding by time range allows
-        embarrassingly-parallel range scans.
-  \item \emph{Block-level vertex Bloom.} Per-block 1-byte Bloom filter
-        on vertex IDs would allow time-ranged multi-vertex queries
-        (\emph{``edges from set $S$ in $[t_1, t_2]$''}) to skip 90\% of
-        blocks.
-\end{enumerate}
+\section{When Not to Use Barry}
+\label{sec:limits}
+Queries with no monotone time predicate get no help from the layout
+and pay its overheads: whole-graph analytics over all time belong on
+a static CSR built offline. Range filters at massive selectivity are
+served equally well by a column store, which also holds the better
+tail. Payloads beyond the 20-byte skeleton belong in an object store
+by reference. Durability is future work: the engine is in-memory;
+the timeline layout makes time-prefix persistence natural (cold
+prefixes flush wholesale, reusing the eviction machinery), but WAL
+and recovery are not yet built.
 
 % =====================================================================
 \section{Conclusion}
-\label{sec:concl}
-Barry treats temporal storage as an addressing problem rather than an
-indexing problem. By mapping timestamp to virtual address with a
-constant-time bit shift, it sidesteps the rebalancing and
-pointer-chasing costs that constrain PMA-based and tree-based stores,
-while exposing time as a first-class queryable axis. Empirically, this
-design is $1610\times$ faster than industrial graph databases on
-ingestion, $4 \times 10^{5}\times$ faster on point-in-time queries, and
-incurs storage overhead in the same band as DCSR for classic graph
-algorithms. The cost we pay is performance for purely-topological,
-time-agnostic queries; the cost we save is the ability to answer any
-query that mentions a timestamp without reorganising the data
-structure.
+Provenance is a workload whose queries, arrival pattern, and
+retention semantics are all functions of time---served today by
+engines keyed on everything but. The cost of that mismatch is now
+measured: evidence destroyed under a metric that cannot see it, and
+no investigation horizon that is both accurate and actionable.
+Keying storage on time collapses the machinery: the index becomes a
+shift, ingestion an append, retention a page release, and the
+canonical queries run at interactive latency against a stream that
+never stops. The remaining trade---bounded concessions on the
+structural axis, an explicit compaction for peak expansion
+speed---is quantified here at the storage layer, where it belongs.
 
-\bibliographystyle{abbrvnat}
+\bibliographystyle{plainnat}
 \bibliography{refs}
-
 \end{document}

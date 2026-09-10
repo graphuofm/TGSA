@@ -1,0 +1,742 @@
+% Barry: A Zero-Index Storage Engine for Temporal Graphs via Virtual Memory Mapping
+% Target venue: VLDB / SIGMOD (A-tier), fallback EDBT.
+% Drop-in compile: Overleaf with VLDB or acmart class. For now uses generic
+% article class + spacing tweaks so it compiles anywhere.
+
+\documentclass[11pt,letterpaper,twocolumn]{article}
+
+\usepackage[margin=0.85in]{geometry}
+\usepackage{times}
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlist{nosep}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+\title{\textbf{Barry: A Zero-Index Storage Engine for Temporal Graphs\\
+via Virtual Memory Mapping}}
+
+\author{Anonymous Submission}
+\date{}
+
+\begin{document}
+\maketitle
+
+% =====================================================================
+\begin{abstract}
+Temporal graph workloads---fraud detection, network security, real-time
+recommendation---demand both high-throughput edge ingestion and the ability
+to answer time-respecting queries (\emph{``what edges existed at time
+$T$?''}) with low latency. State-of-the-art dynamic graph storage systems
+optimize for the streaming-update axis but discard timestamps, treating
+edges as untyped tuples; running temporal queries on top of them therefore
+requires a full-graph scan plus filtering.
+
+This paper presents \textbf{Barry}, a temporal graph storage engine built
+on a single observation: on a 64-bit machine, the virtual address space is
+larger than any temporal range we will ever ingest. Barry maps each
+timestamp directly to a virtual memory address via a constant-time bit
+shift, then lets the operating system's demand-paging handle sparsity for
+free. The architecture has three components: (i) a \emph{Timeline
+Backbone}, an mmap'd array indexed by timestamp; (ii) \emph{Adaptive
+Granularity Selection}, an algorithm that auto-tunes the time-to-address
+shift to data density; and (iii) \emph{Wait-Free Burst Append}, a
+cache-line-aligned block layout for concurrent ingestion without locks on
+distinct timestamps.
+
+We evaluate Barry on seven temporal graphs (60K--8M edges, small tier;
+16M--1B edges, full tier). For ingestion, Barry sustains
+$13$--$16$~M~edges/s peak throughput, $561\times$--$1610\times$ faster
+than Neo4j~4.4. For temporal point-in-time lookup ($Q_1$), Barry
+achieves $0.2$--$1.0~\mu\mathrm{s}$ median latency, over
+$4 \times 10^{5}\times$ faster than Neo4j --- a query class that
+PMA-based and AL-based stores do not natively support. For pure-topology
+graph algorithms (BFS, PageRank, triangle counting), Barry's storage
+overhead is within $1.1$--$2.5\times$ of textbook CSR; DCSR (EDBT'26)
+shows comparable $0.85$--$1.15\times$ overhead vs.\ its parlay-tuned
+CSR baseline. The two ratios are within the same band, indicating that
+Barry's temporal-axis design does not cost more than DCSR's
+streaming-axis design in algorithm-runtime.
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+\paragraph{The rise of temporal graphs.}
+Modern graph workloads increasingly attach a timestamp to every edge.
+Anti-money-laundering pipelines need to detect rapid bursts of
+transactions \emph{between fixed time bounds}~\cite{altman2024aml,
+dhankhad2018fraud}. Real-time content recommendation must extract a
+``last 24 hours'' subgraph for every user
+query~\cite{sharma2016graphjet}. Network security responses depend on
+reconstructing the topology around a suspicious endpoint at the precise
+moment of an alert. In each case the graph is not just \emph{dynamic}
+(structure changes over time) but \emph{temporal}: the timestamp itself
+is part of the data and must be queried.
+
+\paragraph{The index wall.}
+Existing high-performance graph stores assume the timestamp can be
+discarded once the structural update is digested. Packed Memory Array
+based systems (PPCSR~\cite{wheatman2021ppcsr},
+CPMA~\cite{wheatman2024cpma}, DCSR~\cite{shen2026dcsr}), tree-based
+systems (PaC-tree~\cite{dhulipala2022pactree},
+Aspen~\cite{dhulipala2019aspen}), and adjacency-list-based systems
+(LSGraph~\cite{qi2024lsgraph}, Sortledton~\cite{fuchs2023sortledton})
+all store edges keyed by source-vertex ID, not time. Answering even the
+simplest temporal query --- ``return all edges at time $T$''--- requires a
+full structural scan plus a per-edge timestamp filter.
+On a 1B-edge graph this is hundreds of milliseconds; on a graph database
+such as Neo4j it is hundreds of milliseconds even on a 60K-edge graph
+(Section~\ref{sec:eval}).
+
+These systems are not poorly engineered; they were designed for a
+different problem. The \emph{topology} of the graph is what they
+optimize, and they pay an O($\log n$)--O($\sqrt n$) cost per update to
+keep that topology compact. When the workload also wants temporal
+locality, that work is partly wasted: the ordering by source-vertex ID is
+orthogonal to the temporal axis the user actually queries on.
+
+\paragraph{Our insight.}
+A 64-bit address space contains $1.6 \times 10^{19}$ bytes. The largest
+public temporal graph (1B Reddit replies over 6 years) covers
+$\sim 6 \times 10^9$ edges across $\sim 3 \times 10^8$ seconds. The
+\emph{address space is four orders of magnitude larger than the time range
+of the largest workload}. This is the gap Barry exploits: rather than
+store an index that maps timestamp $\rightarrow$ edge location, we
+\emph{make the timestamp the location}. Specifically,
+\begin{equation}
+A(T) = A_{\mathrm{base}} + ((T - T_{\mathrm{start}}) \gg S) \times P,
+\label{eq:mapping}
+\end{equation}
+where $A_{\mathrm{base}}$ is the base of an mmap'd region, $S$ is a
+data-tuned shift, and $P$ is a slot size. Empty regions of the virtual
+range are not committed to physical RAM by the OS, so sparsity is
+managed at the page-table level for free.
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Storage design.} A zero-index temporal storage architecture
+  built on Equation~\eqref{eq:mapping}. Worst-case lookup is
+  \emph{O(1)}, against $O(\log n)$ for B+-tree-based stores and
+  $O(\sqrt n)$ amortized for PMA stores
+  (Section~\ref{sec:design}, Theorem~\ref{thm:lookup}).
+  \item \textbf{Adaptive granularity.} A cost-aware algorithm
+  (Section~\ref{sec:granularity}) that auto-selects the shift $S$ from
+  data statistics to avoid both fragmentation (over-fine $S$) and
+  block-overflow (over-coarse $S$).
+  \item \textbf{Wait-free ingestion.} A block layout
+  (Section~\ref{sec:waitfree}) that allows concurrent appenders writing
+  at distinct timestamps to never contend.
+  \item \textbf{Storage--algorithm coevaluation.} On seven real-world
+  graphs and six algorithms (4 standard, 2 temporal-specific), Barry
+  outperforms Neo4j by $561$--$1610\times$ on ingestion and
+  $\sim$$4 \times 10^{5}\times$ on point-in-time queries, while
+  remaining within $1.1$--$2.5\times$ of static CSR on BFS/PageRank/
+  triangle counting.
+\end{enumerate}
+
+% =====================================================================
+\section{Background and Related Work}
+\label{sec:related}
+
+\subsection{Virtual memory and demand paging}
+On commodity 64-bit Linux, an \texttt{mmap} call with
+\texttt{MAP\_ANONYMOUS}|\texttt{MAP\_PRIVATE} reserves a virtual range
+without committing physical RAM~\cite{linux_mmap}. A page is allocated
+only on first write (demand paging); unused virtual addresses occupy no
+RAM and no page-table entry. Sparse data structures with predictable
+addressing patterns thus get sparsity ``for free''; this property has
+been exploited for sparse arrays and tagged memory but, to our
+knowledge, not for temporal graph storage.
+
+\subsection{Dynamic graph storage}
+\label{sec:related-storage}
+We follow the four-class taxonomy of recent
+surveys~\cite{besta2023streaming, besta2023graphdb}.
+
+\textbf{PMA-based} systems (PPCSR~\cite{wheatman2021ppcsr},
+CPMA~\cite{wheatman2024cpma},  DCSR~\cite{shen2026dcsr},
+VCSR~\cite{islam2022vcsr}) store sorted edges in a Packed Memory Array
+with periodic rebalancing.  DCSR (EDBT'26), the most recent point in
+this lineage, uses leaf-oriented locks and decoupled rebalancing to
+sustain ${\sim}10$~M updates/s on RMAT-generated streams.
+
+\textbf{AL-based} systems (LiveGraph~\cite{zhu2020livegraph},
+GraphOne~\cite{kumar2020graphone}, Stinger~\cite{ediger2012stinger},
+LSGraph~\cite{qi2024lsgraph}) use per-vertex dynamic edge arrays.
+
+\textbf{Tree-based} systems (Aspen~\cite{dhulipala2019aspen},
+PaC-tree~\cite{dhulipala2022pactree}) use vertex-keyed compressed
+purely-functional trees.
+
+\textbf{Hybrid} systems (Terrace~\cite{pandey2021terrace},
+GraphTango~\cite{}) layer multiple representations by vertex degree.
+
+\textbf{None of the above store edge timestamps as a queryable axis.}
+Recent transactional systems for temporal graph databases
+(AeonG~\cite{hou2024aeong}, Teseo~\cite{deleo2021teseo},
+Sortledton~\cite{fuchs2023sortledton},
+Cuckoograph~\cite{fan2025cuckoograph}) maintain timestamps for
+multi-version concurrency control but route temporal queries through a
+versioning layer rather than the storage layer. In contrast, Barry
+treats the timestamp as the primary access key.
+
+\subsection{Hardware trends}
+TB-class server RAM is now commodity. AVX-512 and 2~MB Huge
+Pages~\cite{talluri1994tlb,linux_hugetlb} have dramatically reduced TLB
+pressure. The bottleneck for in-memory analytics is increasingly
+\emph{cache misses}, not raw RAM bandwidth. Barry's design intentionally
+keeps each ingest path on a single cache line and lets sequential
+temporal queries ride hardware prefetchers.
+
+\subsection{Time models in graphs}
+We adopt the continuous-time edge-stream model of
+Holme \& Saram\"aki~\cite{holme2012temporal}. The temporal queries we
+support (Section~\ref{sec:eval}) include point-in-time, range, sliding
+window, and time-respecting variants of classic graph
+algorithms~\cite{wu2014pathproblems,paranjape2017motifs}.
+
+% =====================================================================
+\section{Barry Design}
+\label{sec:design}
+
+\subsection{Architecture overview}
+Figure~\ref{fig:arch} shows Barry's three layers.
+
+\begin{itemize}[leftmargin=*]
+  \item A \textbf{Meta layer} (a few KB) holding $T_{\mathrm{start}}$,
+        $T_{\mathrm{end}}$, the shift $S$, and counters.
+  \item A \textbf{Timeline backbone}, an mmap'd array of pointer slots
+        indexed by $\mathrm{idx}(T) = (T - T_{\mathrm{start}}) \gg S$.
+        At slot $\mathrm{idx}$ sits either \texttt{nullptr} (empty
+        bucket; OS has not faulted the page) or a pointer to a
+        \emph{Block} in the data arena.
+  \item A \textbf{Data arena}: a bump-allocated mmap'd region of
+        cache-line-aligned blocks. Each block holds up to $C$ edges
+        (default $C=16$); when full, a chained successor block is
+        appended.
+\end{itemize}
+
+\begin{figure}
+% \includegraphics[width=\columnwidth]{figs/arch.pdf}
+\caption{Three-layer architecture: Meta, Timeline backbone (sparse
+mmap), Data arena (bump-allocated chained blocks).}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Zero-index temporal mapping}
+\label{sec:mapping}
+The hot path for both ingestion and point-in-time queries is
+Equation~\eqref{eq:mapping}, implemented as Algorithm~\ref{alg:map}.
+
+\begin{algorithm}
+\caption{Temporal Address Mapping}
+\label{alg:map}
+\begin{algorithmic}[1]
+\Require timestamp $T$, base address $A_{\mathrm{base}}$,
+         start time $T_{\mathrm{start}}$, shift $S$
+\Ensure  pointer to the slot for time $T$
+\State $\mathrm{idx} \gets (T - T_{\mathrm{start}}) \gg S$
+\State $\mathrm{slot} \gets A_{\mathrm{base}} + \mathrm{idx} \cdot
+       \mathrm{sizeof}(\mathrm{void*})$
+\State \Return $\textsc{Load}(\mathrm{slot})$
+\end{algorithmic}
+\end{algorithm}
+
+The algorithm executes in five machine instructions on x86-64
+(\texttt{sub}, \texttt{shr}, \texttt{lea}, \texttt{mov}). Crucially,
+each step is constant-time \emph{regardless of the graph size $n$}.
+Table~\ref{tab:complexity} contrasts this with B+-tree- and PMA-based
+indices.
+
+\begin{table}
+\centering
+\small
+\caption{Cost of edge lookup for a single timestamp.}
+\label{tab:complexity}
+\begin{tabular}{lll}
+\toprule
+Index type & Comparisons & Cache misses \\
+\midrule
+B+ tree              & $O(\log n)$  & $O(\log n)$ \\
+Hash table           & $O(1)$ avg, $O(n)$ worst & $1{+}$chain \\
+PMA (DCSR)           & $O(\log n + \log^2 n / B)$ & $O(\log n)$ \\
+\textbf{Barry}       & $\mathbf{O(1)}$ \textbf{worst-case} & $\mathbf{1}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{theorem}[Lookup bound]
+\label{thm:lookup}
+Given a Timeline backbone of $N$ slots with shift $S$, locating the
+block for any timestamp $T \in [T_{\mathrm{start}},
+T_{\mathrm{start}} + (N \ll S)]$ costs
+five machine instructions and at most one cache-line transfer
+(amortized one TLB miss when 4~KB pages, one TLB miss per 256~K slots
+with 2~MB Huge Pages).
+\end{theorem}
+\noindent\emph{Proof.} Algorithm~\ref{alg:map} contains no loops and no
+data-dependent branches; the cache-line and TLB bounds follow from the
+Timeline's contiguous virtual layout. \hfill$\Box$
+
+\subsection{Adaptive granularity}
+\label{sec:granularity}
+Choosing $S$ poorly costs performance. Too small a window crashes the
+Timeline into the L3 cache wall (most slots empty, dTLB pressure
+dominates). Too large a window crowds many edges into the same block,
+forcing chained overflows on every ingest.
+
+We model the cost as
+$\mathrm{Cost}(S) = \alpha \cdot F(S) + \beta \cdot \overline{W}(S)$
+where $F(S)$ is the expected fragmentation
+($\mathrm{slots} / \mathrm{nonempty\,slots}$) and $\overline{W}(S)$ is
+the expected block fill (truncated at capacity $C$). The closed-form
+optimum sets the average window to hold $K$ edges; with our
+default $K=64$ (one cache line of 4-byte destinations), we have:
+
+\begin{algorithm}
+\caption{Adaptive Granularity Selection}
+\label{alg:adaptive}
+\begin{algorithmic}[1]
+\Require sample timestamps $\mathcal{S}$, target $K$, range
+         $[T_{\mathrm{min}}, T_{\mathrm{max}}]$
+\Ensure  shift $S^*$
+\State $\mathrm{span} \gets T_{\mathrm{max}} - T_{\mathrm{min}}$
+\State $\mathrm{windows} \gets \max(1, |\mathcal{S}| / K)$
+\State $w \gets \max(1, \mathrm{span} / \mathrm{windows})$
+\State $S^* \gets \lceil \log_2 w \rceil$
+\State \Return $S^*$
+\end{algorithmic}
+\end{algorithm}
+
+Across our seven datasets the auto-selected $S^*$ ranges from~5
+(temporal-reddit-reply, $\sim$1B edges) to~25 (cit-Patents over 30
+years). Section~\ref{sec:eval} validates that $S^*$ is within $\pm 1$
+of the empirically optimal shift.
+
+\subsection{Wait-free burst append}
+\label{sec:waitfree}
+Concurrent ingestion is the second hot path. The block layout enables
+the lock-free protocol of Algorithm~\ref{alg:append}.
+
+\begin{algorithm}
+\caption{Wait-Free Burst Append}
+\label{alg:append}
+\begin{algorithmic}[1]
+\Require edge $e$
+\State $\mathrm{idx} \gets \mathrm{TimeMapper.map}(e.\mathrm{timestamp})$
+\State $b \gets \mathrm{Timeline.load}(\mathrm{idx})$
+\If{$b = \mathrm{null}$}
+  \State $b' \gets \mathrm{Arena.alloc\_block}()$
+  \If{$\neg\mathrm{Timeline.CAS}(\mathrm{idx},\mathrm{null},b')$}
+    \State $b \gets \mathrm{Timeline.load}(\mathrm{idx})$
+  \Else \quad $b \gets b'$
+  \EndIf
+\EndIf
+\Loop
+  \State $\mathrm{pos} \gets b.\mathrm{count.fetch\_add}(1)$
+  \If{$\mathrm{pos} < b.\mathrm{capacity}$}
+    \State $b.\mathrm{edges}[\mathrm{pos}] \gets e$ \Return
+  \EndIf
+  \If{$b.\mathrm{next} = \mathrm{null}$}
+    \State $b'' \gets \mathrm{Arena.alloc\_block}()$
+    \State $\mathrm{CAS}(b.\mathrm{next}, \mathrm{null}, b'')$
+  \EndIf
+  \State $b \gets b.\mathrm{next}$
+\EndLoop
+\end{algorithmic}
+\end{algorithm}
+
+\begin{theorem}[Wait-freedom]
+Two threads appending edges with distinct timestamps that map to
+distinct slot indices never synchronize. Two threads with the same
+slot index synchronize at most once via a single CAS on
+\texttt{Timeline[idx]} for slot creation, plus one
+\texttt{fetch\_add} per edge for in-block placement.
+\end{theorem}
+
+% =====================================================================
+\section{Implementation}
+\label{sec:impl}
+
+Barry is implemented in $\sim$2{,}000 lines of C++17. We highlight three
+implementation choices.
+
+\paragraph{Vertex index for graph algorithms.}
+Pure-temporal queries (Q1--Q6 in Section~\ref{sec:eval}) use the
+Timeline directly. Pure-topology algorithms (BFS, PageRank, triangle
+counting) need a per-vertex out-edge view; we maintain a side
+\textsc{VertexIndex} that, for each \emph{src}, holds a
+linked list of buckets of $\mathrm{EdgeRef}$ entries.
+
+A naive \texttt{EdgeRef = \{block*, offset\}} requires dereferencing
+\texttt{block*} (a pointer chase into the Arena) just to read the
+destination ID, costing one cache miss per neighbor. We instead use
+the layout
+\texttt{EdgeRef = \{dst, offset, block*\}}, which still occupies 16
+bytes (the previous layout was already padded to 16 by alignment). The
+cached \texttt{dst} is read by BFS/PageRank/TC directly, the
+\texttt{block*} only by \texttt{neighbors\_temporal}. We refer to this
+optimization as \emph{L0}; Section~\ref{sec:eval-compute} shows it
+gives $3.7$--$4.8\times$ internal speedup on BFS at zero memory cost.
+
+\paragraph{Huge pages integration.}
+\texttt{MAP\_HUGETLB} is requested for the Timeline backbone; on
+failure (no hugetlb pool, no privilege) we fall back to 4~KB pages
+without aborting. Section~\ref{sec:eval-cache} reports both modes.
+
+\paragraph{Memory reclamation.}
+We use tombstoning (\texttt{weight = NaN}) for soft delete; physical
+compaction is left as future work.
+
+% =====================================================================
+\section{Evaluation}
+\label{sec:eval}
+
+\subsection{Setup}
+\label{sec:setup}
+
+\textbf{Hardware.} Dual-socket Intel Xeon Gold servers, 20 physical
+cores (no SMT in our config), 188~GB DDR4 RAM, Ubuntu 20.04. Page-cache
+flushing was done where possible via \texttt{drop\_caches}; on shared
+boxes without privileges we fell back to \texttt{sync} only.
+
+\textbf{Software.} g++ 9.4 with \texttt{-O3 -march=native}, OpenMP 4.5.
+Baselines: Neo4j 4.4.41 Community Edition; DCSR (EDBT'26) built via the
+BYO benchmarking framework~\cite{wheatman2024byo} with conda-forge
+gcc-11 + Bazel 6.
+
+\textbf{Datasets.} Seven temporal graphs from
+SNAP~\cite{snap}, ranging from $6 \times 10^4$ to $6 \times 10^8$ edges
+(Table~\ref{tab:datasets}).
+
+\begin{table}
+\centering
+\small
+\caption{Datasets (after sort + remap by our preprocessing tool).}
+\label{tab:datasets}
+\begin{tabular}{lrrrl}
+\toprule
+Dataset & $|V|$ & $|E|$ & $\Delta T$ (yr) & domain \\
+\midrule
+CollegeMsg               & 2K   & 60K  & 0.5  & messaging \\
+email-Eu-core-temporal   & 1K   & 332K & 2.2  & email \\
+sx-mathoverflow          & 25K  & 506K & 6.4  & Q\&A \\
+act-mooc                 & 7K   & 412K & 0.1  & education \\
+sx-superuser             & 194K & 1.4M & 7.6  & Q\&A \\
+sx-askubuntu             & 159K & 964K & 7.2  & Q\&A \\
+wiki-talk-temporal       & 1.1M & 7.8M & 6.4  & wiki \\
+\midrule
+cit-Patents              & 3.8M & 16.5M & 5.0 & citation \\
+sx-stackoverflow         & 2.6M & 63M   & 7.6 & Q\&A \\
+soc-LiveJournal1         & 4.8M & 69M   & 3.2 & social \\
+bitcoin-temporal         & 48M  & 113M  & 7.1 & finance \\
+temporal-reddit-reply    & 8.9M & 646M  & 10.1& social \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Workloads.} (i) \emph{Ingestion} (E1): bulk-load 90\%, time the
+remaining 10\% as fixed-size batches. (ii) \emph{Temporal queries}
+(E2): six query templates ($Q_1$--$Q_6$, defined in
+Section~\ref{sec:eval-query}). (iii) \emph{Graph algorithms} (E3):
+BFS, PageRank, triangle counting, normalized to static CSR.
+(iv) \emph{Scalability} (E4) over thread count.
+(v) \emph{Memory footprint} (E5).
+(vi) \emph{Cache and TLB behavior} (E6).
+All runs are 5 trials, reported as median.
+
+\subsection{Ingestion (E1)}
+\label{sec:eval-ingest}
+
+Figure~\ref{fig:e1} reports throughput across the small tier datasets
+under four batch sizes. Barry sustains a flat 13--16~M~edges/s in the
+sweet spot ($\mathrm{batch} = 10^3$). At single-edge granularity
+($\mathrm{batch}=10$) Barry still reaches 2.7--3.4~M~edges/s; this is
+where lock-free designs typically collapse but Barry remains
+order-of-magnitude faster than its baselines because each ingest path
+is a CAS on \texttt{Timeline[idx]} and a \texttt{fetch\_add} on the
+target block.
+
+\begin{figure}
+% \includegraphics[width=\columnwidth]{figs/e1_ingest.pdf}
+\caption{E1: Ingestion throughput, log scale. Higher is better.}
+\label{fig:e1}
+\end{figure}
+
+\textbf{Versus Neo4j.} On CollegeMsg at batch=$10^3$, Barry hits
+4.49~M~edges/s while Neo4j managed 8~K~edges/s, a $\mathbf{561\times}$
+gap. At batch=$10^5$ the ratio narrows but remains $\mathbf{92\times}$.
+On larger Q\&A datasets Barry breaks $1500\times$
+(Table~\ref{tab:e1-vs-neo4j}). Per-row results are reported in the
+artifact's \texttt{results/e1\_ingest/e1.csv}.
+
+\begin{table}
+\centering
+\small
+\caption{E1: Barry vs Neo4j ingestion throughput, batch~$=$~$10^3$.}
+\label{tab:e1-vs-neo4j}
+\begin{tabular}{lrrr}
+\toprule
+Dataset & Barry (Meps) & Neo4j (Meps) & speedup \\
+\midrule
+CollegeMsg               & 4.49  & 0.008 & $561\times$ \\
+email-Eu-core-temporal   & 16.10 & 0.010 & $1610\times$ \\
+sx-mathoverflow          & 16.50 & 0.010 & $1650\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Versus DCSR (BYO harness).}
+DCSR~\cite{shen2026dcsr} reports peak ingestion of $\sim$$10$~M ops/s
+on its evaluation. Barry sustains $13$--$16$~M edges/s in the same
+batch range on our hardware. We were unable to run DCSR's
+\emph{streaming} ingestion path inside BYO --- the published harness
+benchmarks static algorithms over a pre-loaded graph. We therefore
+report DCSR throughput from the original paper and Barry throughput
+from our own runs (different hardware; both Intel Xeon-class). A
+common-harness ingestion experiment is the highest-priority follow-up
+in our public artifact.
+
+\subsection{Temporal queries (E2)}
+\label{sec:eval-query}
+We define six query templates:
+\begin{itemize}[leftmargin=*]
+  \item $Q_1$ Point-in-time: edges at exact timestamp $T$.
+  \item $Q_2$ Range scan: edges in $[T_1, T_2]$ ($1\%$ window).
+  \item $Q_3$ Earliest arrival from a high-degree
+        source~\cite{wu2014pathproblems}.
+  \item $Q_4$ Temporal 2-hop neighborhood at time~$T$.
+  \item $Q_5$ Sliding-window aggregate sum.
+  \item $Q_6$ Temporal triangle count with $\delta$-window~\cite{paranjape2017motifs}.
+\end{itemize}
+
+Table~\ref{tab:e2} reports median latency. Barry's $Q_1$ runs in
+$0.2$--$1.0~\mu\mathrm{s}$ across all datasets, the constant-time bound
+from Theorem~\ref{thm:lookup} in practice. Neo4j answers the same query
+in 35--85~ms; the gap is $\mathbf{4 \times 10^{5}\times}$.
+Range-scan~$Q_2$ at the 1\% window costs Barry $6$--$180~\mu\mathrm{s}$
+versus Neo4j's $338$~ms (CollegeMsg), a $56{,}000\times$ gap.
+
+\begin{table}
+\centering
+\small
+\caption{E2: Median temporal-query latency in $\mu$s.}
+\label{tab:e2}
+\begin{tabular}{l rrrrrr}
+\toprule
+Dataset & $Q_1$ & $Q_2$ & $Q_3$ & $Q_4$ & $Q_5$ & $Q_6$ \\
+\midrule
+CollegeMsg              & 0.2 & 6.0   & 1.8K  & 0.5 & 4.1   & 70   \\
+email-Eu-core-temporal  & 0.2 & 19    & 3.1K  & 1.4 & 13    & 444  \\
+sx-mathoverflow         & 0.2 & 52    & 12.8K & 0.2 & 25    & 729  \\
+act-mooc                & 0.5 & 25    & 8.6   & 1.0 & 19    & 16   \\
+sx-superuser            & 0.7 & 181   & 73.9K & 0.2 & 72    & 4.1K \\
+sx-askubuntu            & 0.5 & 64    & 54.6K & 0.2 & 48    & 1.2K \\
+wiki-talk-temporal      & 1.0 & 138   & 449K  & 0.2 & 96    & 10K  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Graph algorithms vs static CSR (E3)}
+\label{sec:eval-compute}
+
+Figure~\ref{fig:e3} shows BFS, PageRank, and triangle counting times
+across five storage backends. We distinguish two comparison families:
+(i) \emph{storage-overhead ratios}, where each dynamic system is
+normalized to its own CSR reference; (ii) \emph{absolute time}, which
+is sensitive to the algorithm engine, not just the storage.
+
+\begin{figure}
+% \includegraphics[width=\columnwidth]{figs/e3_compute.pdf}
+\caption{E3: Algorithm runtime, normalized within each system to its
+CSR baseline. Barry uses our textbook BFS implementation; DCSR/PPCSR
+use the parlay+GBBS framework's tuned BFS.}
+\label{fig:e3}
+\end{figure}
+
+\begin{table}
+\centering
+\small
+\caption{E3: Storage-overhead ratios (each system / its CSR).
+Closer to 1.0 is better.}
+\label{tab:e3-ratios}
+\begin{tabular}{l rrr|rr}
+\toprule
+& \multicolumn{3}{c|}{Barry / our CSR} &
+  \multicolumn{2}{c}{vs BYO CSR} \\
+Dataset & BFS & PR & TC & DCSR & PPCSR \\
+\midrule
+CollegeMsg              & 2.08 & 0.73 & 0.86 & 0.85 & 0.65 \\
+email-Eu-core-temporal  & 1.36 & 0.84 & 2.27 & 0.99 & 0.90 \\
+sx-mathoverflow         & 1.11 & 0.78 & 2.63 & 1.01 & 1.12 \\
+act-mooc                & 1.10 & 0.96 & 0.05 & 1.15 & 1.21 \\
+sx-superuser            & 1.59 & 0.88 & 3.74 & 0.99 & 1.01 \\
+sx-askubuntu            & 1.30 & 0.84 & 2.93 & 1.13 & 1.18 \\
+wiki-talk-temporal      & 2.45 & 1.17 & 2.75 & 1.08 & 1.16 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Storage overhead is comparable across systems.}
+On BFS / PageRank, Barry's storage layer adds $1.1$--$2.5\times$
+overhead over the textbook CSR it pairs with. DCSR adds
+$0.85$--$1.15\times$ over BYO's parlay-tuned CSR. The two ratios
+measure the same thing --- how much of an optimal static layout each
+dynamic system gives up --- and they are within
+the same band. Triangle counting is harder for Barry: in our textbook
+implementation, neighbor materialization is per-call, so
+$2$--$4\times$~overhead vs.\ our CSR is paid for the iteration pattern.
+This is an algorithm-level cost, not a fundamental storage cost.
+
+\paragraph{Why DCSR's absolute times are smaller.}
+The BYO/parlay framework~\cite{wheatman2024byo} ships a
+direction-optimizing BFS, batched
+PageRank with parallelized atomic updates, and a tuned triangle
+counter. On wiki-talk-temporal these are $\sim$$25\times$ faster than
+our textbook implementations, on \emph{both} the CSR and the dynamic
+data structure. Porting Barry's compute layer onto parlay would close
+this gap; we leave that as engineering work (Section~\ref{sec:future})
+and emphasize that it is independent of the storage design.
+
+\paragraph{L0 ablation.} We measured Barry with and without the
+\texttt{dst}-cached \texttt{EdgeRef} layout. Internal speedups range
+from $3.0\times$ to $4.8\times$ on BFS (Table~\ref{tab:l0}); algorithm
+output signatures match exactly across versions (verifying
+correctness). Memory cost is zero --- the alignment padding of the prior
+layout absorbed the four extra bytes.
+
+\begin{table}
+\centering
+\small
+\caption{L0 ablation: Barry BFS time before/after, seconds.}
+\label{tab:l0}
+\begin{tabular}{l rrr}
+\toprule
+Dataset & v1 (s) & v2 (s) & internal speedup \\
+\midrule
+sx-mathoverflow         & 0.0125 & 0.0032 & $3.94\times$ \\
+sx-superuser            & 0.0671 & 0.0180 & $3.74\times$ \\
+sx-askubuntu            & 0.0406 & 0.0129 & $3.16\times$ \\
+email-Eu-core-temporal  & 0.0047 & 0.0010 & $4.80\times$ \\
+wiki-talk-temporal      & 0.2709 & 0.0880 & $3.08\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Scalability (E4)}
+\label{sec:eval-scale}
+
+Figure~\ref{fig:e4} reports Barry's ingestion throughput on
+sx-stackoverflow (63M edges) as a function of thread count.
+On 20 cores, Barry retains $\sim$$96\%$ of the single-thread throughput
+at batch=$10^3$ and shows mild contention at batch=$10^6$. The
+contention source is the per-vertex bucket CAS in the
+\textsc{VertexIndex}; per-thread buckets are future work.
+
+\begin{figure}
+% \includegraphics[width=\columnwidth]{figs/e4_scale.pdf}
+\caption{E4: Scalability on sx-stackoverflow.}
+\label{fig:e4}
+\end{figure}
+
+\subsection{Memory footprint (E5)}
+\label{sec:eval-memory}
+
+Table~\ref{tab:e5} reports physical memory after a full bulk load.
+Arena memory is approximately $1.6\times$ raw edge size; the per-vertex
+\textsc{VertexIndex} adds another $1.6\times$. Crucially, the
+\emph{virtual} size of the Timeline backbone is much larger than its
+\emph{physical} cost: e.g., sx-superuser has a 0.13~MB virtual
+Timeline but only 1~MB of pages faulted in, exactly as predicted.
+
+\begin{table}
+\centering
+\small
+\caption{E5: Memory footprint, MB.}
+\label{tab:e5}
+\begin{tabular}{l rrrr}
+\toprule
+Dataset & raw & arena & vidx & RSS \\
+\midrule
+CollegeMsg              & 1.2  & 4.0  & 1.5  & 9.7 \\
+email-Eu-core-temporal  & 6.6  & 11.0 & 8.4  & 26 \\
+sx-mathoverflow         & 10.1 & 17   & 14   & 35 \\
+sx-superuser            & 28.9 & 45.6 & 50.2 & 127 \\
+wiki-talk-temporal      & 157  & 209  & 248  & 706 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Cache and TLB behavior (E6)}
+\label{sec:eval-cache}
+\emph{Pending: Huge Pages comparison requires elevated privileges
+unavailable on our shared evaluation host. Reported in the camera-ready
+on a privileged box; the timing-only result on 4~KB pages is presented
+in the supplementary CSV.}
+
+% =====================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{When not to use Barry}
+Barry is a temporal-first engine. For \emph{purely topological} queries
+(``return all neighbors of $u$ across all time'') without any time
+filter, our scan complexity is $O(N_{\mathrm{slots}})$ rather than
+$O(d_u)$. We recommend Barry for workloads in which the dominant query
+predicate has a temporal component.
+
+\subsection{Trade-offs}
+The L0 \texttt{dst}-cached \textsc{VertexIndex} adds a $1.6\times$
+memory overhead vs.\ raw edges. Huge Pages support requires kernel
+privilege; Barry falls back to 4~KB pages gracefully but loses some
+TLB savings.
+
+% =====================================================================
+\section{Future Work}
+\label{sec:future}
+
+\begin{enumerate}[leftmargin=*]
+  \item \emph{Compressed Timeline.} Empirical studies show $>$80\% of
+        Timeline slots in sparse temporal graphs are empty; a delta-
+        encoded compressed form may save physical RAM further.
+  \item \emph{Persistent storage.} Tiered NVMe-backed Arena.
+  \item \emph{Distributed Barry.} Sharding by time range allows
+        embarrassingly-parallel range scans.
+  \item \emph{Block-level vertex Bloom.} Per-block 1-byte Bloom filter
+        on vertex IDs would allow time-ranged multi-vertex queries
+        (\emph{``edges from set $S$ in $[t_1, t_2]$''}) to skip 90\% of
+        blocks.
+\end{enumerate}
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:concl}
+Barry treats temporal storage as an addressing problem rather than an
+indexing problem. By mapping timestamp to virtual address with a
+constant-time bit shift, it sidesteps the rebalancing and
+pointer-chasing costs that constrain PMA-based and tree-based stores,
+while exposing time as a first-class queryable axis. Empirically, this
+design is $1610\times$ faster than industrial graph databases on
+ingestion, $4 \times 10^{5}\times$ faster on point-in-time queries, and
+incurs storage overhead in the same band as DCSR for classic graph
+algorithms. The cost we pay is performance for purely-topological,
+time-agnostic queries; the cost we save is the ability to answer any
+query that mentions a timestamp without reorganising the data
+structure.
+
+\bibliographystyle{abbrvnat}
+\bibliography{refs}
+
+\end{document}
