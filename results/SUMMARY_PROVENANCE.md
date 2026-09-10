@@ -1,6 +1,6 @@
 # Barry on provenance workloads -- consolidated results
 
-_Last updated 2026-08-22. Supersedes SUMMARY.md, which covers the earlier
+_Last updated 2026-09-10. Supersedes SUMMARY.md, which covers the earlier
 structural-graph framing (BFS/PageRank/KCore vs DCSR) that this work moved away from._
 
 ## What is being claimed
@@ -58,8 +58,9 @@ Same process, same data, answers verified identical at every window.
 - **Traversal**: Barry beats DuckDB **150-700x** across all result sizes (203x even
   at \|R\| > 1000, where DuckDB takes 2.43 s). Each hop costs a relational engine a
   full join; that is a data-model limit, not an engineering one.
-- **Filter**: DuckDB is 1.46x behind on the median and **ahead on p95**
-  (1 568 us vs 6 696 us). Columnar scan has the better tail. This result stays in.
+- **Filter**: after vectorizing the range scan (AVX2 + interior-window bulk copy
+  + header-only reserve prepass), Barry wins the median **14x** (71.5 us vs
+  1.01 ms); DuckDB keeps the better tail (p95 1.50 ms vs 2.30 ms). Both reported.
 - **vs time-sorted CSR**: Barry is **2.7x slower** at high degree, 8-11x at low
   degree. The CSR wins query latency and cannot ingest a stream at all.
 
@@ -72,6 +73,33 @@ everything".
 
 Backward tracing implicates **2 313 hosts on average per alert (13% of the
 network)**. Both directions explode; speed is necessary, not sufficient.
+
+### E13 -- the storage-read share of graph algorithms
+
+Four layouts serve identical executions (checksum-verified); only adjacency
+delivery is timed. Structure-only algorithms cost Barry ~2x vs the static
+topology optimum (E3's end-to-end 5-15x was mostly algorithm implementation,
+not layout). Payload delivery costs 4-5x (arena resolve; inlining rejected as
+the +50%-memory trade). Time-windowed traversal ordering flips with degree:
+ucsr wins at degree 20, parity at 337, LANL (59K) pending.
+
+### Durability -- recovery is re-ingestion (Theorem 6)
+
+WAL with CRC frames + torn-tail discard; asynchronous writer overlaps log I/O:
+**4.2M events/s durable** (64MB group commit) vs 7.4M volatile -- disk-bandwidth
+bound (156MB/s), not engine-bound. `flush_before(t)` tiers a cold time prefix
+to a loadable segment and releases its pages, fsync'd before eviction. 3
+persistence suites pass incl. crash simulation.
+
+### Concurrent-read correctness -- claim upgraded to tested property
+
+"Never stops being queryable" had an unverified hole: count-then-payload writes
+could expose torn edges to concurrent readers. Fixed by per-slot release
+publication (timestamp/block-pointer written last; sorted flag cleared before
+count bump, making the binary-search path provably safe). Stress test: 1,395
+concurrent read iterations, 0 violations; at-scale soak on wiki-talk: 46K
+queries / 50.5M edges validated during 8-writer ingest, 0 violations, exact
+final count. LANL-scale soak pending.
 
 ### E12 -- a static index does not return a stale answer, it returns a wrong one
 
