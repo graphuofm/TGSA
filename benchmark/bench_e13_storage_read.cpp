@@ -93,6 +93,31 @@ struct UCsrAdj {
     static constexpr bool has_time = true;
 };
 
+// Weighted variants: (dst, weight) pairs. csr/tcsr/ucsr store weights inline
+// next to the destination; barry must resolve through the Arena -- that pointer
+// chase is the point of the bfsw variant.
+struct WPair { uint32_t dst; float w; };
+struct WCsr {
+    std::vector<uint64_t> offs; std::vector<WPair> adj;
+    void build(const Edge* edges, size_t n, uint32_t V, bool time_sorted) {
+        offs.assign(V + 1, 0);
+        for (size_t i = 0; i < n; ++i) ++offs[edges[i].src + 1];
+        for (uint32_t v = 0; v < V; ++v) offs[v + 1] += offs[v];
+        adj.resize(n);
+        std::vector<uint64_t> head(offs.begin(), offs.end() - 1);
+        if (!time_sorted) {
+            for (size_t i = 0; i < n; ++i)
+                adj[head[edges[i].src]++] = WPair{edges[i].dst, edges[i].weight};
+        } else {
+            std::vector<std::pair<uint64_t,size_t>> order(n);
+            for (size_t i = 0; i < n; ++i) order[i] = {edges[i].timestamp, i};
+            std::sort(order.begin(), order.end());
+            for (auto& [ts, i] : order)
+                adj[head[edges[i].src]++] = WPair{edges[i].dst, edges[i].weight};
+        }
+    }
+};
+
 struct BarryAdj {
     const VertexIndex* vi;
     mutable std::vector<TemporalRef> tbuf;
@@ -105,6 +130,24 @@ struct BarryAdj {
         for (const TemporalRef& r : tbuf) buf.push_back(r.peer);
     }
     static constexpr bool has_time = true;
+};
+
+// Weighted accessors share one contract: fill (dst, w) pairs.
+struct WAdjArr {
+    const WCsr* g;
+    void outw(uint32_t u, std::vector<WPair>& buf) const {
+        for (uint64_t p = g->offs[u], e = g->offs[u + 1]; p < e; ++p)
+            buf.push_back(g->adj[p]);
+    }
+};
+struct WAdjBarry {
+    const VertexIndex* vi;
+    mutable std::vector<std::pair<uint32_t,float>> tmp;
+    void outw(uint32_t u, std::vector<WPair>& buf) const {
+        tmp.clear();
+        vi->neighbors_weighted_into(u, tmp);
+        for (auto& [d, w] : tmp) buf.push_back(WPair{d, w});
+    }
 };
 
 // ---------------------------------------------------------------- instrumented run
@@ -125,6 +168,16 @@ struct Reader {
         m.storage_sec += now_sec() - t0;
         ++m.calls; m.edges += buf.size();
         return buf;
+    }
+    std::vector<WPair> wbuf;
+    template <class AW = A>
+    const std::vector<WPair>& outw(uint32_t u) {
+        wbuf.clear();
+        double t0 = now_sec();
+        a.outw(u, wbuf);
+        m.storage_sec += now_sec() - t0;
+        ++m.calls; m.edges += wbuf.size();
+        return wbuf;
     }
     const std::vector<uint32_t>& out_in(uint32_t u, uint64_t lo, uint64_t hi) {
         buf.clear();
@@ -194,6 +247,32 @@ uint64_t run_cc(R& r, uint32_t V, int max_iters) {
     return h;
 }
 
+// Weighted BFS-order sweep. True SSSP is semantically empty on these corpora
+// (SNAP weights are uniformly 1.0, so Dijkstra degenerates to BFS; LANL weights
+// are event-class codes, not costs). What is NOT empty is the storage question:
+// engines that store the weight inline deliver it for free, Barry resolves it
+// through the Arena. This sweep runs BFS order but demands (dst, weight) at
+// every expansion and folds the weights, isolating exactly that delta.
+template <class RW>
+uint64_t run_bfsw(RW& r, uint32_t V, uint32_t src) {
+    std::vector<int32_t> lvl(V, -1);
+    std::vector<uint32_t> cur{src}, nxt;
+    lvl[src] = 0;
+    double acc = 0;
+    while (!cur.empty()) {
+        nxt.clear();
+        for (uint32_t u : cur)
+            for (const WPair& p : r.outw(u)) {
+                acc += p.w;
+                if (p.dst < V && lvl[p.dst] < 0) { lvl[p.dst] = lvl[u] + 1; nxt.push_back(p.dst); }
+            }
+        cur.swap(nxt);
+    }
+    uint64_t h = 1469598103934665603ULL;
+    for (uint32_t v = 0; v < V; ++v) h = (h ^ (uint64_t)(lvl[v] + 1)) * 1099511628211ULL;
+    return h ^ (uint64_t)(acc);
+}
+
 template <class R>
 uint64_t run_twbfs(R& r, uint32_t V, uint32_t src, uint64_t lo, uint64_t hi) {
     std::vector<int32_t> lvl(V, -1);
@@ -244,6 +323,13 @@ int main(int argc, char** argv) {
     b.insert_batch(ef.edges, ef.count, threads);
     b.finalize();
 
+    WCsr wcsr_arrival, wcsr_sorted;
+    wcsr_arrival.build(ef.edges, ef.count, V, false);
+    wcsr_sorted.build(ef.edges, ef.count, V, true);
+    WAdjArr   aw_csr{&wcsr_arrival};
+    WAdjArr   aw_tcsr{&wcsr_sorted};
+    WAdjBarry aw_barry{b.vertex_index()};
+
     CsrAdj  a_csr{&csr};
     TcsrAdj a_tcsr{&tcsr};
     UCsrAdj a_ucsr{&ucsr};
@@ -271,6 +357,7 @@ int main(int argc, char** argv) {
         else if (alg == "pr")    sum = run_pr(r, V, 5);
         else if (alg == "cc")    sum = run_cc(r, V, 30);
         else if (alg == "twbfs") sum = run_twbfs(r, V, src, w_lo, w_hi);
+        else if (alg == "bfsw")  { /* handled by run_one_w */ }
         double total = now_sec() - t0;
         w.row(basename_noext(in_path), alg, std::string(engine), trial,
               total, m.storage_sec, total > 0 ? m.storage_sec / total : 0.0,
@@ -283,11 +370,38 @@ int main(int argc, char** argv) {
         return sum;
     };
 
+    auto run_one_w = [&](const char* engine, auto& adj, int trial) {
+        Meter m;
+        Reader<std::decay_t<decltype(adj)>> r{adj, m, {}};
+        double t0 = now_sec();
+        uint64_t sum = run_bfsw(r, V, src);
+        double total = now_sec() - t0;
+        w.row(basename_noext(in_path), std::string("bfsw"), std::string(engine), trial,
+              total, m.storage_sec, total > 0 ? m.storage_sec / total : 0.0,
+              (unsigned long long)m.calls, (unsigned long long)m.edges,
+              (unsigned long long)sum, window_frac);
+        std::fprintf(stderr, "[e13] %-22s bfsw   %-6s total=%8.4fs storage=%8.4fs (%4.1f%%)  edges=%llu  chk=%016llx\n",
+                     basename_noext(in_path).c_str(), engine, total, m.storage_sec,
+                     100.0 * m.storage_sec / std::max(total, 1e-12),
+                     (unsigned long long)m.edges, (unsigned long long)sum);
+        return sum;
+    };
+
     std::vector<std::string> algos;
-    if (algo == "all") algos = {"bfs", "pr", "cc", "twbfs"};
+    if (algo == "all") algos = {"bfs", "pr", "cc", "twbfs", "bfsw"};
     else               algos = {algo};
 
     for (const std::string& alg : algos) {
+        if (alg == "bfsw") {
+            for (int t = 0; t < trials; ++t) {
+                uint64_t c1 = run_one_w("csr",   aw_csr,   t);
+                uint64_t c2 = run_one_w("tcsr",  aw_tcsr,  t);
+                uint64_t c4 = run_one_w("barry", aw_barry, t);
+                if (!(c1 == c2 && c2 == c4))
+                    std::fprintf(stderr, "[e13] WARNING: bfsw checksum mismatch\n");
+            }
+            continue;
+        }
         for (int t = 0; t < trials; ++t) {
             uint64_t c1 = run_one("csr",   a_csr,   alg == "twbfs" ? "bfs" : alg, t);  // csr has no time
             uint64_t c2 = run_one("tcsr",  a_tcsr,  alg, t);

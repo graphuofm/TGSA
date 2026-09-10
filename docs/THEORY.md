@@ -125,6 +125,24 @@ can in principle lose every CAS. Wait-freedom holds for the slot-claim and
 arena-bump sub-steps only. The paper says "lock-free ingestion, wait-free slot
 claim", not more.
 
+### Theorem 6 (Recovery is re-ingestion)
+*Let `L` be a WAL whose complete frames contain edge batches `B₁, …, B_k` and
+whose final bytes may be torn. Replaying the complete frames of `L` through the
+normal insert path yields an engine whose answer to every query in Barry's
+interface equals that of the pre-crash engine restricted to acknowledged
+batches.*
+
+**Proof.** Engine state is determined by the multiset of ingested edges: inserts
+are the only mutation, they commute (Theorem 5's appends are order-insensitive up
+to bucket ordering, and every query is defined over edge sets filtered by
+predicates, never over physical positions -- compaction changes cost, not
+answers). The WAL frame check (length + CRC) accepts exactly the acknowledged
+batches: a torn or corrupt tail fails its check and is discarded, and every
+earlier frame was durable before its append returned. Hence replay ingests
+precisely the acknowledged multiset, and query-equivalence follows from state
+being a function of that multiset. No undo, redo, or idempotence bookkeeping is
+required. ∎
+
 ---
 
 ## 3  What this analysis deliberately does not claim

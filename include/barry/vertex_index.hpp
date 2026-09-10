@@ -4,6 +4,7 @@
 #include <atomic>
 #include <cstdint>
 #include <cstddef>
+#include <utility>
 #include <vector>
 
 namespace barry {
@@ -109,6 +110,12 @@ public:
     std::vector<Edge> in_neighbors_temporal(uint32_t dst,
                                             uint64_t t_lo,
                                             uint64_t t_hi) const;
+
+    // Weighted delivery: (peer, weight) pairs. Unlike neighbors_dst_into, this
+    // must resolve each edge through the Arena -- the pointer chase this costs
+    // versus inline-weight layouts is measured in E13's weighted sweep.
+    void neighbors_weighted_into(uint32_t src,
+                                 std::vector<std::pair<uint32_t,float>>& out) const;
 
     // Reverse-direction counterpart of neighbors_temporal_into.
     void in_neighbors_temporal_into(uint32_t dst, uint64_t t_lo, uint64_t t_hi,

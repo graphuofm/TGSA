@@ -231,6 +231,17 @@ size_t VertexIndex::finalize() {
     return marked;
 }
 
+void VertexIndex::neighbors_weighted_into(uint32_t src,
+                                          std::vector<std::pair<uint32_t,float>>& out) const {
+    if (heads_ == nullptr || src >= num_vertices_) return;
+    for (VertexBucket* b = head_of(src); b; b = b->next) {
+        uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
+        const EdgeRef* refs = refs_of(b);
+        for (uint32_t i = 0; i < cnt; ++i)
+            out.emplace_back(refs[i].dst, resolve(refs[i]).weight);
+    }
+}
+
 void VertexIndex::in_neighbors_temporal_into(uint32_t dst, uint64_t t_lo, uint64_t t_hi,
                                              std::vector<TemporalRef>& out) const {
     if (heads_in_ == nullptr || dst >= num_vertices_) return;
