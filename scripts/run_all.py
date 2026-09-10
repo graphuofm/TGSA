@@ -1,3 +1,5 @@
+# LEGACY: orchestrates the E1-E6 structural experiments (April 2026 framing).
+# The provenance experiments (E7-E13) are driven by scripts/reproduce.sh instead.
 #!/usr/bin/env python3
 """Orchestrator for the 6 experiments.
 
