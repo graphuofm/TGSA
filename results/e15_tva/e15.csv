@@ -1,7 +1,5 @@
-engine,edges,V,ingest_s,eps,scans,scan_us,scan_edges,fullsnap_s,fullsnap_edges,rss_mb
-[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
-[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
-[Arena] reserved 1.07 GB at 0x7f7387921000 (huge=0)
-[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=0.5 GB virtual
-[e15-barry] ingest 0.60s (13.14 Meps, 1 thread)  scan med~0.2us  fullsnap 0.649s (76036 nbrs)  RSS 659MB
-barry,7833140,1140149,0.596,13138207,200,0.2,58,0.649,76036,659
+engine,dataset,edges,V,ingest_s,eps_1thread,scan_us,fullsnap_s,rss_mb
+barry,wiki-talk-temporal,7833140,1140149,0.596,13138207,0.2,0.649,659
+barry,tc-cadets-e3,22536062,2855135,1.45,15530000,0.1,217.867,1832
+barry,tc-theia-e3,97289833,6874886,8.16,11920000,0.4,45.763,7723
+tva,wiki-talk-temporal,7833140,1140149,DNF>5415,<1447,,,41641
