@@ -1,0 +1,7 @@
+engine,edges,V,ingest_s,eps,scans,scan_us,scan_edges,fullsnap_s,fullsnap_edges,rss_mb
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f7387921000 (huge=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=0.5 GB virtual
+[e15-barry] ingest 0.60s (13.14 Meps, 1 thread)  scan med~0.2us  fullsnap 0.649s (76036 nbrs)  RSS 659MB
+barry,7833140,1140149,0.596,13138207,200,0.2,58,0.649,76036,659
