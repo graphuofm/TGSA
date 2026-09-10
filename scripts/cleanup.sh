@@ -26,12 +26,19 @@ report() {
     return 0
 }
 
-echo "=== derived graphs (regenerate: tools/lanl_to_bin.cpp, tools/tc_cdm_to_bin.cpp) ==="
-for f in "$BIN"/lanl-*.bin "$BIN"/tc-*.bin; do report "$f"; done
+echo "=== derived graphs (deletable ONLY when the raw source to rebuild from is still present) ==="
+for f in "$BIN"/lanl-*.bin; do
+    [ -e "$f" ] || continue
+    if [ -s "$RAW/auth.txt.gz" ]; then report "$f"
+    else printf '%8s MB  %s  (KEPT: raw source gone, cannot rebuild)\n' "$(du -sm "$f"|cut -f1)" "$f"; fi
+done
+for f in "$BIN"/tc-*.bin; do report "$f"; done
 
 echo
-echo "=== raw archives (re-downloadable; keep redteam.txt.gz, it is 5 KB and ground truth) ==="
-for f in "$RAW"/auth.txt.gz "$RAW"/proc.txt.gz "$RAW"/flows.txt.gz "$RAW"/dns.txt.gz; do report "$f"; done
+echo "=== raw archives — NEVER auto-deleted (LANL fence links are time-signed and expire; not reliably re-downloadable) ==="
+for f in "$RAW"/auth.txt.gz "$RAW"/proc.txt.gz "$RAW"/flows.txt.gz "$RAW"/dns.txt.gz; do
+    [ -e "$f" ] && printf '%8s MB  %s  (kept)\n' "$(du -sm "$f" 2>/dev/null | cut -f1)" "$f"
+done
 
 echo
 echo "=== per-query detail dumps (superseded once summarised into NOTES.md) ==="
