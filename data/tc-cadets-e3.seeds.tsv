@@ -39,3 +39,8 @@ attack	kind	match	node_id	node_kind	label
 4	file	eWq10bVcx	2758071	file	eWq10bVcx
 4	file	memhelp.so	2759215	file	memhelp.so
 4	file	done.so	2759841	file	done.so
+4	netflow	53.158.101.118	2561735	netflow	53.158.101.118:80
+4	netflow	53.158.101.118	2562149	netflow	53.158.101.118:80
+4	netflow	53.158.101.118	2758433	netflow	53.158.101.118:80
+4	netflow	198.115.236.119	2759069	netflow	198.115.236.119:80
+4	netflow	198.115.236.119	2759247	netflow	198.115.236.119:80

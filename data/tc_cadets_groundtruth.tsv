@@ -28,3 +28,5 @@ attack	kind	match	mode	role
 4	file	eWq10bVcx	exact	libdrakon staged
 4	file	memhelp.so	exact	injection payload copy
 4	file	done.so	exact	injection payload copy
+4	netflow	53.158.101.118	substr	drakon C2 (reused)
+4	netflow	198.115.236.119	substr	sshd injection C2 (reused)

@@ -292,6 +292,31 @@ Horizon & Tainted & \% of net & Recall & Latency \\
 \end{tabular}
 \end{table}
 
+\subsection{Cross-corpus: granularity sets both the danger and the ceiling}
+\label{sec:evidence-cross}
+Repeating the protocol on DARPA TC E3 CADETS---22.5M information-flow
+edges over 2.86M system-level entities, against the four nation-state
+attacks of the official ground-truth report---completes the picture
+from the opposite end of the granularity spectrum. Forward taint from
+the first exploit source recovers the entire documented chain (nginx
+worker, implant drop, privilege escalation, C2, injection target) in
+causal order within an impact set of 265 entities, \emph{0.0093\%} of
+the graph; the bidirectional investigation primitive recovers
+68--100\% of chain entities per attack at union sizes of
+0.3--1.6\%---actionable, where LANL's host-granularity taint
+implicates 15--29\% of the network. On this fine-grained log CPR's
+reduction tops out at $5.6\times$ (against $131\times$ on LANL): the
+massive apparent redundancy of the coarse corpus \emph{is} causal
+detail, miscounted. At that ceiling CPR deletes nothing from
+first-contact attacks---but erases a third of the chain of the one
+attack that \emph{reused} C2 infrastructure from earlier intrusions,
+because repeat contact is precisely what it deduplicates. Reuse is how
+analysts link intrusions into campaigns; CPR removes that link
+preferentially. Random loss inverts the geometry: 90\% dropping
+leaves coarse LANL over-connected (58\% recall) but shatters
+fine-grained chains (47--80\%), each hop riding on few edges. The
+better the collection, the more lossless retention matters.
+
 % =====================================================================
 \section{Design}
 \label{sec:design}
@@ -414,7 +439,10 @@ traversals against hand-computed ground truth.
 \label{sec:eval}
 
 \textbf{Setup.} 20-core Xeon, 188\,GB RAM. Datasets: LANL (1.05B
-events, ground truth), 12 SNAP temporal graphs (60K--646M edges), the
+events, ground truth), DARPA TC E3 CADETS (44.4M CDM records $\to$
+22.5M information-flow edges over 2.86M system-level entities, with
+the four nation-state attacks of the official ground-truth report
+resolved to node ids), 12 SNAP temporal graphs (60K--646M edges), the
 synthetic chain fixture. Baselines: DuckDB v1.5.5 via its C API in
 the same process; a time-sorted CSR (\texttt{tcsr}: entity-keyed,
 per-vertex time-sorted---the strongest simple competitor); an
