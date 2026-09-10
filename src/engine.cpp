@@ -116,6 +116,19 @@ void Barry::insert_batch(const Edge* edges, size_t n, int num_threads) {
 // and then query should call it once; a streaming deployment schedules it like a
 // compaction. Queries remain correct without it, just linear per expansion.
 size_t Barry::finalize() {
+    // Mark arena blocks whose every slot is published: readers then take the
+    // no-check bulk path. Quiescence is the caller's contract (as for the
+    // bucket sort below), so a plain verify-then-set is sound.
+    for (uint64_t idx = 0; idx < timeline_->num_slots(); ++idx) {
+        for (BlockHeader* b = timeline_->load(idx); b; b = b->next) {
+            uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
+            const Edge* arr = edges_of(b);
+            bool all = true;
+            for (uint32_t i = 0; i < cnt; ++i)
+                if (arr[i].timestamp == 0) { all = false; break; }
+            if (all) b->flags.store(kBlockPublished, std::memory_order_release);
+        }
+    }
     return vertex_index_ ? vertex_index_->finalize() : 0;
 }
 
@@ -152,9 +165,10 @@ namespace {
 // refs dereference into the arena. With AVX2 we gather 4 timestamps per step (byte
 // offsets 8,28,48,68 relative to the cursor). Timestamps are < 2^63 (nanosecond
 // epochs are ~1.5e18), so signed 64-bit compares are exact.
-inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
+inline void scan_block_filtered(const BlockHeader* b, const Edge* arr, uint32_t cnt,
                                 uint64_t t_lo, uint64_t t_hi,
                                 std::vector<Edge>& out) {
+    const bool published = b->flags.load(std::memory_order_acquire) & kBlockPublished;
     uint32_t i = 0;
 #if defined(__AVX2__)
     // Concurrent-publish note: the gather reads timestamps with plain loads; a
@@ -181,7 +195,8 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
     }
 #endif
     for (; i < cnt; ++i) {
-        uint64_t ts = __atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE);
+        uint64_t ts = published ? arr[i].timestamp
+                                : __atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE);
         if (ts >= t_lo && ts <= t_hi && ts != 0 && is_alive(arr[i]))
             out.push_back(arr[i]);
     }
@@ -189,7 +204,15 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
 
 // Interior windows of a range query lie entirely inside [t_lo, t_hi]: every alive
 // edge qualifies and no timestamp is ever compared.
-inline void copy_block_alive(const Edge* arr, uint32_t cnt, std::vector<Edge>& out) {
+inline void copy_block_alive(const BlockHeader* b, const Edge* arr, uint32_t cnt,
+                             std::vector<Edge>& out) {
+    // Count was loaded before this flag read; the append protocol (clear flag,
+    // then bump) makes an observed flag prove the counted prefix is verified.
+    if (b->flags.load(std::memory_order_acquire) & kBlockPublished) {
+        for (uint32_t i = 0; i < cnt; ++i)
+            if (is_alive(arr[i])) out.push_back(arr[i]);
+        return;
+    }
     for (uint32_t i = 0; i < cnt; ++i) {
         if (__atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE) == 0) continue;  // unpublished
         if (is_alive(arr[i])) out.push_back(arr[i]);
@@ -247,8 +270,8 @@ std::vector<Edge> Barry::query_range(uint64_t t_lo, uint64_t t_hi) const {
             uint32_t cnt = std::min(block->count.load(std::memory_order_acquire),
                                     block->capacity);
             const Edge* arr = edges_of(block);
-            if (boundary) scan_block_filtered(arr, cnt, t_lo, t_hi, out);
-            else          copy_block_alive(arr, cnt, out);
+            if (boundary) scan_block_filtered(block, arr, cnt, t_lo, t_hi, out);
+            else          copy_block_alive(block, arr, cnt, out);
             block = block->next;
         }
     }

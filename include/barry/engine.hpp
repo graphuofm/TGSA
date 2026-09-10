@@ -75,9 +75,11 @@ public:
                                                   uint64_t delta) const;
 
     // Compaction ---------------------------------------------------------
-    // Sort each vertex's adjacency by timestamp so traversal can binary search.
-    // Optional and explicit: queries are correct without it, and it is kept off
-    // the insert path so appends stay O(batch). Returns buckets processed.
+    // Sort each vertex's adjacency by timestamp so traversal can binary search,
+    // and mark fully published arena blocks so range scans skip per-edge
+    // publication checks. Optional and explicit: queries are correct without
+    // it, and it is kept off the insert path so appends stay O(batch).
+    // Returns buckets processed.
     size_t finalize();
 
     // Retention / lifecycle ---------------------------------------------

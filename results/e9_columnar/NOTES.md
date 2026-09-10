@@ -84,3 +84,20 @@ reported avg \|R\| = 7458.
 DuckDB lives in `~/opt/duckdb` (C API) and `~/bin/duckdb` (CLI), installed without
 root. CMake probes for it and skips `bench_e9_columnar` when absent, so the normal
 build stays dependency-free.
+
+
+## Update 2026-09-10 -- filter tail closed; concurrency cost recovered
+
+Post publication-protocol (concurrent-read correctness), the acquire loads cost
+the filter path 2.3x. A block-publication watermark (finalize verifies a block's
+slots and flags it; readers take a no-check bulk path; any append clears the
+flag before bumping the count, same proven ordering as the bucket sorted flag)
+recovered it: same-seed median 75.1 us vs 71.5 us pre-protocol.
+
+Five-seed wiki-talk filter, current build:
+  barry  median 77.1 us   p95 980.8 us  (range 917-1546)
+  duckdb median 819.0 us  p95 1105.0 us (range 976-1516)
+
+Median won 10.6x; p95 at parity with overlapping ranges -- the earlier "DuckDB
+owns the tail 4x" finding no longer holds and the paper now reports the
+progression instead.

@@ -53,13 +53,17 @@ BlockHeader* Arena::allocate_block(uint32_t capacity) {
     h->count.store(0, std::memory_order_relaxed);
     h->capacity = capacity;
     h->next = nullptr;
-    h->padding = 0;
+    h->flags.store(0, std::memory_order_relaxed);
 
     num_blocks_.fetch_add(1, std::memory_order_relaxed);
     return h;
 }
 
 int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
+    // Clear the published flag BEFORE bumping the count (same happens-before
+    // argument as the bucket sorted flag: a reader that acquires the bumped
+    // count sees this clear, so an observed flag proves a verified prefix).
+    block->flags.store(0, std::memory_order_release);
     uint32_t pos = block->count.fetch_add(1, std::memory_order_acq_rel);
     if (pos >= block->capacity) return -1;
     // Publish protocol: payload first, timestamp last with release. Fresh arena

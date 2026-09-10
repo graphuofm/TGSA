@@ -432,10 +432,12 @@ at $|R|>1000$ the median is 12.0\,ms vs.\ 2.43\,s ($203\times$). The
 gap is a data-model consequence---each hop is a fresh join against
 the edge table---and grows with the answer. On DuckDB's home
 ground, time-range filtering, Barry's vectorized scan wins the median
-$14\times$ (71.5\,$\mu$s vs.\ 1.01\,ms) while DuckDB retains the
-better tail (p95 1.50\,ms vs.\ 2.30\,ms): sequential columnar scan
-has the more predictable latency, and we report it so the traversal
-numbers can be believed.
+$10.6\times$ (77\,$\mu$s vs.\ 819\,$\mu$s across five seeds) with
+the p95 at parity (981\,$\mu$s vs.\ 1{,}105\,$\mu$s, overlapping
+ranges). An earlier build lost the tail $4\times$ to DuckDB's
+sequential scan; a header-only reserve prepass, an interior-window
+bulk path, and a block-publication watermark closed it, and we report
+the progression so the traversal numbers can be believed.
 
 \subsection{Rebuild versus stream}
 \label{sec:eval-staleness}

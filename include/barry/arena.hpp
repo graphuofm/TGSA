@@ -7,11 +7,19 @@
 
 namespace barry {
 
+// kBlockPublished: every slot in [0, min(count,capacity)) carries a published
+// (ts != 0) edge, verified by a quiescent finalize() pass. Readers may then take
+// a no-check fast path over the block. The flag follows the same protocol as the
+// bucket sorted flag: any append clears it (release) BEFORE bumping the count,
+// so a reader that still observes the flag after an acquire count-load is
+// looking at a fully verified prefix.
+enum : uint32_t { kBlockPublished = 1u };
+
 struct alignas(kCacheLineSize) BlockHeader {
     std::atomic<uint32_t> count;          // logical write index (may exceed capacity transiently)
     uint32_t              capacity;
     BlockHeader*          next;           // overflow chain
-    uint32_t              padding;
+    std::atomic<uint32_t> flags;          // kBlockPublished
 };
 static_assert(sizeof(BlockHeader) <= kCacheLineSize,
               "BlockHeader must fit in one cache line");
