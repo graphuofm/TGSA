@@ -162,18 +162,21 @@ time-respecting traversal that touches only the windows a query names.
 \label{sec:workload}
 
 \subsection{Event rates, measured}
-We instrumented an ordinary 20-core server (strace, syscall counts
-verified against untraced wall-clock) under a routine parallel
-software build and observed \textbf{80,021 provenance-relevant system
-calls per second} on one host---opens, reads, writes, execs, clones,
-connects: precisely the event classes whole-system provenance
-records~\cite{pasquier2017camflow}. For calibration: the DARPA TC
-THEIA trace stores $102.2$ events/s/host; the LANL enterprise corpus
-(authentication only) stores $0.012$ events/s/host. Today's recorded
-corpora therefore sit two to four orders of magnitude below what hosts
-emit; the gap---$783\times$ for THEIA against our measured
-rate---is reduction, applied before storage, whose cost has never been
-measured on the investigation axis.
+We instrumented an ordinary 20-core server (syscall counts via strace,
+rates against separately measured untraced wall-clock) across four
+workload classes and observed per-host provenance-relevant syscall
+rates---opens, reads, writes, execs, clones, connects: precisely the
+event classes whole-system provenance
+records~\cite{pasquier2017camflow}---of \textbf{8{,}300/s under
+archival I/O, 10{,}700/s under file analytics, and 58{,}500--80{,}000/s
+under a parallel software build} ($\sim$20/s idle). For calibration:
+the DARPA TC THEIA trace stores $102.2$ events/s/host; the LANL
+enterprise corpus (authentication only) stores $0.012$. Recorded
+corpora therefore sit \emph{two to three orders of magnitude} below
+what active hosts emit---$783\times$ for THEIA against the build-rate
+peak---and that gap is reduction, applied before storage, whose cost
+has never been measured on the investigation axis. The measurement
+script ships in the artifact.
 
 \subsection{The retention arithmetic}
 At 20 bytes per event, losslessly retaining a 1{,}000-host fleet at
