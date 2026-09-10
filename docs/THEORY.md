@@ -125,6 +125,38 @@ can in principle lose every CAS. Wait-freedom holds for the slot-claim and
 arena-bump sub-steps only. The paper says "lock-free ingestion, wait-free slot
 claim", not more.
 
+**Remark (publication protocol, concurrent reads).** Queries are correct during
+concurrent ingestion by a per-slot release-publication discipline:
+
+- *Arena edges*: payload (`src`,`dst`,`weight`) is written first; `timestamp` is
+  stored last with release. Fresh arena pages are zeroed, so `ts == 0` identifies
+  an unpublished slot; every reader acquire-loads the timestamp and skips zeros.
+  Consequently `ts == 0` is reserved: `insert` clamps an epoch-zero event to 1
+  (one time unit of error at the epoch boundary, never a dropped record).
+- *Vertex-index refs*: `dst`/`offset` first; the `block` pointer last with
+  release. `block == nullptr` marks an unpublished ref; readers skip.
+- *Sorted-flag ordering*: an append clears `kBucketSorted` (release) **before**
+  bumping the bucket count (`fetch_add`, acq-rel). A reader loads the count
+  (acquire) and then the flag. If it observes the flag still set, then no
+  append's clear — and hence, by program order, no append's bump — is visible to
+  it; the acquire on the count synchronizes with every visible bump's release,
+  so the loaded count covers only the compaction-verified prefix and binary
+  search over it is sound. Any reader that instead sees a published new ref also
+  sees the cleared flag and takes the linear path.
+
+Verified by a multi-writer/multi-reader stress test (4 writers, 3 readers,
+range + taint queries throughout ingestion): zero violations, final state equal
+to a serially built engine.
+
+**Boundary (SIMD path, x86-TSO assumption).** The AVX2 range scan gathers
+timestamps with plain vector loads and upgrades the mask-dependent payload reads
+with an acquire fence. Correctness of skipping unpublished slots relies on
+`t_lo ≥ 1` (a zero timestamp fails the range test) and, for payload visibility,
+on the acquire fence pairing with the writer's release store — sufficient on
+x86-TSO, where the gather cannot observe a timestamp before earlier payload
+stores are visible after the fence. A port to weaker memory models (ARM) must
+re-audit this path or fall back to the scalar acquire loop.
+
 ### Theorem 6 (Recovery is re-ingestion)
 *Let `L` be a WAL whose complete frames contain edge batches `B₁, …, B_k` and
 whose final bytes may be torn. Replaying the complete frames of `L` through the
