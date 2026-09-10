@@ -123,3 +123,7 @@ add_test(NAME taint COMMAND test_taint)
 add_executable(test_persistence tests/test_persistence.cpp)
 target_link_libraries(test_persistence PRIVATE barry)
 add_test(NAME persistence COMMAND test_persistence)
+
+add_executable(test_concurrent tests/test_concurrent.cpp)
+target_link_libraries(test_concurrent PRIVATE barry)
+add_test(NAME concurrent COMMAND test_concurrent)

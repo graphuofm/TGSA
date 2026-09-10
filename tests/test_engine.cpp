@@ -57,8 +57,10 @@ static void test_concurrent_insert_no_loss() {
     for (int t = 0; t < T; ++t) {
         ts.emplace_back([&, t] {
             for (int i = 0; i < N_PER; ++i) {
+                // ts >= 1: timestamp 0 is the unpublished-slot sentinel and is
+                // rejected by insert() by contract.
                 Edge e{uint32_t(t), uint32_t(t + 1),
-                       uint64_t(i), 1.0f};
+                       uint64_t(i) + 1, 1.0f};
                 b.insert(e);
             }
         });
@@ -92,7 +94,7 @@ static void test_window_aggregate() {
 static void test_bfs_line_graph() {
     Barry b(small_cfg(16));
     for (uint32_t i = 0; i < 10; ++i)
-        b.insert({i, i + 1, uint64_t(i), 1.0f});
+        b.insert({i, i + 1, uint64_t(i) + 1, 1.0f});   // ts >= 1 by contract
 
     auto level = b.bfs(0);
     for (int i = 0; i < 11; ++i) {

@@ -58,6 +58,7 @@ BlockHeader* Barry::get_or_create_block(uint64_t idx) {
 }
 
 void Barry::insert(const Edge& e) {
+    if (e.timestamp == 0) return;   // ts == 0 is the unpublished-slot sentinel
     uint64_t idx = mapper_->map(e.timestamp);
     BlockHeader* block = get_or_create_block(idx);
     if (!block) return;
@@ -150,6 +151,11 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
                                 std::vector<Edge>& out) {
     uint32_t i = 0;
 #if defined(__AVX2__)
+    // Concurrent-publish note: the gather reads timestamps with plain loads; a
+    // zero (unpublished) slot fails the range test because t_lo >= 1. The fence
+    // below upgrades the mask-dependent payload reads to acquire semantics.
+#endif
+#if defined(__AVX2__)
     const __m256i vidx = _mm256_setr_epi64x(8, 28, 48, 68);
     const __m256i vlo  = _mm256_set1_epi64x(static_cast<long long>(t_lo) - 1);
     const __m256i vhi  = _mm256_set1_epi64x(static_cast<long long>(t_hi) + 1);
@@ -159,6 +165,7 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
         __m256i ok = _mm256_and_si256(_mm256_cmpgt_epi64(ts, vlo),
                                       _mm256_cmpgt_epi64(vhi, ts));
         int mask = _mm256_movemask_pd(_mm256_castsi256_pd(ok));
+        if (mask) __atomic_thread_fence(__ATOMIC_ACQUIRE);
         while (mask) {
             int j = __builtin_ctz(mask);
             mask &= mask - 1;
@@ -168,7 +175,8 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
     }
 #endif
     for (; i < cnt; ++i) {
-        if (arr[i].timestamp >= t_lo && arr[i].timestamp <= t_hi && is_alive(arr[i]))
+        uint64_t ts = __atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE);
+        if (ts >= t_lo && ts <= t_hi && ts != 0 && is_alive(arr[i]))
             out.push_back(arr[i]);
     }
 }
@@ -176,8 +184,10 @@ inline void scan_block_filtered(const Edge* arr, uint32_t cnt,
 // Interior windows of a range query lie entirely inside [t_lo, t_hi]: every alive
 // edge qualifies and no timestamp is ever compared.
 inline void copy_block_alive(const Edge* arr, uint32_t cnt, std::vector<Edge>& out) {
-    for (uint32_t i = 0; i < cnt; ++i)
+    for (uint32_t i = 0; i < cnt; ++i) {
+        if (__atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE) == 0) continue;  // unpublished
         if (is_alive(arr[i])) out.push_back(arr[i]);
+    }
 }
 
 }  // namespace
@@ -193,7 +203,8 @@ std::vector<Edge> Barry::query_at(uint64_t timestamp) const {
                                 block->capacity);
         const Edge* arr = edges_of(block);
         for (uint32_t i = 0; i < cnt; ++i) {
-            if (arr[i].timestamp == timestamp && is_alive(arr[i])) out.push_back(arr[i]);
+            uint64_t ts = __atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE);
+            if (ts == timestamp && ts != 0 && is_alive(arr[i])) out.push_back(arr[i]);
         }
         block = block->next;
     }
@@ -255,6 +266,7 @@ double Barry::window_aggregate_sum(uint64_t t_lo, uint64_t t_hi) const {
                                     block->capacity);
             const Edge* arr = edges_of(block);
             for (uint32_t i = 0; i < cnt; ++i) {
+                if (__atomic_load_n(&arr[i].timestamp, __ATOMIC_ACQUIRE) == 0) continue;
                 if (arr[i].timestamp >= t_lo && arr[i].timestamp <= t_hi
                     && is_alive(arr[i])) {
                     sum += arr[i].weight;

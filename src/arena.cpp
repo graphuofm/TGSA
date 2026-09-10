@@ -62,7 +62,14 @@ BlockHeader* Arena::allocate_block(uint32_t capacity) {
 int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
     uint32_t pos = block->count.fetch_add(1, std::memory_order_acq_rel);
     if (pos >= block->capacity) return -1;
-    edges_of(block)[pos] = e;
+    // Publish protocol: payload first, timestamp last with release. Fresh arena
+    // pages are zero, so ts == 0 marks an unpublished slot; readers acquire-load
+    // the timestamp and skip zeros, which makes queries correct DURING concurrent
+    // ingestion instead of only between batches. Edges must carry ts > 0 (both
+    // converters guarantee it; insert() drops ts == 0).
+    Edge* slot = &edges_of(block)[pos];
+    slot->src = e.src; slot->dst = e.dst; slot->weight = e.weight;
+    __atomic_store_n(&slot->timestamp, e.timestamp, __ATOMIC_RELEASE);
     return static_cast<int32_t>(pos);
 }
 

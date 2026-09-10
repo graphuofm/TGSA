@@ -107,12 +107,20 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
 
     VertexBucket* b = head;
     for (;;) {
+        // Order matters for concurrent readers: clear the sorted flag BEFORE
+        // bumping the count. A reader loads count (acquire) and then the flag;
+        // if it still observes kBucketSorted, the acquire on count synchronizes
+        // with every prior bump's release, and each bump was preceded by a
+        // clear -- so a sorted flag proves the loaded count covers only the
+        // verified prefix, and binary search over it is sound.
+        b->flags.store(0, std::memory_order_release);
         uint32_t pos = b->count.fetch_add(1, std::memory_order_acq_rel);
         if (pos < b->capacity) {
-            refs_of(b)[pos] = EdgeRef{peer, offset, block};
-            // Any append invalidates a previously verified ordering. Clearing is
-            // monotone and therefore safe to race.
-            b->flags.store(0, std::memory_order_release);
+            EdgeRef* r = &refs_of(b)[pos];
+            r->dst = peer; r->offset = offset;
+            // Publish protocol: block pointer last, release. Zero pages mean an
+            // unpublished ref reads block == nullptr; every reader skips those.
+            __atomic_store_n(&r->block, block, __ATOMIC_RELEASE);
             return;
         }
         // Bucket is full -- push a new one onto the front of the chain so future
@@ -168,8 +176,9 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
         return;
     }
     for (uint32_t i = 0; i < cnt; ++i) {
+        if (!__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) continue;   // unpublished
         uint64_t ts = resolve(refs[i]).timestamp;
-        if (ts >= t_lo && ts <= t_hi) out.push_back(TemporalRef{refs[i].dst, ts});
+        if (ts >= t_lo && ts <= t_hi && ts != 0) out.push_back(TemporalRef{refs[i].dst, ts});
     }
 }
 
@@ -238,7 +247,8 @@ void VertexIndex::neighbors_weighted_into(uint32_t src,
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
         for (uint32_t i = 0; i < cnt; ++i)
-            out.emplace_back(refs[i].dst, resolve(refs[i]).weight);
+            if (__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE))
+                out.emplace_back(refs[i].dst, resolve(refs[i]).weight);
     }
 }
 
@@ -254,7 +264,8 @@ void VertexIndex::neighbors_dst_into(uint32_t src,
     for (VertexBucket* b = head_of(src); b; b = b->next) {
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
-        for (uint32_t i = 0; i < cnt; ++i) out.push_back(refs[i].dst);
+        for (uint32_t i = 0; i < cnt; ++i)
+            if (__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) out.push_back(refs[i].dst);
     }
 }
 
@@ -273,7 +284,8 @@ std::vector<Edge> VertexIndex::neighbors_of(uint32_t src) const {
     for (VertexBucket* b = head_of(src); b; b = b->next) {
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
-        for (uint32_t i = 0; i < cnt; ++i) out.push_back(resolve(refs[i]));
+        for (uint32_t i = 0; i < cnt; ++i)
+            if (__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) out.push_back(resolve(refs[i]));
     }
     return out;
 }
@@ -288,8 +300,9 @@ std::vector<Edge> VertexIndex::neighbors_temporal(uint32_t src,
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
         for (uint32_t i = 0; i < cnt; ++i) {
+            if (!__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) continue;
             Edge e = resolve(refs[i]);
-            if (e.timestamp >= t_lo && e.timestamp <= t_hi) out.push_back(e);
+            if (e.timestamp >= t_lo && e.timestamp <= t_hi && e.timestamp != 0) out.push_back(e);
         }
     }
     return out;
@@ -302,7 +315,8 @@ std::vector<uint32_t> VertexIndex::sorted_neighbors_unique(uint32_t src) const {
     for (VertexBucket* b = head_of(src); b; b = b->next) {
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
-        for (uint32_t i = 0; i < cnt; ++i) ids.push_back(resolve(refs[i]).dst);
+        for (uint32_t i = 0; i < cnt; ++i)
+            if (__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) ids.push_back(resolve(refs[i]).dst);
     }
     std::sort(ids.begin(), ids.end());
     ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
@@ -319,8 +333,9 @@ std::vector<Edge> VertexIndex::in_neighbors_temporal(uint32_t dst,
         uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
         const EdgeRef* refs = refs_of(b);
         for (uint32_t i = 0; i < cnt; ++i) {
+            if (!__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) continue;
             Edge e = resolve(refs[i]);
-            if (e.timestamp >= t_lo && e.timestamp <= t_hi) out.push_back(e);
+            if (e.timestamp >= t_lo && e.timestamp <= t_hi && e.timestamp != 0) out.push_back(e);
         }
     }
     return out;
