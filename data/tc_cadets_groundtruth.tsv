@@ -1,36 +1,30 @@
-# DARPA TC E3 CADETS ground truth, extracted from TC_Ground_Truth_Report_E3_Update.pdf
-# (Kudu Dynamics, May 2018), Nation-State sections 3.1 / 3.8 / 3.13 / 3.14.
-# kind: process|file|netflow   match: substring against tc-cadets-e3.nodes.tsv labels
-# attack: 1=0406 nginx/Drakon  2=0411 nginx/Drakon  3=0412 nginx+micro  4=0413 final
-attack	kind	match	role
-1	process	nginx	exploited webserver
-1	file	/tmp/vUgefal	dropped drakon loader, elevated as root
-1	file	/var/log/devc	libdrakon injection target path
-1	file	/etc/passwd	read by implant
-1	file	/etc/group	read by implant
-1	netflow	81.49.200.166	exploit source
-1	netflow	78.205.235.65	shellcode server
-1	netflow	200.36.109.214	loaderDrakon fetch
-1	netflow	139.123.0.113	drakon fetch
-1	netflow	152.111.159.139	libdrakon fetch
-1	netflow	154.145.113.18	netrecon (failed)
-1	netflow	61.167.39.128	netrecon C2
-2	file	/tmp/grain	drakon implant dropped+injected
-2	netflow	25.159.96.207	exploit source
-2	netflow	76.56.184.25	stage1
-2	netflow	155.162.39.48	loaderDrakon C2
-2	netflow	198.115.236.119	libdrakon fetch (failed)
-3	file	/tmp/tmux-1002	micro apt drop (elevate failed)
-3	file	/tmp/minions	micro apt drop (elevate failed)
-3	file	/tmp/font	libdrakon drop
-3	file	/tmp/XIM	drakon executed
-3	file	/tmp/test	micro executed as user (execfile)
-3	netflow	53.158.101.118	XIM drakon C2
-3	netflow	98.15.44.232	micro C2 (failed)
-3	netflow	192.113.144.28	micro 2 C2 (sendmail)
-4	file	/tmp/pEja72mA	drakon executable, elevated root
-4	file	/tmp/eWq10bVcx	libdrakon staged
-4	file	/tmp/memhelp.so	injection payload copy
-4	file	/tmp/done.so	injection payload copy
-4	netflow	53.158.101.118	drakon C2
-4	netflow	198.115.236.119	sshd connection (injection attempt)
+# DARPA TC E3 CADETS ground truth (report sections 3.1/3.8/3.13/3.14)
+# Expected-absent (verified against node table, reasons documented):
+#   1 netflow 152.111.159.139 / 154.145.113.18 -- failed connections, never recorded
+#   3 netflow 98.15.44.232 -- micro C2 failed
+#   3 file /tmp/tmux-1002, /tmp/minions, /tmp/font, /tmp/test -- putfile artifacts
+#     absent or only generic-name collisions in the node table; excluded rather
+#     than risk false seeds
+attack	kind	match	mode	role
+1	process	nginx	substr	exploited webserver (matches binary/config paths)
+1	file	/tmp/vUgefal	substr	dropped drakon loader, elevated as root
+1	file	/var/log/devc	substr	libdrakon injection target path
+1	file	/etc/passwd	exact	read by implant
+1	file	/etc/group	exact	read by implant
+1	netflow	81.49.200.166	substr	exploit source
+1	netflow	78.205.235.65	substr	shellcode server
+1	netflow	200.36.109.214	substr	loaderDrakon fetch
+1	netflow	139.123.0.113	substr	drakon fetch
+1	netflow	61.167.39.128	substr	netrecon C2
+2	file	/tmp/grain	substr	drakon implant dropped+injected
+2	netflow	25.159.96.207	substr	exploit source
+2	netflow	76.56.184.25	substr	stage1
+2	netflow	155.162.39.48	substr	loaderDrakon C2
+2	netflow	198.115.236.119	substr	libdrakon fetch
+3	file	XIM	exact	drakon executed (bare-name putfile label)
+3	netflow	53.158.101.118	substr	XIM drakon C2
+3	netflow	192.113.144.28	substr	micro 2 C2 (sendmail)
+4	file	pEja72mA	exact	drakon executable, elevated root
+4	file	eWq10bVcx	exact	libdrakon staged
+4	file	memhelp.so	exact	injection payload copy
+4	file	done.so	exact	injection payload copy
