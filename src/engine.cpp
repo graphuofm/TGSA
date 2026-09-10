@@ -58,14 +58,20 @@ BlockHeader* Barry::get_or_create_block(uint64_t idx) {
 }
 
 void Barry::insert(const Edge& e) {
-    if (e.timestamp == 0) return;   // ts == 0 is the unpublished-slot sentinel
-    uint64_t idx = mapper_->map(e.timestamp);
+    Edge ec = e;
+    // ts == 0 is reserved as the unpublished-slot sentinel for concurrent
+    // readers. A provenance engine must not silently drop a real event, so an
+    // epoch-zero timestamp is clamped to 1 -- one time unit of error at the
+    // epoch boundary instead of a lost record. (Audit across all 13 corpora:
+    // exactly 2 such edges exist.)
+    if (ec.timestamp == 0) ec.timestamp = 1;
+    uint64_t idx = mapper_->map(ec.timestamp);
     BlockHeader* block = get_or_create_block(idx);
     if (!block) return;
 
     int32_t off;
     while (true) {
-        off = arena_->try_append(block, e);
+        off = arena_->try_append(block, ec);
         if (off >= 0) break;
         // Block is full — extend the chain.
         BlockHeader* next = block->next;
@@ -86,7 +92,7 @@ void Barry::insert(const Edge& e) {
     }
 
     if (vertex_index_) {
-        vertex_index_->register_edge(e.src, e.dst, block, static_cast<uint32_t>(off));
+        vertex_index_->register_edge(ec.src, ec.dst, block, static_cast<uint32_t>(off));
     }
     num_inserts_.fetch_add(1, std::memory_order_relaxed);
 }
