@@ -88,4 +88,60 @@ Wal::ReplayStats Wal::replay(const std::string& path, Barry& into, int num_threa
     return st;
 }
 
+AsyncWal::AsyncWal(const std::string& path, size_t sync_every_bytes)
+    : inner_(path, sync_every_bytes) {
+    if (inner_.ok()) writer_ = std::thread(&AsyncWal::writer_loop, this);
+}
+
+AsyncWal::~AsyncWal() {
+    {
+        std::lock_guard<std::mutex> g(mu_);
+        stop_ = true;
+    }
+    cv_writer_.notify_one();
+    if (writer_.joinable()) writer_.join();
+}
+
+void AsyncWal::append(const Edge* edges, size_t n) {
+    if (!inner_.ok() || n == 0) return;
+    std::vector<Edge> copy(edges, edges + n);
+    std::unique_lock<std::mutex> lk(mu_);
+    // Backpressure: an unbounded queue would hide a disk that cannot keep up and
+    // then lose everything queued on a crash. Bounding it makes the overload
+    // case visible as throughput instead of as silent risk.
+    cv_producer_.wait(lk, [&] { return queued_bytes_ < kMaxQueuedBytes || io_error_; });
+    if (io_error_) return;
+    queued_bytes_ += copy.size() * sizeof(Edge);
+    q_.push_back(std::move(copy));
+    lk.unlock();
+    cv_writer_.notify_one();
+}
+
+bool AsyncWal::sync() {
+    std::unique_lock<std::mutex> lk(mu_);
+    cv_producer_.wait(lk, [&] { return q_.empty() || io_error_; });
+    if (io_error_) return false;
+    lk.unlock();
+    return inner_.sync();
+}
+
+void AsyncWal::writer_loop() {
+    for (;;) {
+        std::unique_lock<std::mutex> lk(mu_);
+        cv_writer_.wait(lk, [&] { return stop_ || !q_.empty(); });
+        if (q_.empty() && stop_) break;
+        std::vector<Edge> batch = std::move(q_.front());
+        q_.pop_front();
+        queued_bytes_ -= batch.size() * sizeof(Edge);
+        lk.unlock();
+        cv_producer_.notify_all();
+        if (!inner_.append(batch.data(), batch.size())) {
+            std::lock_guard<std::mutex> g(mu_);
+            io_error_ = true;
+            cv_producer_.notify_all();
+        }
+    }
+    inner_.sync();
+}
+
 }  // namespace barry

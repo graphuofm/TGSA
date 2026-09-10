@@ -1,8 +1,13 @@
 #pragma once
 #include "edge.hpp"
+#include <condition_variable>
 #include <cstdint>
 #include <cstddef>
+#include <deque>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <vector>
 
 namespace barry {
 
@@ -62,6 +67,41 @@ private:
     size_t bytes_ = 0;
     size_t unsynced_ = 0;
     size_t sync_every_;
+};
+
+// Asynchronous front-end: append() copies the batch onto a queue and returns;
+// a writer thread drains the queue through the underlying Wal. Ingestion no
+// longer waits on the disk -- the durability point moves from "append returned"
+// to "sync() returned", which is the contract a streaming collector actually
+// wants (ack after group commit, ingest at memory speed).
+class AsyncWal {
+public:
+    explicit AsyncWal(const std::string& path, size_t sync_every_bytes = 4u << 20);
+    ~AsyncWal();
+
+    AsyncWal(const AsyncWal&) = delete;
+    AsyncWal& operator=(const AsyncWal&) = delete;
+
+    bool ok() const noexcept { return inner_.ok(); }
+
+    // Copies the batch and returns immediately. Durable only after sync().
+    void append(const Edge* edges, size_t n);
+
+    // Drain the queue, then fsync. On return every prior append is durable.
+    bool sync();
+
+private:
+    void writer_loop();
+
+    Wal inner_;
+    std::thread writer_;
+    std::mutex mu_;
+    std::condition_variable cv_producer_, cv_writer_;
+    std::deque<std::vector<Edge>> q_;
+    size_t queued_bytes_ = 0;
+    bool stop_ = false;
+    bool io_error_ = false;
+    static constexpr size_t kMaxQueuedBytes = 64u << 20;   // backpressure bound
 };
 
 }  // namespace barry

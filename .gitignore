@@ -17,3 +17,4 @@ docs/*.pdf
 docs/*.txt
 NEXT_SESSION.md
 usenix_cfp.txt
+.claude/
