@@ -359,9 +359,17 @@ folding it in would make every batch pay $O(E)$ and forfeit streaming
 (we measured exactly this failure: an early build that compacted per
 batch ingested at $11$K events/s; moved off the path, $3.28$M).
 Queries are correct in either state---compaction changes cost, not
-answers. Barry's contract is thus: \emph{always appendable, always
-correct; fast expansion after a compaction that can be scheduled
-whenever convenient.}
+answers---and they are correct \emph{during} concurrent ingestion:
+writers publish each edge by storing its timestamp last with release
+semantics (zeroed pages make an unpublished slot detectable), readers
+acquire-load and skip unpublished slots, and the sorted-bucket flag is
+cleared before the count is bumped so that observing the flag proves
+the loaded count covers only the verified prefix. A multi-writer,
+multi-reader stress test observes zero violations across thousands of
+concurrent range and taint queries, with the final state equal to a
+serially built engine. Barry's contract is thus: \emph{always
+appendable, always correct---including mid-ingest; fast expansion
+after a compaction that can be scheduled whenever convenient.}
 
 \subsection{Taint semantics}
 \begin{theorem}[Sparse taint correctness]
