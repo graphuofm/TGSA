@@ -9,6 +9,8 @@ rm -rf "$OUT"; mkdir -p "$OUT"
 git archive HEAD | tar -x -C "$OUT"
 # identity-bearing content that must not ship anonymously
 rm -rf "$OUT/docs/email_to_zephyr.txt" "$OUT/paper" "$OUT/.claude" 2>/dev/null || true
+# this script itself carries the identity pattern list; it must not ship
+rm -f "$OUT/scripts/make_anon_artifact.sh"
 # scrub identity strings from EVERY text file (no extension whitelist -- the
 # whitelist approach missed .json and .py on its first run)
 grep -rIl "jding\|[Jj]iacheng\|memphis\|[Zz]ephyr" "$OUT" 2>/dev/null | while read -r f; do
