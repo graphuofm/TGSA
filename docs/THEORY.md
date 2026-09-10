@@ -64,20 +64,24 @@ This is the "zero-index" claim in its defensible form: sparsity is absorbed by t
 MMU, not by a data structure Barry maintains.
 
 ### Theorem 3 (Adaptive shift bound — Algorithm 2)
-*`auto_select_shift_from_stats(E, t_min, t_max, target)` returns `s` such that the
-mean occupancy `E / W` lies in `[target/2, 2·target)`, whenever any shift can
-achieve occupancy ≥ `target/2`.*
+*For `E ≥ 2·target` and non-degenerate span, `auto_select_shift_from_stats(E, t_min,
+t_max, target)` returns `s` such that the mean occupancy `μ = E / W`, with
+`W = ⌈S / 2^s⌉` non-degenerate windows, satisfies `target/2 ≤ μ < 4·target`.*
 
-**Proof.** Occupancy `μ(s) = E · 2^s / S` is monotone increasing in `s` and exactly
-doubles per unit step. The selector takes the smallest `s` with `μ(s) ≥ target`
-(clamped to the representable range). By minimality `μ(s−1) < target`, so
-`μ(s) = 2·μ(s−1) < 2·target`; by the stopping rule `μ(s) ≥ target ≥ target/2`.
-If no shift reaches `target/2` the clamp returns the max shift, the densest
-achievable packing. ∎
+**Proof.** The implementation computes `D = ⌊E/target⌋` desired windows, a desired
+window size `w = ⌊S/D⌋`, and returns the smallest `s` with `2^s ≥ w`, i.e.
+`2^s ∈ [w, 2w)`. Then `W = ⌈S/2^s⌉` obeys `W > S/(2w) ≥ D/2` and
+`W ≤ S/w + 1 ≤ D + 1`. Hence
+`μ = E/W ≥ E/(D+1) ≥ E/(E/target + 1) = target·E/(E+target) ≥ target/2` for
+`E ≥ target`, and `μ < E/(D/2) = 2E/⌊E/target⌋ ≤ 2·target·E/(E−target) < 4·target`
+for `E ≥ 2·target`. ∎
 
-Doubling is the price of shift-based addressing: window size must be a power of
-two, so occupancy cannot be tuned finer than a factor 2. That factor is the
-worst-case constant behind every `W_range` term in §1.
+The two factors of two are honest artifacts of the design: one from rounding the
+window size up to a power of two (shift addressing admits nothing finer), one
+from the ceiling on the window count. A counterexample shows the bound is not
+`2·target`: `E = 190, target = 64` yields `D = 2` and can land all edges in a
+single window, `μ = 190 > 128`. The paper must quote `[target/2, 4·target)`;
+quoting a tighter bound would misstate the code.
 
 ### Theorem 4 (Sparse taint correctness)
 *`forward_taint(v₀, t₀, t_hi)` returns exactly the set
