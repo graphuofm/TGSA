@@ -74,6 +74,10 @@ target_link_libraries(barry_provenance_query PRIVATE barry)
 add_executable(barry_lanl_to_bin tools/lanl_to_bin.cpp)
 target_link_libraries(barry_lanl_to_bin PRIVATE barry)
 
+add_executable(barry_soak tools/soak_concurrent.cpp)
+target_link_libraries(barry_soak PRIVATE barry)
+target_include_directories(barry_soak PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
+
 # benchmarks
 foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read)
     add_executable(bench_${B} benchmark/bench_${B}.cpp)
