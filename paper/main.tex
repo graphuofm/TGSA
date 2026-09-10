@@ -545,7 +545,15 @@ version-chain locality, hopscotch layouts) do not arise in an
 append-only event stream, and their query class (snapshot + predicate)
 is disjoint from time-respecting reachability. The two lines are
 complementary: an entity's property history is a TVA problem; what the
-entity causally touched is Barry's.
+entity causally touched is Barry's. The complementarity is measurable:
+driving TVA's released artifact with an event stream---where every
+repeated $(src,dst)$ contact becomes another link in one edge's
+version chain, the structure its hopscotch layout must keep within
+bounded offsets---did not finish ingesting a 7.8M-event graph in 90
+minutes at 41.6\,GB RSS, where Barry ingests it in 0.6\,s at
+0.66\,GB; conversely, Barry's weakest operation, the full-graph
+as-of snapshot, is precisely what TVA's version-skipping is built to
+serve. Neither subsumes the other; they store different things.
 \textbf{Structural dynamic graph stores}~\cite{wheatman2021ppcsr,
 shen2026dcsr, dhulipala2019aspen, fuchs2023sortledton} optimize the
 entity axis and treat time as payload; \S\ref{sec:eval-e13} bounds
