@@ -61,3 +61,41 @@ Three consequences, each a paper claim:
     --trial 0 --output e14.csv
 ```
 Converter: tools/tc_cdm_to_bin.cpp; ground truth: data/tc_cadets_groundtruth.tsv.
+
+## Full sweep (2026-09-10): CPR windows 1s-24h, random x3 seeds
+
+```
+attack policy  param       reduction  chain_recall union_frac
+1      cpr     1e+09       5.01       0.68         0.0026
+1      cpr     6e+10       5.29       0.68         0.0025
+1      cpr     6e+11       5.53       0.68         0.0023
+1      cpr     3.6e+12     5.59       0.68         0.0023
+1      cpr     8.64e+13    5.60       0.68         0.0022
+1      random  90          10.00      0.47         0.0000
+1      random  90          10.01      0.47         0.0000
+1      random  90          10.01      0.47         0.0000
+2      cpr     1e+09       5.01       0.92         0.0145
+2      cpr     6e+10       5.29       0.92         0.0130
+2      cpr     6e+11       5.53       0.92         0.0127
+2      cpr     3.6e+12     5.59       0.92         0.0125
+2      cpr     8.64e+13    5.60       0.92         0.0123
+2      random  90          10.00      0.92         0.0000
+2      random  90          10.01      0.92         0.0000
+2      random  90          10.01      0.92         0.0000
+3      cpr     1e+09       5.01       1.00         0.0144
+3      cpr     6e+10       5.29       1.00         0.0129
+3      cpr     6e+11       5.53       1.00         0.0126
+3      cpr     3.6e+12     5.59       1.00         0.0124
+3      cpr     8.64e+13    5.60       1.00         0.0122
+3      random  90          10.00      0.80         0.0000
+3      random  90          10.01      0.80         0.0000
+3      random  90          10.01      0.80         0.0000
+4      cpr     1e+09       5.01       0.89         0.0144
+4      cpr     6e+10       5.29       0.89         0.0129
+4      cpr     6e+11       5.53       0.89         0.0126
+4      cpr     3.6e+12     5.59       0.67         0.0124
+4      cpr     8.64e+13    5.60       0.67         0.0122
+4      random  90          10.00      0.56         0.0000
+4      random  90          10.01      0.78         0.0000
+4      random  90          10.01      0.56         0.0000
+```

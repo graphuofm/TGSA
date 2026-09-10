@@ -1,4 +1,4 @@
-% Barry: A Temporal-First Storage Engine for Provenance Graphs
+% Barry: A Streaming Storage Engine for Temporal Graphs
 % Target: PVLDB Regular Research. Compiles standalone with article class;
 % drop into the vldb class for submission.
 \documentclass[11pt,letterpaper,twocolumn]{article}
@@ -18,7 +18,7 @@
 \setlist{nosep}
 \newtheorem{theorem}{Theorem}
 
-\title{\textbf{Barry: A Temporal-First Storage Engine\\for Provenance Graphs}}
+\title{\textbf{Barry: A Streaming Storage Engine\\for Temporal Graphs}}
 \author{Anonymous Submission}
 \date{}
 
@@ -27,40 +27,46 @@
 
 % =====================================================================
 \begin{abstract}
-Provenance graphs---the causal record of system audit events, and
-increasingly of LLM-agent execution traces---are queried along time and
-causality: \emph{what did this alert descend from}, \emph{what did this
-compromise touch}, \emph{what held at time $T$}. Existing engines are
-structurally mismatched to this workload. Entity-keyed graph stores
-answer these queries by structural scan plus per-edge filtering;
-column stores answer range filters well but pay a full join per
-traversal hop; statically time-sorted structures answer both but
-cannot ingest a stream.
+Temporal graphs whose edges are immutable timestamped events---system
+audit streams, agent execution traces, interaction logs---are ingested
+as never-ending, near-sorted streams; queried along time and causality
+(time-respecting reachability, point-in-time reconstruction, windowed
+aggregation); and retained under time-based policies. No deployed
+storage layer serves this combination: entity-keyed dynamic graph
+stores demote the timestamp to a payload attribute, columnar and LSM
+engines answer range filters well but pay a join per traversal hop,
+and statically time-sorted layouts win queries while being unable to
+ingest at all.
 
-We first quantify what that mismatch costs today. A single ordinary
-host emits $80{,}021$ provenance-relevant events per second under
-routine load, while published provenance corpora record roughly $10^2$
-per second per host---an implied $783\times$ reduction applied before
-anything is stored. On 1.05 billion real enterprise events with 749
-labelled red-team actions, we show that causality-preserving reduction
-at $131\times$ silently deletes \textbf{44\% of the attacker's own
-evidence} while node-level recall---the metric the field validates
-reduction with---remains \textbf{97.7\%, unchanged across the entire
-reduction range}. The standard certification of ``safe'' reduction
-does not measure what an investigation needs.
+Barry keys storage on time itself. Each timestamp maps to a virtual
+address by a constant-time shift, and the operating system's demand
+paging absorbs temporal sparsity, so no index is built or maintained.
+Every property the workload needs then falls out of the layout:
+ingestion is a lock-free $O(1)$ append, independent of arrival order;
+retention is a page release over an address prefix; compaction is
+explicit and off the ingest path---queries stay correct without it,
+and stay correct \emph{during} concurrent ingestion via a per-slot
+release-publication protocol, soaked at a billion edges with zero
+violations; durability follows from state being a pure function of the
+edge multiset, so recovery is re-ingestion.
 
-Barry is a storage engine built so that this trade-off need not be
-taken blindly. It maps each timestamp to a virtual address by a
-constant-time shift, letting demand paging absorb sparsity: ingestion
-is a lock-free $O(1)$ append that sustains $3.28$M~events/s of
-continuous arrival, retention is a page-release over a time prefix,
-and time-respecting traversal runs $150$--$700\times$ faster than a
-columnar engine on identical data with element-wise identical answers.
-Against a statically time-sorted CSR---which is $2.7\times$ faster per
-traversal and cannot ingest at all---Barry never stops being
-queryable: queries served during the CSR's mandatory rebuild silently
-lose $33.2\%$ of the true answer on average and up to $99.5\%$. All
-749 real red-team alerts are causally traced in $46.5$ seconds total.
+Barry sustains 3.3--6.8M~events/s of continuous ingestion (4.2M
+durable, at the disk's sequential bandwidth) while answering
+time-respecting traversal $150$--$700\times$ faster than a columnar
+engine on identical data with element-wise identical answers. Against
+a statically time-sorted CSR it concedes $2.7\times$ on traversal
+latency---and never stops being queryable, where queries served
+during the CSR's mandatory rebuild silently lose $33\%$ of the true
+answer. At the storage layer, classic graph algorithms cost
+$1.4$--$2.1\times$ the static topology optimum; time-windowed
+traversal at provenance-scale degrees runs $104\times$ ahead of
+arrival-order adjacency. The driving workload is provenance: on 1.05
+billion real enterprise events with 749 labelled red-team actions and
+on DARPA TC whole-system traces, Barry traces every real alert in
+seconds total and reconstructs full attack chains at microsecond
+latency---while our measurements show the lossy reduction today's
+pipelines rely on silently destroys 44\% of attack evidence, the case
+for the lossless streaming retention this engine makes affordable.
 \end{abstract}
 
 % =====================================================================
@@ -135,31 +141,39 @@ time-respecting traversal that touches only the windows a query names.
 
 \paragraph{Contributions.}
 \begin{enumerate}[leftmargin=1.2em]
-\item \textbf{A workload characterization with measured rates}
-  (\S\ref{sec:workload}): per-host provenance event rates, the implied
-  reduction ratio in today's pipelines, and the storage arithmetic
-  that forces the retention trade-off.
-\item \textbf{The first measurement of what log reduction costs an
-  investigation} (\S\ref{sec:evidence}): attack-edge survival, a
-  metric under which $131\times$ CPR loses 44\% of red-team evidence
-  while node-level recall stays fixed at 97.7\%; and an
-  investigation-horizon analysis showing no operating point is both
-  accurate and actionable.
-\item \textbf{A temporal-first storage engine} (\S\ref{sec:design})
-  with formal guarantees: constant-time addressing, a physical-space
-  bound under demand paging, an adaptive granularity bound, sparse
-  taint correctness, and lock-free ingestion (proofs in the artifact).
-\item \textbf{A layered evaluation} (\S\ref{sec:eval}) on 13 datasets
-  and 7 baselines, including element-wise answer-verified comparisons
-  against DuckDB and a time-sorted CSR, a rebuild-versus-stream
-  experiment, a full-corpus alert sweep against real ground truth, and
-  a storage-read decomposition that isolates the storage engine's
-  share of classic graph algorithms.
+\item \textbf{A streaming temporal graph storage engine}
+  (\S\ref{sec:design}) whose primary key is time: constant-time
+  addressing with a physical-space bound under demand paging, adaptive
+  granularity selection, lock-free order-independent ingestion, a
+  release-publication protocol making queries correct during
+  concurrent ingestion, an explicit-compaction contract that keeps the
+  ingest path $O(1)$, address-prefix retention, and durability by
+  recovery-as-re-ingestion---each backed by a theorem in the artifact.
+\item \textbf{A layered evaluation} (\S\ref{sec:eval}): element-wise
+  answer-verified comparisons against DuckDB and three CSR layouts, a
+  rebuild-versus-stream experiment that measures what static
+  structures silently lose, a storage-read decomposition isolating the
+  engine's share of classic graph algorithms, and a billion-edge
+  concurrency soak---on 14 datasets and 7 baselines.
+\item \textbf{A workload characterization with measured stakes}
+  (\S\ref{sec:workload}): per-host event rates across workload
+  classes, the reduction ratio current pipelines silently apply, and
+  ground-truth measurements---attack-edge survival under reduction,
+  full-chain recovery on DARPA TC---establishing that lossless
+  streaming retention is both necessary and, with this engine,
+  affordable at interactive latency.
 \end{enumerate}
 
 % =====================================================================
-\section{The Provenance Workload}
+\section{The Driving Workload: Temporal Event Streams}
 \label{sec:workload}
+
+An event-stream temporal graph is any graph whose edges are immutable
+timestamped occurrences: audit events, agent tool calls, messages,
+transactions, telemetry. We characterize the most demanding instance
+we know of---whole-system provenance---because it stresses every axis
+at once: rate, retention, query class, and the cost of getting
+retention wrong. The engine is not specific to it.
 
 \subsection{Event rates, measured}
 We instrumented an ordinary 20-core server (syscall counts via strace,
@@ -203,8 +217,7 @@ open for hours and events straggle. Structures that depend on global
 order (sorted arrays, PMAs, LSM levels) pay for arrival order; a
 computed address does not.
 
-% =====================================================================
-\section{What Reduction Destroys}
+\subsection{The stakes, measured on ground truth}
 \label{sec:evidence}
 
 We use the LANL Comprehensive Multi-Source Cyber-Security Events
@@ -215,7 +228,7 @@ truth---to our knowledge the largest public corpus pairing raw events
 with attacker labels. All 749 resolve into the graph's identifier
 space; 706 match a stored authentication edge exactly.
 
-\subsection{Attack-edge survival vs.\ node-level recall}
+\subsubsection{Attack-edge survival vs.\ node-level recall}
 \label{sec:evidence-survival}
 We apply causality-preserving reduction at operating windows from 60
 seconds to 24 hours and ask two questions of the reduced log.
@@ -242,24 +255,17 @@ random 90\%     & 10.00$\times$  & 60/699 (8.6\%)    & 58.4\% \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:e8} is the paper's central measurement. Across the
-entire CPR range---$1\times$ to $131\times$---node-level recall is
-constant at 97.7\%: taint over-approximates enough that compromised
-hosts stay reachable through surviving paths. Over the same range the
-red team's own edges fall from 100\% to 55.9\% survival.
-\textbf{Forty-four percent of the attacker's evidence is deleted while
-the metric used to certify reduction as safe reports no change
-whatsoever.} Systems advertising three-orders-of-magnitude reduction
-at ``99.99\% accuracy''~\cite{zhang2025tapas} are reporting detection
-accuracy; this experiment shows that number cannot certify
-investigative fidelity, because the two metrics decouple completely.
+Across the entire CPR range---$1\times$ to $131\times$---node-level
+recall is constant at 97.7\%, while the red team's own edges fall
+from 100\% to 55.9\% survival: \textbf{44\% of the attacker's
+evidence is deleted while the metric used to certify reduction as
+safe~\cite{zhang2025tapas} reports no change whatsoever}. This is
+the retention trade-off current pipelines take blindly, and the
+workload-side case for an engine that makes lossless streaming
+retention affordable; a full treatment of the security implications
+is developed in the measurement study shipped with the artifact.
 
-Methodologically this finding was nearly missed: a pilot scored by
-node recall concluded $8.4\times$ reduction was free. Node recall is
-not wrong; it is blind on this axis. We propose attack-edge survival
-as the metric reduction schemes must additionally report.
-
-\subsection{No usable investigation horizon}
+\subsubsection{No usable investigation horizon}
 \label{sec:evidence-window}
 Forward taint from the first red-team compromise, sweeping the
 horizon (Table~\ref{tab:e8b}): at a horizon an analyst would accept
@@ -292,30 +298,21 @@ Horizon & Tainted & \% of net & Recall & Latency \\
 \end{tabular}
 \end{table}
 
-\subsection{Cross-corpus: granularity sets both the danger and the ceiling}
+\subsubsection{Cross-corpus, briefly}
 \label{sec:evidence-cross}
-Repeating the protocol on DARPA TC E3 CADETS---22.5M information-flow
-edges over 2.86M system-level entities, against the four nation-state
-attacks of the official ground-truth report---completes the picture
-from the opposite end of the granularity spectrum. Forward taint from
-the first exploit source recovers the entire documented chain (nginx
-worker, implant drop, privilege escalation, C2, injection target) in
-causal order within an impact set of 265 entities, \emph{0.0093\%} of
-the graph; the bidirectional investigation primitive recovers
-68--100\% of chain entities per attack at union sizes of
-0.3--1.6\%---actionable, where LANL's host-granularity taint
-implicates 15--29\% of the network. On this fine-grained log CPR's
-reduction tops out at $5.6\times$ (against $131\times$ on LANL): the
-massive apparent redundancy of the coarse corpus \emph{is} causal
-detail, miscounted. At that ceiling CPR deletes nothing from
-first-contact attacks---but erases a third of the chain of the one
-attack that \emph{reused} C2 infrastructure from earlier intrusions,
-because repeat contact is precisely what it deduplicates. Reuse is how
-analysts link intrusions into campaigns; CPR removes that link
-preferentially. Random loss inverts the geometry: 90\% dropping
-leaves coarse LANL over-connected (58\% recall) but shatters
-fine-grained chains (47--80\%), each hop riding on few edges. The
-better the collection, the more lossless retention matters.
+The protocol repeats on DARPA TC E3 CADETS (22.5M information-flow
+edges over 2.86M system-level entities, four report-documented
+attacks resolved to node ids). Granularity flips every constant:
+bidirectional tracing recovers 68--100\% of each attack chain within
+impact sets of 0.3--1.6\% of the graph (against 15--29\% of the
+network at LANL's host granularity); CPR's achievable reduction drops
+from $131\times$ to a $5.6\times$ ceiling---coarse logs' apparent
+redundancy \emph{is} causal detail---and at that ceiling it erases a
+third of the chain of precisely the attack that reused C2
+infrastructure from earlier intrusions. The engine-relevant constant
+is that every one of these measurements is a time-respecting
+traversal answered in microseconds to milliseconds
+(\S\ref{sec:eval}).
 
 % =====================================================================
 \section{Design}
@@ -592,17 +589,24 @@ engineering, not design, gaps.
 
 % =====================================================================
 \section{Conclusion}
-Provenance is a workload whose queries, arrival pattern, and
-retention semantics are all functions of time---served today by
-engines keyed on everything but. The cost of that mismatch is now
-measured: evidence destroyed under a metric that cannot see it, and
-no investigation horizon that is both accurate and actionable.
-Keying storage on time collapses the machinery: the index becomes a
-shift, ingestion an append, retention a page release, and the
-canonical queries run at interactive latency against a stream that
-never stops. The remaining trade---bounded concessions on the
-structural axis, an explicit compaction for peak expansion
-speed---is quantified here at the storage layer, where it belongs.
+Keying graph storage on time collapses the machinery a temporal event
+stream otherwise requires: the index becomes a shift, ingestion a
+lock-free append indifferent to arrival order, retention a page
+release, durability a replay, and time-respecting traversal an
+address computation---correct even mid-ingest, at a measured
+$150$--$700\times$ over columnar layouts and $104\times$ over
+arrival-order adjacency at realistic degrees. The concessions are
+bounded and priced: $2.7\times$ traversal latency against a static
+structure that cannot ingest and silently loses a third of its
+answers while rebuilding, and $1.4$--$2.1\times$ at the storage layer
+on structure-only analytics. Provenance supplied the stakes---on
+real ground truth, the retention this engine makes affordable is the
+difference between evidence that survives and evidence silently
+destroyed---and the same contract serves every workload whose edges
+are events: agent traces, telemetry, interaction streams. The
+security semantics that these measurements open---recovery under
+known contamination, reduction policies scored by evidence
+survival---are the subject of work this engine now makes possible.
 
 \bibliographystyle{plainnat}
 \bibliography{refs}
