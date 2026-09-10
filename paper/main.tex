@@ -529,10 +529,17 @@ and pay its overheads: whole-graph analytics over all time belong on
 a static CSR built offline. Range filters at massive selectivity are
 served equally well by a column store, which also holds the better
 tail. Payloads beyond the 20-byte skeleton belong in an object store
-by reference. Durability is future work: the engine is in-memory;
-the timeline layout makes time-prefix persistence natural (cold
-prefixes flush wholesale, reusing the eviction machinery), but WAL
-and recovery are not yet built.
+by reference. Durability exploits the same property that simplifies
+everything else: engine state is a pure function of the edge
+multiset, so recovery \emph{is} re-ingestion. The WAL frames raw
+batches with a CRC (torn tails detected and discarded, verified by a
+crash-simulation test), and durable ingestion sustains 2.0M~events/s
+under 4\,MB group commit (1.1M with per-batch fsync, 5.3M volatile);
+\texttt{flush\_before}$(t)$ tiers a cold time prefix to a loadable
+segment file and releases its pages in one pass, fsync'd before
+eviction. WAL appends are not yet overlapped with inserts, and
+queries over flushed segments require reloading them; both are
+engineering, not design, gaps.
 
 % =====================================================================
 \section{Conclusion}

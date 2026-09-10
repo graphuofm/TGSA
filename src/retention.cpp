@@ -2,6 +2,9 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdio>
+#include <fcntl.h>
+#include <unistd.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #include <vector>
@@ -84,6 +87,46 @@ Barry::EvictStats Barry::evict_before(uint64_t t) {
     st.seconds   = now_sec() - t0;
     st.rss_after = Timeline::process_rss_bytes();
     return st;
+}
+
+Barry::FlushStats Barry::flush_before(uint64_t t, const std::string& path) {
+    FlushStats fs;
+    const double t0 = now_sec();
+    if (t <= cfg_.t_min) { fs.seconds = now_sec() - t0; return fs; }
+
+    FILE* f = std::fopen(path.c_str(), "wb");
+    if (!f) { std::perror(path.c_str()); fs.seconds = now_sec() - t0; return fs; }
+
+    uint64_t idx_cut = std::min<uint64_t>(mapper_->map(t), timeline_->num_slots());
+    std::vector<Edge> buf;
+    buf.reserve(1u << 16);
+    for (uint64_t idx = 0; idx < idx_cut; ++idx) {
+        for (BlockHeader* b = timeline_->load(idx); b; b = b->next) {
+            uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
+            const Edge* arr = edges_of(b);
+            for (uint32_t i = 0; i < cnt; ++i) {
+                // The boundary window can hold edges at or past t; those stay hot.
+                if (arr[i].timestamp < t) buf.push_back(arr[i]);
+            }
+            if (buf.size() >= (1u << 16)) {
+                std::fwrite(buf.data(), sizeof(Edge), buf.size(), f);
+                fs.edges_flushed += buf.size();
+                buf.clear();
+            }
+        }
+    }
+    if (!buf.empty()) {
+        std::fwrite(buf.data(), sizeof(Edge), buf.size(), f);
+        fs.edges_flushed += buf.size();
+    }
+    fs.bytes_written = fs.edges_flushed * sizeof(Edge);
+    ::fflush(f);
+    ::fsync(::fileno(f));       // segment durable BEFORE the pages are released
+    std::fclose(f);
+
+    fs.evict = evict_before(t);
+    fs.seconds = now_sec() - t0;
+    return fs;
 }
 
 }  // namespace barry

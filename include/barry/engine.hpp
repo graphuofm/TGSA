@@ -6,6 +6,7 @@
 #include "timeline.hpp"
 #include "vertex_index.hpp"
 #include <atomic>
+#include <string>
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -102,6 +103,21 @@ public:
     EvictStats evict_before(uint64_t t);
 
     uint64_t min_valid_time() const noexcept { return min_valid_time_; }
+
+    // Persist every edge with timestamp < t to `path` (packed Edge records,
+    // Barry's standard .bin format -- the segment is itself loadable), then
+    // release the prefix with evict_before(t). Cold history therefore tiers to
+    // disk in one pass; a crash between write and evict leaves duplicates on
+    // disk, which replay tolerates because state is a function of the multiset
+    // ONLY up to multiplicity-insensitive queries -- callers who care sync the
+    // segment before evicting, which this does (fsync before evict).
+    struct FlushStats {
+        size_t edges_flushed = 0;
+        size_t bytes_written = 0;
+        EvictStats evict;
+        double seconds = 0.0;
+    };
+    FlushStats flush_before(uint64_t t, const std::string& path);
 
     // Introspection ----------------------------------------------------
     struct Stats {

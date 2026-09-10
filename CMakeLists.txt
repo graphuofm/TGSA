@@ -31,6 +31,7 @@ add_library(barry STATIC
     src/timeline.cpp
     src/vertex_index.cpp
     src/retention.cpp
+    src/wal.cpp
     src/engine.cpp
     src/algorithms/bfs.cpp
     src/algorithms/pagerank.cpp
@@ -43,7 +44,7 @@ add_library(barry STATIC
     src/algorithms/kcore.cpp
     src/algorithms/taint.cpp
 )
-target_link_libraries(barry PUBLIC Threads::Threads)
+target_link_libraries(barry PUBLIC Threads::Threads z)
 if(OpenMP_CXX_FOUND)
     target_link_libraries(barry PUBLIC OpenMP::OpenMP_CXX)
     target_compile_definitions(barry PUBLIC BARRY_HAVE_OPENMP)
@@ -118,3 +119,7 @@ add_test(NAME engine COMMAND test_engine)
 add_executable(test_taint tests/test_taint.cpp)
 target_link_libraries(test_taint PRIVATE barry)
 add_test(NAME taint COMMAND test_taint)
+
+add_executable(test_persistence tests/test_persistence.cpp)
+target_link_libraries(test_persistence PRIVATE barry)
+add_test(NAME persistence COMMAND test_persistence)
