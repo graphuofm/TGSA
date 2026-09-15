@@ -60,6 +60,20 @@ public:
     // Returns the slot offset on success, -1 if the block is full.
     int32_t try_append(BlockHeader* block, const Edge& e);
 
+    // Claim up to `n` consecutive slots with a single counter bump and fill
+    // them. Returns how many were placed (0 if the block was already full) and
+    // writes the first slot's offset to *first_off.
+    //
+    // This exists because a time-ordered stream is the worst case for the
+    // per-edge path: every writer is appending into the same window at the same
+    // moment, so one counter and one cache line serialise the whole engine. The
+    // measurement that showed it was the disorder sweep, where shuffling
+    // arrivals made ingestion *faster* by spreading writers across windows.
+    // Consecutive arrivals usually share a window, so one bump per run replaces
+    // one per edge.
+    uint32_t try_append_run(BlockHeader* block, const Edge* edges, uint32_t n,
+                            int32_t* first_off);
+
     size_t bytes_used()       const { return bump_.load(std::memory_order_relaxed); }
     size_t bytes_reserved()   const { return reserved_; }
     size_t blocks_allocated() const { return num_blocks_.load(std::memory_order_relaxed); }

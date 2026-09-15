@@ -138,7 +138,11 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
         // with every prior bump's release, and each bump was preceded by a
         // clear -- so a sorted flag proves the loaded count covers only the
         // verified prefix, and binary search over it is sound.
-        b->flags.store(0, std::memory_order_release);
+        // Same reasoning as Arena::try_append: the release matters only on the
+        // set-to-clear transition, and an already-clear flag cannot be seen as
+        // set, so skipping the store removes a write to a contended line.
+        if (b->flags.load(std::memory_order_relaxed) != 0)
+            b->flags.store(0, std::memory_order_release);
         uint32_t pos = b->count.fetch_add(1, std::memory_order_acq_rel);
         if (pos < b->capacity) {
             EdgeRef* r = &refs_of(b)[pos];

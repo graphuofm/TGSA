@@ -104,14 +104,100 @@ void Barry::insert(const Edge& e) {
     num_inserts_.fetch_add(1, std::memory_order_relaxed);
 }
 
+// Insert a contiguous span, claiming slots a run at a time.
+//
+// Consecutive arrivals in an event stream nearly always share a window, so the
+// whole run can be placed with one counter bump instead of one per edge. That
+// matters because a time-ordered stream is precisely the case where every
+// writer thread is appending into the same window at the same instant, making
+// one block counter the engine's serialisation point.
+void Barry::insert_span(const Edge* edges, size_t lo, size_t hi) {
+    size_t i = lo;
+    while (i < hi) {
+        const uint64_t ts0 = edges[i].timestamp ? edges[i].timestamp : uint64_t{1};
+        const uint64_t idx = mapper_->map(ts0);
+
+        // Extend the run while the window is unchanged.
+        size_t j = i + 1;
+        while (j < hi) {
+            const uint64_t ts = edges[j].timestamp ? edges[j].timestamp : uint64_t{1};
+            if (mapper_->map(ts) != idx) break;
+            ++j;
+        }
+
+        size_t placed = 0;
+        const size_t run = j - i;
+        BlockHeader* block = get_or_create_block(idx);
+        if (!block) {
+            edges_dropped_.fetch_add(run, std::memory_order_relaxed);
+            i = j;
+            continue;
+        }
+
+        while (placed < run) {
+            const uint32_t want = static_cast<uint32_t>(
+                std::min<size_t>(run - placed, 0xFFFFu));
+            int32_t first = 0;
+            const uint32_t took = arena_->try_append_run(block, edges + i + placed,
+                                                         want, &first);
+            if (took > 0) {
+                if (vertex_index_) {
+                    for (uint32_t k = 0; k < took; ++k) {
+                        const Edge& e = edges[i + placed + k];
+                        vertex_index_->register_edge(
+                            e.src, e.dst, block, static_cast<uint32_t>(first) + k);
+                    }
+                }
+                placed += took;
+                num_inserts_.fetch_add(took, std::memory_order_relaxed);
+                continue;
+            }
+            // Block full: extend the chain, re-reading the link first so the
+            // common case where another writer already extended it allocates
+            // nothing.
+            BlockHeader* next = __atomic_load_n(&block->next, __ATOMIC_ACQUIRE);
+            if (next == nullptr) {
+                const uint32_t cap = block->capacity * 2;
+                BlockHeader* nb = arena_->allocate_block(cap);
+                if (!nb) {
+                    edges_dropped_.fetch_add(run - placed, std::memory_order_relaxed);
+                    break;
+                }
+                BlockHeader* expected = nullptr;
+                if (__atomic_compare_exchange_n(&block->next, &expected, nb,
+                                                /*weak=*/false,
+                                                __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
+                    next = nb;
+                } else {
+                    arena_->try_return_block(nb, cap);
+                    next = expected;
+                }
+            }
+            block = next;
+        }
+        i = j;
+    }
+}
+
 void Barry::insert_batch(const Edge* edges, size_t n, int num_threads) {
+    // Chunk explicitly rather than letting the parallel-for hand out single
+    // iterations: a run can only be detected inside one thread's contiguous
+    // span, and a static chunk of 1024 keeps that span long enough to matter.
+    constexpr size_t kChunk = 1024;
+    const size_t chunks = (n + kChunk - 1) / kChunk;
 #ifdef BARRY_HAVE_OPENMP
     if (num_threads <= 0) num_threads = omp_get_max_threads();
-    #pragma omp parallel for num_threads(num_threads) schedule(static, 1024)
-    for (size_t i = 0; i < n; ++i) insert(edges[i]);
+    #pragma omp parallel for num_threads(num_threads) schedule(static)
+    for (size_t c = 0; c < chunks; ++c) {
+        const size_t lo = c * kChunk;
+        insert_span(edges, lo, std::min(n, lo + kChunk));
+    }
 #else
     (void)num_threads;
-    for (size_t i = 0; i < n; ++i) insert(edges[i]);
+    for (size_t c = 0; c < chunks; ++c) {
+        const size_t lo = c * kChunk;
+        insert_span(edges, lo, std::min(n, lo + kChunk));
+    }
 #endif
 }
 

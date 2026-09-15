@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <cstring>
+#include <algorithm>
 
 namespace barry {
 
@@ -92,7 +93,15 @@ int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
     // Clear the published flag BEFORE bumping the count (same happens-before
     // argument as the bucket sorted flag: a reader that acquires the bumped
     // count sees this clear, so an observed flag proves a verified prefix).
-    block->flags.store(0, std::memory_order_release);
+    //
+    // Only write when the flag is actually set. The ordering argument needs the
+    // set-to-clear transition to carry release, and it still does; a flag that
+    // is already clear cannot be observed as set, so the store would be pure
+    // cache-line traffic. It is not free: on a time-ordered stream every writer
+    // is appending to the same window, so this line is the most contended in
+    // the engine.
+    if (block->flags.load(std::memory_order_relaxed) != 0)
+        block->flags.store(0, std::memory_order_release);
     uint32_t pos = block->count.fetch_add(1, std::memory_order_acq_rel);
     if (pos >= block->capacity) return -1;
     // Publish protocol: payload first, timestamp last with release. Fresh arena
@@ -104,6 +113,33 @@ int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
     slot->src = e.src; slot->dst = e.dst; slot->weight = e.weight;
     __atomic_store_n(&slot->timestamp, e.timestamp, __ATOMIC_RELEASE);
     return static_cast<int32_t>(pos);
+}
+
+uint32_t Arena::try_append_run(BlockHeader* block, const Edge* edges,
+                               uint32_t n, int32_t* first_off) {
+    if (block->flags.load(std::memory_order_relaxed) != 0)
+        block->flags.store(0, std::memory_order_release);
+
+    // One bump for the whole run. Overshooting capacity is harmless: readers
+    // clamp to min(count, capacity), exactly as the single-edge path already
+    // relies on.
+    uint32_t pos = block->count.fetch_add(n, std::memory_order_acq_rel);
+    if (pos >= block->capacity) return 0;
+
+    const uint32_t take = std::min(n, block->capacity - pos);
+    Edge* arr = edges_of(block);
+    for (uint32_t i = 0; i < take; ++i) {
+        Edge* slot = &arr[pos + i];
+        const Edge& e = edges[i];
+        slot->src = e.src; slot->dst = e.dst; slot->weight = e.weight;
+        // Same publication protocol as try_append: payload first, timestamp
+        // last with release, and ts == 0 reserved for an unclaimed slot.
+        __atomic_store_n(&slot->timestamp,
+                         e.timestamp ? e.timestamp : uint64_t{1},
+                         __ATOMIC_RELEASE);
+    }
+    *first_off = static_cast<int32_t>(pos);
+    return take;
 }
 
 }  // namespace barry

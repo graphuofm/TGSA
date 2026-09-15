@@ -149,6 +149,7 @@ public:
 
 private:
     BlockHeader* get_or_create_block(uint64_t idx);
+    void         insert_span(const Edge* edges, size_t lo, size_t hi);
 
     GraphConfig                  cfg_;
     std::unique_ptr<TimeMapper>  mapper_;
