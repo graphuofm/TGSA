@@ -109,8 +109,7 @@ them later. We quantify both, delimit them with an explicit
 compaction contract---\emph{always appendable, always correct,
 including mid-ingest; fast neighborhood expansion after a compaction
 schedulable at leisure}---and show the concessions are bounded
-constants while the wins are orders of magnitude
-(\cref{sec:eval}).
+constants while the wins are orders of magnitude (\cref{sec:eval}).
 
 We contribute: (i)~a storage design that keys temporal graphs on time,
 with formal guarantees for its addressing, space, granularity
@@ -130,33 +129,56 @@ structure silently loses while rebuilding (\cref{sec:eval}).
 \centering
 \begin{tikzpicture}[
   font=\footnotesize,
-  box/.style={draw, rounded corners=1pt, minimum height=1.4em, inner sep=2pt},
-  lbl/.style={font=\scriptsize\itshape},
-  arr/.style={-{Stealth[length=1.6mm]}, thick}
+  slot/.style={draw, minimum width=0.52cm, minimum height=0.42cm, inner sep=0pt},
+  full/.style={slot, fill=black!16},
+  empty/.style={slot, fill=white},
+  blk/.style={draw, rounded corners=1pt, fill=black!7,
+              minimum width=0.72cm, minimum height=0.34cm, inner sep=1pt,
+              font=\scriptsize},
+  lbl/.style={font=\scriptsize},
+  note/.style={font=\scriptsize\itshape, text=black!62},
+  arr/.style={-{Stealth[length=1.3mm]}, thin}
 ]
-\node[box, minimum width=0.92\columnwidth, fill=black!4] (tl) at (0,0)
-  {Timeline: mmap'd slot array, $idx = (T - T_0) \gg S$};
-\node[lbl, anchor=north west] at ($(tl.south west)+(0.05,-0.02)$)
-  {untouched windows $=$ unmapped pages $=$ 0 bytes};
-\node[box, fill=black!8] (b1) at (-2.5,-1.35) {block};
-\node[box, fill=black!8] (b2) at (-1.35,-1.35) {block};
-\node[box, fill=black!8] (b3) at (0.6,-1.35) {block};
-\node[box, fill=black!8] (b4) at (2.45,-1.35) {block};
-\draw[arr] ($(tl.south)+(-2.5,0)$) -- (b1);
-\draw[arr] ($(tl.south)+(-0.7,0)$) -- (b2);
-\draw[arr] ($(tl.south)+(0.6,0)$) -- (b3);
-\draw[arr] ($(tl.south)+(2.45,0)$) -- (b4);
-\draw[arr] (b1) -- (b2) node[midway, above, lbl] {chain};
-\node[box, minimum width=0.92\columnwidth, fill=black!4] (ar) at (0,-2.35)
-  {Arena: bump-allocated, cache-aligned edge blocks (20\,B/edge)};
-\node[box, minimum width=0.92\columnwidth, fill=black!4] (vi) at (0,-3.3)
-  {Vertex index: per-vertex ref chains; sorted on \texttt{compact()}};
-\node[lbl, anchor=north west] at ($(vi.south west)+(0.05,-0.05)$)
-  {writers publish last-field-with-release; readers skip unpublished};
+% ---- the mapping, stated once and shown once ----
+\node[lbl, anchor=west] (eq) at (-3.95,1.62)
+  {$T \;\longrightarrow\; idx=(T-T_{0})\!\gg\!S$\;: one subtract, one shift};
+
+% ---- timeline slots: sparse by construction ----
+\foreach \i/\s in {0/full,1/empty,2/full,3/full,4/empty,5/empty,6/full,7/empty}{
+  \node[\s] (s\i) at ({-3.6+\i*0.54},0.92) {};
+}
+\node[lbl, anchor=east] at (-3.95,0.92) {Timeline};
+\draw[arr] (-1.5,1.44) -- (s2.north);
+\node[note, anchor=west] at (0.62,0.92) {shaded: touched};
+\node[note, anchor=west] at (0.62,0.55) {white: never faulted in,};
+\node[note, anchor=west] at (0.62,0.22) {0\,B resident};
+
+% ---- arena blocks hanging off occupied slots (each directly below its slot) ----
+\node[blk] (b0) at (-3.6,-0.30) {edges};
+\node[blk] (b3) at (-2.10,-0.30) {edges};
+\node[blk] (b3b) at (-1.24,-0.30) {edges};
+\node[blk] (b6) at (-0.36,-0.30) {edges};
+\draw[arr] (s0.south) -- (b0.north);
+\draw[arr] (s3.south) to[out=270,in=90] (b3.north);
+\draw[arr] (s6.south) -- (b6.north);
+\draw[arr] (b3.east) -- (b3b.west);
+\node[note, anchor=north] at (-1.67,-0.52) {overflow chain};
+
+% ---- the two lower structures ----
+\node[draw, rounded corners=1.5pt, fill=black!4, minimum width=7.3cm,
+      minimum height=0.40cm, font=\scriptsize, inner sep=2pt] (ar) at (-0.1,-1.12)
+  {Arena: bump-allocated, cache-aligned blocks, 20\,B/edge, never sorted on insert};
+\node[draw, rounded corners=1.5pt, fill=black!4, minimum width=7.3cm,
+      minimum height=0.40cm, font=\scriptsize, inner sep=2pt] (vi) at (-0.1,-1.69)
+  {Vertex index: per-vertex ref chains; the only structure \texttt{compact()} sorts};
+\node[note, anchor=north] at (-0.1,-1.97)
+  {writers publish payload-then-timestamp with release; readers skip unpublished slots};
 \end{tikzpicture}
-\caption{\sys's layout. The timestamp computes the timeline slot;
-blocks hold the window's edges in arrival order; the vertex index adds
-entity-keyed access and is the only structure compaction ever sorts.}
+\caption{\sys's layout. A timestamp \emph{computes} its timeline slot,
+so ingestion never searches and never sorts, and temporal sparsity is
+absorbed by the MMU rather than by a structure the engine maintains.
+Entity-keyed access lives in a separate index that compaction---never
+insertion---sorts.}
 \label{fig:arch}
 \end{figure}
 
@@ -281,14 +303,19 @@ with tails or size-binned results, never means.
 
 \subsection{Ingestion}
 \label{sec:eval-ingest}
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/fig_ingest.pdf}
-\caption{Single-thread ingestion (log scale). TVA is a bound: it did
-not finish wiki-talk's 7.8M events within a 90-minute cutoff at
-41.6\,GB RSS. \sys's durable modes pay the disk, not the engine.}
-\label{fig:ingest}
-\end{figure}
+\includegraphics[width=\textwidth]{figures/fig_streaming.pdf}
+\caption{The dynamic axis. \textbf{(a)}~Single-thread ingestion unless
+noted; log scale. The versioned store did not finish wiki-talk's 7.8M
+events within a 90-minute cutoff, so its bar is an upper bound; a
+statically sorted CSR has no ingest path to place on this axis at all.
+\sys's durable modes are bounded by the disk's 156\,MB/s sequential
+bandwidth, not by the engine. \textbf{(b)}~Queries answered from a
+static structure's pre-rebuild snapshot are not stale but silently
+incomplete; \sys never has a rebuild window, at any corpus size.}
+\label{fig:streaming}
+\end{figure*}
 \begin{table}[t]
 \centering\small
 \caption{Cross-engine operations, identical data and thread count.
@@ -316,7 +343,7 @@ group commit against 7.4M volatile---bounded by the disk's measured
 156\,MB/s sequential bandwidth, not by the engine---and 1.2M with an
 fsync per batch. Driving TVA's artifact with the same single-threaded
 event stream did not complete wiki-talk within a 90-minute cutoff at
-41.6\,GB RSS (\cref{fig:ingest}): under event streams, every repeated
+41.6\,GB RSS (\cref{fig:streaming}): under event streams, every repeated
 $(src,dst)$ contact extends one edge's version chain, the structure
 its hopscotch layout must keep within bounded offsets, and its
 design assumption---few, property-rich versions per entity---inverts.
@@ -325,26 +352,34 @@ simplest reason: it has no ingest path at all.
 
 \subsection{Time-respecting traversal}
 \label{sec:eval-traversal}
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/fig_traversal.pdf}
-\caption{Left: traversal-to-fixpoint median latency vs.\ query window
-(sx-mathoverflow); answers verified identical. Right: time-windowed
-BFS storage-read time vs.\ mean degree; at provenance-scale degrees
-the arrival-order entity store must scan what \sys's compacted
-buckets skip.}
-\label{fig:traversal}
-\end{figure}
+\includegraphics[width=\textwidth]{figures/fig_temporal.pdf}
+\caption{The time axis, three ways. \textbf{(a)}~Time-respecting
+traversal to fixpoint across query windows on two corpora (filled
+markers: sx-mathoverflow; open: wiki-talk); answers verified
+element-wise identical across engines before timing.
+\textbf{(b)}~Windowed BFS, normalised to cost \emph{per delivered
+edge}---the only size-independent comparison across corpora spanning
+$60$K to $1.05$B edges. An arrival-order adjacency must scan an entire
+neighborhood to find the in-window edges, so its per-edge cost
+explodes with density ($26\!\rightarrow\!1500$\,ns); \sys's compacted
+buckets amortise a binary search, so its cost \emph{improves}
+($54\!\rightarrow\!15$\,ns). The crossover lands inside the regime
+event streams occupy. \textbf{(c)}~Sparse temporal reachability makes
+query cost track the answer rather than the graph.}
+\label{fig:temporal}
+\end{figure*}
 On multi-hop time-respecting traversal run to fixpoint, \sys leads
 DuckDB by $150$--$700\times$ across all answer sizes---at
 $|R|>1{,}000$ the median is 12\,ms against 2.43\,s---because each hop
 costs a relational engine a join against the edge table
-(\cref{fig:traversal}, left). The time-sorted CSR remains
+(\cref{fig:temporal}a). The time-sorted CSR remains
 $2.7\times$ faster than \sys at high degree: that is the measured
 price of refusing to sort on ingest, and \cref{sec:eval-stream}
 prices what the CSR pays for the privilege. Against the
 \emph{ingesting} entity-keyed layout the ordering flips with degree
-(\cref{fig:traversal}, right): at mean degree 20 \texttt{ucsr} wins
+(\cref{fig:temporal}b): at mean degree 20 \texttt{ucsr} wins
 on contiguity, at 337 \sys reaches parity, and at LANL's mean degree
 of 59,517 \sys leads by $104\times$ (4.2\,ms vs.\ 435\,ms)---the
 crossover lands where event-stream workloads actually live. On
@@ -354,9 +389,11 @@ five seeds) with p95 at parity (981 vs.\ 1{,}105\,$\mu$s,
 overlapping ranges). Decomposing classic graph algorithms (BFS,
 PageRank, label propagation) into storage-read share under identical,
 checksum-verified executions bounds the structural concession:
-\sys delivers adjacency within $1.4$--$2.1\times$ of the topology-only
-CSR optimum---at billion-edge scale, $1.4\times$---while being the
-only layout of the four that ingests. \sys's weakest operation is the
+\sys delivers adjacency at $0.9$--$2.9\times$ the topology-only CSR
+optimum (median $1.7\times$), and the ratio \emph{improves} with
+scale---$1.4\times$ on the billion-edge corpus, where long bucket
+chains amortise---while \sys is the only layout of the four that
+ingests at all (\cref{fig:structural}). \sys's weakest operation is the
 full-graph as-of snapshot (enumerate-then-reduce; 218\,s on CADETS,
 whose hottest vertices carry millions of events): precisely the
 operation TVA's version-skipping is built to serve, and we report it
@@ -366,18 +403,20 @@ as its win.
 \label{sec:eval-stream}
 \begin{figure}[t]
 \centering
-\includegraphics[width=\columnwidth]{figures/fig_rebuild.pdf}
-\caption{What queries lose when served by a statically sorted
-structure during its rebuild window, measured against the
-always-current answer.}
-\label{fig:rebuild}
+\includegraphics[width=\columnwidth]{figures/fig_structural.pdf}
+\caption{The concession, priced. Adjacency delivery for structure-only
+algorithms against the topology-only CSR optimum, under identical
+checksum-verified executions. The cost is a small constant that
+\emph{improves} with scale, and it buys an ingest path the optimum
+does not have.}
+\label{fig:structural}
 \end{figure}
 The time-sorted CSR's only update path is a full rebuild (28.4\,s on
 LANL). Queries about the live window served from the pre-rebuild
 snapshot are not stale but silently \emph{wrong}: on LANL, 68 of 100
 queries returned incomplete answers, losing 33.2\% of the true result
 on average and 99.5\% in the worst case; an independent wiki-talk
-measurement gives 34.1\%/96.7\% (\cref{fig:rebuild}). \sys ingests
+measurement gives 34.1\%/96.7\% (\cref{fig:streaming}b). \sys ingests
 the same arrivals incrementally at 3.3M events/s and has no blind
 window. \sys's own optional compaction costs more than the CSR
 rebuild (76\,s vs.\ 28\,s on LANL; an arena-order timestamp resolve
@@ -416,8 +455,8 @@ entities} for snapshot retrieval; delta encoding and version-chain
 locality, their central difficulties, do not arise in an append-only
 event stream, and time-respecting reachability is not expressible
 over their snapshot query surface. The two lines are complementary,
-and measurably so in both directions (\cref{sec:eval-ingest,
-sec:eval-traversal}): neither subsumes the other; they store
+and measurably so in both directions
+(\cref{sec:eval-ingest,sec:eval-traversal}): neither subsumes the other; they store
 different things.
 \textbf{Structural dynamic graph stores}~\cite{wheatman2021ppcsr,
 shen2026dcsr, dhulipala2019aspen, fuchs2023sortledton} optimize the
