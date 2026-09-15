@@ -201,9 +201,12 @@ def section_graphone(buf):
                "first point a vertex-centric read sees the edges. Against Gnomon those "
                "line up with ingest, the `write_only` row of E18 cost, and ingest plus "
                "`finalize()`.\n")
+    # -j 20 is the ingest configuration, -j 28 the windowed-query one; both
+    # ingest identically, so take ingest numbers from 20 only or every corpus
+    # appears twice.
     rows = []
     for r in go:
-        if r.get("config") != "weight64":
+        if r.get("config") != "weight64" or r.get("job") != "20":
             continue
         ds = r["dataset"]
         g = e16.get(ds)
@@ -212,24 +215,44 @@ def section_graphone(buf):
                      f"{f(r,'make_graph_Meps'):.2f}",
                      f"{f(g,'ingest_Meps'):.2f}" if g else "-",
                      f"{f(g,'ready_Meps'):.2f}" if g else "-",
-                     f"{f(r,'make_graph_Meps')/f(g,'ready_Meps'):.2f}x"
-                     if g and f(g, 'ready_Meps') else "-"])
+                     f"{f(g,'ingest_Meps')/f(r,'batch_update_Meps'):.2f}x"
+                     if g and f(r, 'batch_update_Meps') else "-",
+                     f"{f(g,'ready_Meps')/f(r,'make_graph_Meps'):.2f}x"
+                     if g and f(r, 'make_graph_Meps') else "-"])
     if rows:
         buf.append(table(["corpus", "edges", "GO batch update Meps",
                           "GO make graph Meps", "Gnomon ingest Meps",
-                          "Gnomon ready Meps", "GO/Gnomon query-ready"], rows))
+                          "Gnomon ready Meps", "ingest ratio",
+                          "query-ready ratio"], rows))
         buf.append("")
 
-    wq = [r for r in go if r.get("window_ns_per_delivered")]
+    wq = [r for r in go if r.get("window_ns_per_delivered") and r.get("job") == "28"]
+    lg = {}
+    for r in read("results/e19_livegraph/e19.csv"):
+        lg.setdefault(r["dataset"], {})[(r["system"], r["mode"])] = r
     if wq:
-        rows = [[r["dataset"], r.get("window_delivered", "-"),
-                 r.get("window_scanned", "-"),
-                 r.get("window_ns_per_delivered", "-"),
-                 r.get("window_checksum_matches", "-")] for r in wq]
+        rows = []
+        for r in wq:
+            ds = r["dataset"]
+            d = lg.get(ds, {})
+            gn = d.get(("gnomon", "compacted"))
+            delivered = f(r, "window_delivered")
+            scanned = f(r, "window_scanned")
+            rows.append([ds, f"{delivered:,.0f}", f"{scanned:,.0f}",
+                         f"{scanned/delivered:.0f}x" if delivered else "-",
+                         f"{f(r,'window_ns_per_delivered'):.1f}",
+                         f"{f(gn,'ns_per_delivered_edge'):.1f}" if gn else "-",
+                         f"{f(r,'window_ns_per_delivered')/f(gn,'ns_per_delivered_edge'):.1f}x"
+                         if gn and f(gn, 'ns_per_delivered_edge') else "-",
+                         r.get("window_checksum_matches", "-")])
         buf.append("**Windowed neighbour delivery on GraphOne's archived adjacency.** "
-                   "Same query list as E19, same checksum.\n")
-        buf.append(table(["corpus", "delivered", "scanned", "ns/delivered edge",
-                          "checksum matches Gnomon"], rows))
+                   "Same query list as E19, same checksum. The read-amplification "
+                   "column is the structural point: an entity-keyed adjacency has "
+                   "no order on time, so selecting a window means touching the "
+                   "whole neighbourhood.\n")
+        buf.append(table(["corpus", "delivered", "scanned", "read amplification",
+                          "GraphOne ns/edge", "Gnomon ns/edge", "speedup",
+                          "checksum agrees"], rows))
         buf.append("")
 
 

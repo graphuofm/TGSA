@@ -61,3 +61,30 @@ which is consistent with its own statement that an unplanned shutdown may lose
 recent data and that recovery depends on an upstream backup such as Kafka. Its
 "Durable Graph Time" therefore means "reached the page cache". Comparing our
 fsync'd numbers against that would flatter us, so both contracts are measured.
+
+## Update after the arena fix
+
+The 256M-edge point of an earlier `curve.csv` read 578.97 s (0.44 Meps) and was
+measured against an engine that was silently dropping edges; it is not a
+property of replay. With the CAS-loser leak fixed (see the commit "Fix silent
+edge loss at scale") replay is flat in log size all the way out:
+
+| edges | log GB | replay s | replay Meps |
+|---|---|---|---|
+| 1M | 0.02 | 0.06 | 16.20 |
+| 4M | 0.08 | 0.17 | 22.96 |
+| 16M | 0.32 | 0.49 | 32.87 |
+| 64M | 1.28 | 1.80 | 35.54 |
+| 256M | 5.12 | 7.11 | 36.02 |
+| 1.024B | 20.48 | 28.78 | 35.58 |
+
+The full 1.024-billion-edge LANL corpus recovers in 28.78 seconds. A flat rate
+is what "recovery is re-ingestion" should look like when the re-ingestion path
+is genuinely O(1) per edge; the earlier decline was the bug, not the theorem.
+
+The cost table also reads differently now that ingestion is faster: the engine
+absorbs 63.4 Meps with no log and 30.3 Meps writing a log it never fsyncs, but
+only 2.8 to 6.7 Meps with real fsync. Durable ingest is bounded by fsync, not by
+the data structure. That is the right frame for the GraphOne comparison, whose
+durable path never calls fsync at all: its number belongs beside `write_only`,
+not beside `sync_4MB`.
