@@ -113,7 +113,7 @@ VertexBucket* VertexIndex::allocate_bucket(uint32_t capacity) {
     return b;
 }
 
-void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
+void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key, uint64_t ts,
                              uint32_t peer, BlockHeader* block, uint32_t offset) {
     VertexBucket* head = heads[key].load(std::memory_order_acquire);
     if (head == nullptr) {
@@ -146,9 +146,11 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
         uint32_t pos = b->count.fetch_add(1, std::memory_order_acq_rel);
         if (pos < b->capacity) {
             EdgeRef* r = &refs_of(b)[pos];
-            r->dst = peer; r->offset = offset;
+            r->dst = peer; r->offset = offset; r->ts = ts;
             // Publish protocol: block pointer last, release. Zero pages mean an
             // unpublished ref reads block == nullptr; every reader skips those.
+            // The cached timestamp is written before it, so a reader that sees a
+            // published ref also sees a valid ts.
             __atomic_store_n(&r->block, block, __ATOMIC_RELEASE);
             return;
         }
@@ -172,11 +174,11 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
     }
 }
 
-void VertexIndex::register_edge(uint32_t src, uint32_t dst,
+void VertexIndex::register_edge(uint32_t src, uint32_t dst, uint64_t ts,
                                 BlockHeader* block, uint32_t offset) {
     if (heads_ == nullptr) return;
-    if (src < num_vertices_) append_ref(heads_, src, dst, block, offset);
-    if (heads_in_ && dst < num_vertices_) append_ref(heads_in_, dst, src, block, offset);
+    if (src < num_vertices_) append_ref(heads_, src, ts, dst, block, offset);
+    if (heads_in_ && dst < num_vertices_) append_ref(heads_in_, dst, ts, src, block, offset);
 }
 
 static Edge resolve(const EdgeRef& r) {
@@ -198,10 +200,10 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
         uint32_t lo = 0, hi = cnt;
         while (lo < hi) {
             uint32_t mid = lo + (hi - lo) / 2;
-            if (resolve(refs[mid]).timestamp < t_lo) lo = mid + 1; else hi = mid;
+            if (refs[mid].ts < t_lo) lo = mid + 1; else hi = mid;
         }
         for (uint32_t i = lo; i < cnt; ++i) {
-            uint64_t ts = resolve(refs[i]).timestamp;
+            const uint64_t ts = refs[i].ts;
             if (ts > t_hi) break;
             out.push_back(TemporalRef{refs[i].dst, ts});
         }
@@ -209,7 +211,7 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
     }
     for (uint32_t i = 0; i < cnt; ++i) {
         if (!__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) continue;   // unpublished
-        uint64_t ts = resolve(refs[i]).timestamp;
+        const uint64_t ts = refs[i].ts;
         if (ts >= t_lo && ts <= t_hi && ts != 0) out.push_back(TemporalRef{refs[i].dst, ts});
     }
 }
@@ -252,7 +254,7 @@ size_t VertexIndex::finalize() {
                 bool ordered = true;
                 uint64_t prev = 0;
                 for (uint32_t i = 0; i < cnt; ++i) {
-                    uint64_t ts = resolve(refs[i]).timestamp;
+                    uint64_t ts = refs[i].ts;
                     if (ts < prev) ordered = false;
                     prev = ts;
                     scratch.push_back(Keyed{ts, refs[i]});

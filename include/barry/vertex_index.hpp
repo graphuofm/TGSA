@@ -28,8 +28,15 @@ struct EdgeRef {
     uint32_t     dst;       // cached peer id (destination, or source in the reverse index)
     uint32_t     offset;    // edge slot inside *block
     BlockHeader* block;     // owning block (needed for resolving the full Edge)
+    uint64_t     ts;        // cached timestamp: the whole point of the extra 8 bytes
 };
-static_assert(sizeof(EdgeRef) == 16, "EdgeRef expected 16 bytes");
+// 24 rather than 16 bytes, and the reason is a measurement. With the timestamp
+// only in the Arena, every temporal predicate cost a random access into a
+// multi-gigabyte mapping to fetch eight bytes, so an uncompacted window scan ran
+// 6x slower than GraphOne's, whose adjacency stores (dst, weight) inline and
+// scans sequentially. Caching it here makes both the scan and the binary search
+// touch one contiguous stream. Anything needing src or weight still resolves.
+static_assert(sizeof(EdgeRef) == 24, "EdgeRef expected 24 bytes");
 
 // A (peer, time) pair: everything a time-respecting expansion needs.
 struct TemporalRef {
@@ -77,7 +84,7 @@ public:
 
     // Append (dst, block, offset) under src -- and, when the reverse index is
     // enabled, (src, block, offset) under dst. Thread-safe.
-    void register_edge(uint32_t src, uint32_t dst,
+    void register_edge(uint32_t src, uint32_t dst, uint64_t ts,
                        BlockHeader* block, uint32_t offset);
 
     // ----- Pure-topology iteration (no Edge resolve, alloc-free w/ buffer) -----
@@ -145,7 +152,7 @@ private:
     }
 
     // Shared append path for both directions; `heads` selects the index.
-    void append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
+    void append_ref(std::atomic<VertexBucket*>* heads, uint32_t key, uint64_t ts,
                     uint32_t peer, BlockHeader* block, uint32_t offset);
 
     VertexBucket* head_of(uint32_t src) const noexcept {

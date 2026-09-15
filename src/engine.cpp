@@ -99,7 +99,8 @@ void Barry::insert(const Edge& e) {
     }
 
     if (vertex_index_) {
-        vertex_index_->register_edge(ec.src, ec.dst, block, static_cast<uint32_t>(off));
+        vertex_index_->register_edge(ec.src, ec.dst, ec.timestamp, block,
+                                     static_cast<uint32_t>(off));
     }
     num_inserts_.fetch_add(1, std::memory_order_relaxed);
 }
@@ -145,7 +146,9 @@ void Barry::insert_span(const Edge* edges, size_t lo, size_t hi) {
                     for (uint32_t k = 0; k < took; ++k) {
                         const Edge& e = edges[i + placed + k];
                         vertex_index_->register_edge(
-                            e.src, e.dst, block, static_cast<uint32_t>(first) + k);
+                            e.src, e.dst,
+                            e.timestamp ? e.timestamp : uint64_t{1},
+                            block, static_cast<uint32_t>(first) + k);
                     }
                 }
                 placed += took;
