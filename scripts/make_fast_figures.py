@@ -50,7 +50,7 @@ def load(path):
 # Fig. streaming: the dynamic axis -- ingest rate, and what static layouts lose
 # =====================================================================
 def fig_streaming():
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 2.15),
+    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 1.82),
                                gridspec_kw={'width_ratios': [1.35, 1]})
 
     # (a) single-thread ingestion, log scale. Three bar classes, redundantly
@@ -115,7 +115,7 @@ def fig_streaming():
 # Fig. temporal: the time axis -- three ways time-keyed storage pays off
 # =====================================================================
 def fig_temporal():
-    fig, (a, b, c) = plt.subplots(1, 3, figsize=(7.0, 2.1))
+    fig, (a, b, c) = plt.subplots(1, 3, figsize=(7.0, 1.80))
 
     # (a) traversal-to-fixpoint vs query window, two corpora
     rows = load('e9_columnar/e9_pilot.csv')
@@ -217,7 +217,7 @@ def fig_structural():
     the two regimes separate: frontier-driven traversal touches only reached
     vertices, whole-graph iteration walks every bucket chain every round.
     """
-    fig, ax = plt.subplots(figsize=(3.34, 2.15))
+    fig, ax = plt.subplots(figsize=(3.34, 1.88))
     rows = (load('e13_storage/e13_full.csv') + load('e13_storage/e13_lanl.csv')
             + load('e13_storage/e13_more.csv'))
     g, size = defaultdict(list), {}

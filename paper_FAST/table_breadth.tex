@@ -1,12 +1,11 @@
 \begin{table}[t]
 \centering\footnotesize
 \setlength{\tabcolsep}{3.4pt}
-\caption{Breadth across 13 public corpora spanning four orders of
-magnitude. Ingestion is what the stream sees; compaction is the one
-optional pass that makes neighborhood expansion binary-searchable.
-Traversal is the median time-respecting forward traversal over a 1\%
-window. Resident bytes per edge are against a 20\,B packed edge; the
-remainder is the vertex index and block headers. Eight threads.}
+\caption{Breadth across 13 corpora spanning four orders of magnitude.
+Ingestion is what the stream sees; compaction is the one optional
+pass. Traversal is the median time-respecting forward traversal over a
+1\% window. Bytes/edge are resident, against a 20\,B packed edge.
+Eight threads.}
 \label{tab:breadth}
 \begin{tabular}{@{}lrrrrrrr@{}}
 \toprule

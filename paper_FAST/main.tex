@@ -2,6 +2,7 @@
 \usepackage[hidelinks]{hyperref}
 \usepackage{usenix2019_v3}
 \usepackage{amsmath,amssymb,amsthm}
+\usepackage[ruled,linesnumbered,vlined]{algorithm2e}
 \newtheorem{theorem}{Theorem}
 \usepackage{booktabs}
 \usepackage{graphicx}
@@ -10,12 +11,12 @@
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage[capitalise,noabbrev]{cleveref}
 
-\newcommand{\sys}{Barry\xspace}
+\newcommand{\sys}{Gnomon\xspace}
 
 \begin{document}
 
 % CFP: short papers carry the prefix in the submitted title; it is not published.
-\title{\Large \bf Short Paper: \sys: A Streaming Storage Engine for Temporal Graphs}
+\title{\Large \bf Short Paper: Gnomon: A Streaming Storage Engine for Temporal Graphs}
 
 % Double-blind: no author identification.
 \author{Anonymous submission}
@@ -57,17 +58,21 @@ A growing class of graphs is built from \emph{events}. A system call
 touches a file; an agent invokes a tool; a host authenticates to
 another; a user replies to a message. Each edge carries the moment it
 happened, never changes afterwards, and arrives as part of a stream
-that does not end. The queries these graphs exist to answer are
-temporal and causal: what could have influenced this state, what did
-this event go on to touch, what did a neighborhood look like at time
-$t$, how much happened in this window. And because an event's value
-fades with age, the data is governed by time-based retention.
+that does not end. For a storage system this combination is unusual
+and demanding: writes are append-only and unbounded, reads are
+constrained by time and causality rather than by key, and the
+retention policy---keep the last $N$ days---is itself a predicate on
+the write key. A single endpoint under ordinary load emits tens of
+thousands of such events per second, and a fleet multiplies that, so
+what the layout does with the time dimension determines the write
+path, the read path, the eviction path, and the recovery path at once.
 
 Existing storage engines all approach this workload with a layout
 designed for something else. Dynamic graph
 stores~\cite{wheatman2021ppcsr, shen2026dcsr, dhulipala2019aspen,
-fuchs2023sortledton} key storage on source-vertex identity and treat
-the timestamp as payload. A time-constrained query then becomes a
+fuchs2023sortledton, pandey2021terrace, deleo2021teseo, zhu2020livegraph,
+kumar2019graphone} key storage on source-vertex identity and treat the
+timestamp as payload. A time-constrained query then becomes a
 structural scan with a per-edge filter, and a retention pass has to
 find expired edges wherever vertex order scattered them. Columnar and
 LSM engines~\cite{raasveldt2019duckdb} have the opposite problem:
@@ -95,12 +100,25 @@ paging absorbing temporal sparsity at no data-structure cost.
 
 What follows from that layout is the point of the paper. An edge's
 home is computed, not searched, so ingestion is a wait-free slot
-claim. The computation ignores arrival order, so out-of-order and late
-events cost nothing extra. Retention is a monotone predicate on time,
-so expiry is the release of an address prefix. Nothing is updated in
-place, so crash recovery is replaying an append-only log through the
-normal insert path. None of these is engineered on top of the layout;
-each is a consequence of it.
+claim; the computation ignores arrival order, so late events cost
+nothing extra; retention is a monotone predicate on time, so expiry
+releases an address prefix; and nothing is updated in place, so
+recovery is replaying an append-only log through the normal insert
+path. None of these is engineered on top of the layout; each is a
+consequence of it.
+
+The idea is not that time-ordering is new---log-structured file
+systems~\cite{rosenblum1991lfs} and LSM trees~\cite{oneil1996lsm} have
+organised writes by arrival for three decades, and time-series
+stores~\cite{pelkonen2015gorilla} exploit temporal locality directly.
+What those designs share is that time orders the data but an auxiliary
+structure still maps keys to it: an LSM keeps sorted runs and a
+manifest, a time-series store keeps per-series chunk indexes. \sys
+removes that level. Because the key \emph{is} the time and the time
+\emph{is} the address, there is no run, no manifest, and no chunk
+index to maintain, merge, or recover---which is why compaction here is
+optional rather than structural, and why recovery is replay rather
+than log analysis~\cite{mohan1992aries}.
 
 The design also has costs, and a storage paper owes their measurement
 as much as their mitigation. A layout that refuses to organize by
@@ -218,16 +236,30 @@ most $W_{occ}$ since each occupied slot dirties one page. Untouched
 ranges are never faulted in and never appear in the page table.
 \end{proof}
 
-Sparsity is thus absorbed by the MMU, not by a structure the engine
-maintains. The mapping is \emph{anonymous}, with no file behind it, so
-the failure modes catalogued against mmap in
-databases~\cite{crotty2022mmap}---torn file pages, SIGBUS on
-truncation, eviction stalls---do not apply: we use mmap the way an
-allocator reserves address space, not as a buffer pool.
+Sparsity is absorbed by the MMU, not by a structure the engine
+maintains. The mapping is \emph{anonymous}, so the failure modes
+catalogued against mmap in databases~\cite{crotty2022mmap}---torn file
+pages, SIGBUS on truncation, eviction stalls---do not apply: we use
+mmap as an allocator reserves address space, not as a buffer pool.
 
 The shift $S$ sets how much time one slot covers. Too coarse and
 windows overfill; too fine and the timeline sprawls. \sys picks $S$
 from stream statistics, and the choice is bounded.
+
+\begin{algorithm}[t]
+\small
+\DontPrintSemicolon
+\KwIn{event count $E$, span $S_{\mathrm{span}}$, target occupancy $\tau$}
+\KwOut{shift $S$}
+$D \leftarrow \max(1, \lfloor E/\tau \rfloor)$ \tcp*{windows we want}
+$w \leftarrow \max(1, \lfloor S_{\mathrm{span}}/D \rfloor)$ \tcp*{width we want}
+$S \leftarrow \lceil \log_2 w \rceil$ \tcp*{width we can address}
+\Return{$S$}
+\caption{Adaptive granularity selection. Runs once on a stream
+prefix; re-running on a later prefix changes only future windows,
+since \cref{eq:mapping} is evaluated per edge at insert time.}
+\label{alg:shift}
+\end{algorithm}
 
 \begin{theorem}[Granularity]
 \label{thm:shift}
@@ -267,6 +299,33 @@ acquire-load the timestamp and skip those. Vertex-index references
 publish through their block pointer the same way. One extra ordering
 rule makes the fast read path safe as well: an append clears the
 bucket's \emph{sorted} flag \emph{before} it bumps the bucket counter.
+
+\begin{algorithm}[t]
+\small
+\DontPrintSemicolon
+\SetKwProg{Fn}{}{}{}
+\Fn{\textsc{Append}$(e)$}{
+  $b \leftarrow$ block for slot $(e.t - T_0) \gg S$ \tcp*{\cref{thm:addr}}
+  $b.\mathit{sorted} \leftarrow \bot$ \hfill \textsf{(release)}\;
+  $i \leftarrow \textsc{FetchAdd}(b.\mathit{count}, 1)$ \hfill \textsf{(acq-rel)}\;
+  \lIf{$i \ge b.\mathit{cap}$}{install overflow block by CAS; retry}
+  write $e.\mathit{src}, e.\mathit{dst}, e.w$ into $b[i]$\;
+  $b[i].t \leftarrow e.t$ \hfill \textsf{(release: publishes the slot)}\;
+}
+\Fn{\textsc{Expand}$(v, t_{lo}, t_{hi})$}{
+  \ForEach{bucket $b$ of $v$}{
+    $n \leftarrow b.\mathit{count}$ \hfill \textsf{(acquire)}\;
+    \lIf{$b.\mathit{sorted}$ \textsf{(acquire)}}{binary-search $b[0..n)$}
+    \lElse{scan $b[0..n)$, skipping $t = 0$}
+  }
+}
+\caption{Publication protocol. The two release stores and the order of
+lines 3--4 are what \cref{thm:conc} rests on: clearing \emph{sorted}
+before bumping \emph{count} is what lets a reader trust a binary
+search, and storing $t$ last is what makes a half-written slot
+invisible.}
+\label{alg:publish}
+\end{algorithm}
 
 \begin{theorem}[Concurrent reads]
 \label{thm:conc}
@@ -466,10 +525,10 @@ contiguous array, and that gap widens with size: $5.8\times$ at 69M
 edges. This is the concession, it is the price of not organising by
 entity, and it buys an ingest path the optimum does not have.
 
-\sys's weakest operation is the full-graph as-of snapshot, which it
-answers by enumerating and reducing: 218\,s on CADETS, whose hottest
-vertices carry millions of events. That is precisely the operation
-TVA's version-skipping is built for, and we report it as its win.
+\sys's weakest operation is the full-graph as-of snapshot, answered by
+enumerating and reducing: 218\,s on CADETS, whose hottest vertices
+carry millions of events. That is what TVA's version-skipping is built
+for, and we report it as its win.
 
 \begin{figure}[t]
 \centering
@@ -523,12 +582,11 @@ target---in causal order, inside an impact set that is 0.0093\% of the
 graph, at 133\,$\mu$s.
 
 \subsection{Negative results, kept}
-For the record: caching timestamps in vertex-index refs (+50\%
-index memory for 15\% traversal) was built, measured, and reverted;
-binary-search expansion buys $2.5\times$ at degree 337 and nothing
-below degree 30; and the retention comparison's original
-hypothesis---that the columnar engine would fail to reclaim
-memory---was false.
+Caching timestamps in vertex-index refs ($+50\%$ index memory for
+$15\%$ traversal) was built, measured, and reverted; binary-search
+expansion buys $2.5\times$ at degree 337 and nothing below degree 30;
+and this comparison's original hypothesis---that the columnar engine
+would mark deleted rows without reclaiming---was false.
 
 % =====================================================================
 \section{Related Work}
@@ -553,19 +611,20 @@ magnitude. \textbf{mmap in databases.} The case against
 mmap~\cite{crotty2022mmap} targets file-backed buffer management;
 \sys's anonymous reservation sidesteps each cited failure mode.
 \textbf{Provenance systems}~\cite{king2003backtracker,
-pasquier2017camflow, zhang2025tapas} motivate the workload's rates
-and retention stakes; serving them is an application of this engine,
-developed separately.
+pasquier2017camflow, zhang2025tapas, hassan2020omegalog} motivate the
+workload's rates, and their reduction
+techniques~\cite{lee2013loggc} exist because no storage layer made
+retention affordable; serving them is an application of this engine,
+developed separately. Corpora are from
+SNAP~\cite{leskovec2014snap}, LANL~\cite{lanl2015data}, and DARPA
+Transparent Computing.
 
 % =====================================================================
 \section{Conclusion}
-Keying graph storage on time collapses the machinery an event stream
-otherwise requires: the index becomes a shift, ingestion an
-order-indifferent lock-free append, retention a page release,
-recovery a replay, and temporal traversal an address
-computation---correct even mid-ingest. The concessions are bounded
-constants, measured at the storage layer where they belong; the wins
-are the axes an event stream cannot live without.
+Keying storage on time collapses the machinery an event stream
+otherwise needs: the index becomes a shift, ingestion an
+order-indifferent lock-free append, retention a page release, and
+recovery a replay. The concessions are bounded constants.
 
 \bibliographystyle{plain}
 \bibliography{references}
