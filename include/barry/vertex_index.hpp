@@ -68,7 +68,8 @@ class VertexIndex {
 public:
     VertexIndex(uint32_t num_vertices,
                 size_t   arena_reserve_bytes = (8ULL << 30),
-                bool     build_reverse = false);
+                bool     build_reverse = false,
+                bool     transparent_huge = true);
     ~VertexIndex();
 
     VertexIndex(const VertexIndex&) = delete;
@@ -134,6 +135,14 @@ public:
 
 private:
     VertexBucket* allocate_bucket(uint32_t capacity);
+    bool          try_return_bucket(VertexBucket* b, uint32_t capacity);
+
+    // 8-byte align the next allocation; EdgeRef and the header are both
+    // 8-byte aligned already.
+    static size_t bucket_bytes(uint32_t capacity) {
+        size_t total = sizeof(VertexBucket) + static_cast<size_t>(capacity) * sizeof(EdgeRef);
+        return (total + 7) & ~size_t{7};
+    }
 
     // Shared append path for both directions; `heads` selects the index.
     void append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
@@ -152,6 +161,7 @@ private:
     char*                      bucket_base_;
     size_t                     bucket_reserved_;
     std::atomic<size_t>        bucket_bump_{0};
+    std::atomic<size_t>        bucket_failures_{0};
 };
 
 }  // namespace barry

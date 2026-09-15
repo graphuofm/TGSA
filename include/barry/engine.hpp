@@ -130,8 +130,16 @@ public:
         size_t bytes_timeline_virtual;
         size_t bytes_vertex_index;
         size_t bytes_rss;
+        size_t edges_dropped;      // must be zero; non-zero means the arena filled
+        size_t blocks_returned;    // CAS losers reclaimed rather than abandoned
     };
     Stats stats() const;
+
+    // Non-zero means appends were refused: the arena reservation was too small
+    // for the stream. Check it after any ingest that matters.
+    size_t edges_dropped() const noexcept {
+        return edges_dropped_.load(std::memory_order_relaxed);
+    }
 
     const TimeMapper&  mapper()       const { return *mapper_; }
     const Timeline&    timeline()     const { return *timeline_; }
@@ -148,6 +156,10 @@ private:
     std::unique_ptr<Arena>       arena_;
     std::unique_ptr<VertexIndex> vertex_index_;
     std::atomic<size_t>          num_inserts_{0};
+    // Appends refused because the arena reservation was exhausted. Silence here
+    // is the worst failure mode a store can have, so the count is part of the
+    // engine's reported state and the benchmarks assert it is zero.
+    std::atomic<size_t>          edges_dropped_{0};
     uint64_t                     min_valid_time_{0};
 };
 

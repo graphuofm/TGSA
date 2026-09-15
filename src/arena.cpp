@@ -14,7 +14,7 @@ static void* try_mmap(size_t bytes, bool huge) {
     return p;
 }
 
-Arena::Arena(size_t reserve, bool huge_pages)
+Arena::Arena(size_t reserve, bool huge_pages, bool transparent_huge)
     : base_(nullptr), reserved_(reserve), huge_pages_(huge_pages) {
 
     void* p = try_mmap(reserve, huge_pages_);
@@ -29,8 +29,18 @@ Arena::Arena(size_t reserve, bool huge_pages)
         std::abort();
     }
     base_ = static_cast<char*>(p);
-    std::fprintf(stderr, "[Arena] reserved %.2f GB at %p (huge=%d)\n",
-                 reserve / 1e9, base_, huge_pages_ ? 1 : 0);
+    // The arena is bump-allocated and every page that is reserved gets written,
+    // so backing it with 2 MB pages costs no extra resident memory and removes
+    // most of the TLB misses that a multi-gigabyte working set otherwise pays.
+    bool thp = false;
+#ifdef MADV_HUGEPAGE
+    if (!huge_pages_ && transparent_huge)
+        thp = (madvise(base_, reserved_, MADV_HUGEPAGE) == 0);
+#else
+    (void)transparent_huge;
+#endif
+    std::fprintf(stderr, "[Arena] reserved %.2f GB at %p (huge=%d thp=%d)\n",
+                 reserve / 1e9, base_, huge_pages_ ? 1 : 0, thp ? 1 : 0);
 }
 
 Arena::~Arena() {
@@ -38,14 +48,19 @@ Arena::~Arena() {
 }
 
 BlockHeader* Arena::allocate_block(uint32_t capacity) {
-    size_t total = sizeof(BlockHeader) + static_cast<size_t>(capacity) * sizeof(Edge);
-    // Round up so the next block is also cache-line aligned.
-    total = (total + kCacheLineSize - 1) & ~(kCacheLineSize - 1);
+    const size_t total = block_bytes(capacity);
 
     size_t off = bump_.fetch_add(total, std::memory_order_relaxed);
     if (off + total > reserved_) {
-        std::fprintf(stderr, "[Arena] OOM (used %zu + req %zu > reserved %zu)\n",
-                     off, total, reserved_);
+        // One line, not one per dropped edge: a full arena used to print per
+        // failed insert and buried the run in tens of millions of identical
+        // messages. The count is what matters and the engine reports it.
+        if (num_failures_.fetch_add(1, std::memory_order_relaxed) == 0) {
+            std::fprintf(stderr,
+                "[Arena] exhausted: %zu of %zu reserved bytes used; further "
+                "appends will be refused (see Stats::edges_dropped)\n",
+                off, reserved_);
+        }
         return nullptr;
     }
 
@@ -57,6 +72,20 @@ BlockHeader* Arena::allocate_block(uint32_t capacity) {
 
     num_blocks_.fetch_add(1, std::memory_order_relaxed);
     return h;
+}
+
+bool Arena::try_return_block(BlockHeader* block, uint32_t capacity) {
+    const size_t total = block_bytes(capacity);
+    const size_t off = static_cast<size_t>(reinterpret_cast<char*>(block) - base_);
+    size_t expected = off + total;
+    if (bump_.compare_exchange_strong(expected, off,
+                                      std::memory_order_acq_rel,
+                                      std::memory_order_relaxed)) {
+        num_blocks_.fetch_sub(1, std::memory_order_relaxed);
+        num_returned_.fetch_add(1, std::memory_order_relaxed);
+        return true;
+    }
+    return false;   // someone allocated after us; the space stays spent
 }
 
 int32_t Arena::try_append(BlockHeader* block, const Edge& e) {

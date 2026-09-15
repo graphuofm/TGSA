@@ -34,13 +34,28 @@ inline const Edge* edges_of(const BlockHeader* h) {
 // Bump-allocator backed by an mmap'd virtual region.
 class Arena {
 public:
-    Arena(size_t reserve_bytes, bool huge_pages = false);
+    Arena(size_t reserve_bytes, bool huge_pages = false,
+          bool transparent_huge = true);
     ~Arena();
 
     Arena(const Arena&) = delete;
     Arena& operator=(const Arena&) = delete;
 
     BlockHeader* allocate_block(uint32_t capacity = 16);
+
+    // Give back a block that lost a CAS race, so the space is not burned.
+    //
+    // Speculative allocation is unavoidable here: a thread must have a block in
+    // hand before it can try to publish it. What is avoidable is paying for the
+    // losers. With N writers on a hot window, every fill event produced N-1
+    // abandoned blocks, each twice the size of the last, and the bump pointer
+    // ran roughly an order of magnitude ahead of the bytes actually written
+    // until the reservation was exhausted. Returning the allocation succeeds
+    // whenever nothing else has bumped since, which is the common case.
+    bool try_return_block(BlockHeader* block, uint32_t capacity);
+
+    size_t blocks_returned() const { return num_returned_.load(std::memory_order_relaxed); }
+    size_t alloc_failures()  const { return num_failures_.load(std::memory_order_relaxed); }
 
     // Returns the slot offset on success, -1 if the block is full.
     int32_t try_append(BlockHeader* block, const Edge& e);
@@ -55,7 +70,14 @@ private:
     size_t              reserved_;
     std::atomic<size_t> bump_{0};
     std::atomic<size_t> num_blocks_{0};
+    std::atomic<size_t> num_returned_{0};
+    std::atomic<size_t> num_failures_{0};
     bool                huge_pages_;
+
+    static size_t block_bytes(uint32_t capacity) {
+        size_t total = sizeof(BlockHeader) + static_cast<size_t>(capacity) * sizeof(Edge);
+        return (total + kCacheLineSize - 1) & ~(kCacheLineSize - 1);
+    }
 };
 
 }  // namespace barry

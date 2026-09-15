@@ -36,11 +36,12 @@ Barry::Barry(const GraphConfig& cfg) : cfg_(cfg) {
 
     mapper_   = std::make_unique<TimeMapper>(cfg_.t_min, shift);
     timeline_ = std::make_unique<Timeline>(slots, cfg_.use_huge_pages);
-    arena_    = std::make_unique<Arena>(cfg_.arena_reserve_bytes, cfg_.use_huge_pages);
+    arena_    = std::make_unique<Arena>(cfg_.arena_reserve_bytes, cfg_.use_huge_pages,
+                                        cfg_.transparent_huge_pages);
     if (cfg_.num_vertices > 0) {
         vertex_index_ = std::make_unique<VertexIndex>(
             cfg_.num_vertices, cfg_.vertex_arena_reserve_bytes,
-            cfg_.build_reverse_index);
+            cfg_.build_reverse_index, cfg_.transparent_huge_pages);
     }
 }
 
@@ -53,7 +54,8 @@ BlockHeader* Barry::get_or_create_block(uint64_t idx) {
     BlockHeader* nb = arena_->allocate_block(cfg_.default_block_capacity);
     if (!nb) return nullptr;
     if (timeline_->cas(idx, nullptr, nb)) return nb;
-    // Someone else won the CAS; nb is wasted (small leak in bump arena).
+    // Someone else won the CAS. Hand the block back rather than abandoning it.
+    arena_->try_return_block(nb, cfg_.default_block_capacity);
     return timeline_->load(idx);
 }
 
@@ -67,17 +69,21 @@ void Barry::insert(const Edge& e) {
     if (ec.timestamp == 0) ec.timestamp = 1;
     uint64_t idx = mapper_->map(ec.timestamp);
     BlockHeader* block = get_or_create_block(idx);
-    if (!block) return;
+    if (!block) { edges_dropped_.fetch_add(1, std::memory_order_relaxed); return; }
 
     int32_t off;
     while (true) {
         off = arena_->try_append(block, ec);
         if (off >= 0) break;
-        // Block is full — extend the chain.
-        BlockHeader* next = block->next;
+        // Block is full; extend the chain. Re-read the link first: under N
+        // writers on a hot window the usual case is that someone has already
+        // extended it, and allocating before checking is what used to burn the
+        // arena. Capacity doubles so the chain stays O(log) hops deep.
+        BlockHeader* next = __atomic_load_n(&block->next, __ATOMIC_ACQUIRE);
         if (next == nullptr) {
-            BlockHeader* nb = arena_->allocate_block(block->capacity * 2);
-            if (!nb) return;
+            const uint32_t cap = block->capacity * 2;
+            BlockHeader* nb = arena_->allocate_block(cap);
+            if (!nb) { edges_dropped_.fetch_add(1, std::memory_order_relaxed); return; }
             BlockHeader* expected = nullptr;
             if (__atomic_compare_exchange_n(
                     &block->next, &expected, nb,
@@ -85,6 +91,7 @@ void Barry::insert(const Edge& e) {
                     __ATOMIC_ACQ_REL, __ATOMIC_ACQUIRE)) {
                 next = nb;
             } else {
+                arena_->try_return_block(nb, cap);
                 next = expected;
             }
         }
@@ -310,6 +317,8 @@ double Barry::window_aggregate_sum(uint64_t t_lo, uint64_t t_hi) const {
 Barry::Stats Barry::stats() const {
     Stats s{};
     s.num_edges               = num_inserts_.load(std::memory_order_relaxed);
+    s.edges_dropped           = edges_dropped_.load(std::memory_order_relaxed);
+    s.blocks_returned         = arena_->blocks_returned();
     s.num_blocks              = arena_->blocks_allocated();
     s.bytes_arena_used        = arena_->bytes_used();
     s.bytes_arena_reserved    = arena_->bytes_reserved();

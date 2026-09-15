@@ -71,6 +71,9 @@ target_link_libraries(barry_tc_cdm_to_bin PRIVATE barry)
 add_executable(barry_provenance_query tools/provenance_query.cpp)
 target_link_libraries(barry_provenance_query PRIVATE barry)
 
+add_executable(barry_bin_to_graphone tools/bin_to_graphone.cpp)
+target_link_libraries(barry_bin_to_graphone PRIVATE barry)
+
 add_executable(barry_lanl_to_bin tools/lanl_to_bin.cpp)
 target_link_libraries(barry_lanl_to_bin PRIVATE barry)
 
@@ -79,7 +82,7 @@ target_link_libraries(barry_soak PRIVATE barry)
 target_include_directories(barry_soak PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
 
 # benchmarks
-foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth)
+foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming)
     add_executable(bench_${B} benchmark/bench_${B}.cpp)
     target_link_libraries(bench_${B} PRIVATE barry)
     target_include_directories(bench_${B} PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
@@ -100,6 +103,22 @@ if(EXISTS "${DUCKDB_ROOT}/duckdb.h" AND EXISTS "${DUCKDB_ROOT}/libduckdb.so")
     message(STATUS "DuckDB found at ${DUCKDB_ROOT} -- building bench_e9_columnar")
 else()
     message(STATUS "DuckDB not found at ${DUCKDB_ROOT} -- skipping bench_e9_columnar")
+endif()
+
+# E19 needs LiveGraph; built only when the baseline has been compiled, so the
+# normal build stays dependency-free.
+set(LIVEGRAPH_ROOT "${CMAKE_SOURCE_DIR}/baselines/livegraph" CACHE PATH "LiveGraph source root")
+if(EXISTS "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
+    add_executable(bench_e19_livegraph benchmark/bench_e19_livegraph.cpp)
+    target_include_directories(bench_e19_livegraph PRIVATE
+        ${CMAKE_SOURCE_DIR}/benchmark ${LIVEGRAPH_ROOT}/bind)
+    target_link_libraries(bench_e19_livegraph PRIVATE barry
+        "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
+    set_target_properties(bench_e19_livegraph PROPERTIES
+        BUILD_RPATH "${LIVEGRAPH_ROOT}/build;${CMAKE_SOURCE_DIR}/baselines/tbb_install/lib")
+    message(STATUS "LiveGraph found -- building bench_e19_livegraph")
+else()
+    message(STATUS "LiveGraph not built -- skipping bench_e19_livegraph")
 endif()
 
 # tests

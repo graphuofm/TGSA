@@ -16,7 +16,7 @@ static void* try_mmap(size_t bytes) {
 }
 
 VertexIndex::VertexIndex(uint32_t num_vertices, size_t arena_reserve_bytes,
-                         bool build_reverse)
+                         bool build_reverse, bool transparent_huge)
     : num_vertices_(num_vertices),
       heads_(nullptr),
       heads_in_(nullptr),
@@ -49,6 +49,18 @@ VertexIndex::VertexIndex(uint32_t num_vertices, size_t arena_reserve_bytes,
         std::perror("[VertexIndex] mmap bucket arena"); std::abort();
     }
     bucket_base_ = static_cast<char*>(bp);
+    // Same reasoning as the edge arena: bump-allocated and fully touched, so
+    // 2 MB pages are free here and the random reads during expansion are the
+    // most TLB-hostile access the engine makes.
+#ifdef MADV_HUGEPAGE
+    if (transparent_huge) {
+        madvise(bucket_base_, bucket_reserved_, MADV_HUGEPAGE);
+        madvise(heads_, heads_bytes, MADV_HUGEPAGE);
+        if (heads_in_) madvise(heads_in_, heads_bytes, MADV_HUGEPAGE);
+    }
+#else
+    (void)transparent_huge;
+#endif
 
     std::fprintf(stderr,
         "[VertexIndex] %u vertices, heads=%.1f MB%s, bucket arena=%.1f GB virtual\n",
@@ -70,14 +82,27 @@ VertexIndex::~VertexIndex() {
     }
 }
 
+// Give back a bucket that lost its CAS, for the same reason the arena does:
+// with N writers on a hot vertex every fill produced N-1 abandoned buckets of
+// twice the previous size.
+bool VertexIndex::try_return_bucket(VertexBucket* b, uint32_t capacity) {
+    const size_t total = bucket_bytes(capacity);
+    const size_t off = static_cast<size_t>(reinterpret_cast<char*>(b) - bucket_base_);
+    size_t expected = off + total;
+    return bucket_bump_.compare_exchange_strong(expected, off,
+                                                std::memory_order_acq_rel,
+                                                std::memory_order_relaxed);
+}
+
 VertexBucket* VertexIndex::allocate_bucket(uint32_t capacity) {
-    size_t total = sizeof(VertexBucket) + static_cast<size_t>(capacity) * sizeof(EdgeRef);
-    // 8-byte align next allocation (EdgeRef is 8-byte aligned already, header too).
-    total = (total + 7) & ~size_t{7};
+    const size_t total = bucket_bytes(capacity);
 
     size_t off = bucket_bump_.fetch_add(total, std::memory_order_relaxed);
     if (off + total > bucket_reserved_) {
-        std::fprintf(stderr, "[VertexIndex] bucket arena OOM\n");
+        if (bucket_failures_.fetch_add(1, std::memory_order_relaxed) == 0)
+            std::fprintf(stderr,
+                "[VertexIndex] bucket arena exhausted: %zu of %zu reserved bytes "
+                "used; further refs will be refused\n", off, bucket_reserved_);
         return nullptr;
     }
     auto* b = reinterpret_cast<VertexBucket*>(bucket_base_ + off);
@@ -100,8 +125,8 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
                 std::memory_order_acq_rel, std::memory_order_acquire)) {
             head = nb;
         } else {
+            try_return_bucket(nb, kInitialBucketCap);
             head = expected;
-            // nb is leaked into the bump arena -- acceptable; we never free buckets.
         }
     }
 
@@ -123,9 +148,10 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
             __atomic_store_n(&r->block, block, __ATOMIC_RELEASE);
             return;
         }
-        // Bucket is full -- push a new one onto the front of the chain so future
+        // Bucket is full: push a new one onto the front of the chain so future
         // appends find space immediately.
-        VertexBucket* nb = allocate_bucket(b->capacity * 2);
+        const uint32_t cap = b->capacity * 2;
+        VertexBucket* nb = allocate_bucket(cap);
         if (!nb) return;
         nb->next = b;
         VertexBucket* expected = b;
@@ -134,7 +160,9 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key,
                 std::memory_order_acq_rel, std::memory_order_acquire)) {
             b = nb;
         } else {
-            // Someone else extended the chain first -- retry against the new head.
+            // Someone else extended the chain first; give the bucket back and
+            // retry against the new head.
+            try_return_bucket(nb, cap);
             b = expected;
         }
     }
