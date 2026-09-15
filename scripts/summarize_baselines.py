@@ -198,9 +198,22 @@ def section_graphone(buf):
                "with its own statement that an unplanned shutdown may lose recent data "
                "and that recovery depends on an upstream backup such as Kafka. *Make "
                "graph* is when archiving into the adjacency has caught up, which is the "
-               "first point a vertex-centric read sees the edges. Against Gnomon those "
-               "line up with ingest, the `write_only` row of E18 cost, and ingest plus "
-               "`finalize()`.\n")
+               "first point a vertex-centric read sees the edges.\n")
+    buf.append("**The states being compared are not the same, and the column names say "
+               "so.** GraphOne's *make graph* produces an adjacency in arrival order "
+               "with no ordering on time; it has no operation that sorts by time, which "
+               "is the whole point of the comparison. Gnomon's *ingest* produces a state "
+               "that already answers windowed queries correctly, and is the like-for-like "
+               "counterpart. Gnomon's *ready* additionally runs `finalize()`, which "
+               "time-sorts each vertex's adjacency so the window can be binary-searched; "
+               "GraphOne has no equivalent, so comparing *ready* against *make graph* "
+               "charges us for work the baseline never does. An earlier version of this "
+               "table did exactly that and made GraphOne look faster than it is.\n")
+    buf.append("GraphOne's directed schema (`dgraph`) builds both out- and in-adjacency. "
+               "The Gnomon columns below build out-edges only. Measured with the reverse "
+               "index enabled for parity, ingest becomes 51.98 Meps on wiki-talk, 78.59 "
+               "on tc-cadets and 24.23 on cit-Patents (see `e16_reverse.csv`), still "
+               "ahead of GraphOne's make graph on all three.\n")
     # -j 20 is the ingest configuration, -j 28 the windowed-query one; both
     # ingest identically, so take ingest numbers from 20 only or every corpus
     # appears twice.
@@ -215,15 +228,14 @@ def section_graphone(buf):
                      f"{f(r,'make_graph_Meps'):.2f}",
                      f"{f(g,'ingest_Meps'):.2f}" if g else "-",
                      f"{f(g,'ready_Meps'):.2f}" if g else "-",
-                     f"{f(g,'ingest_Meps')/f(r,'batch_update_Meps'):.2f}x"
-                     if g and f(r, 'batch_update_Meps') else "-",
-                     f"{f(g,'ready_Meps')/f(r,'make_graph_Meps'):.2f}x"
+                     f"{f(g,'ingest_Meps')/f(r,'make_graph_Meps'):.2f}x"
                      if g and f(r, 'make_graph_Meps') else "-"])
     if rows:
         buf.append(table(["corpus", "edges", "GO batch update Meps",
-                          "GO make graph Meps", "Gnomon ingest Meps",
-                          "Gnomon ready Meps", "ingest ratio",
-                          "query-ready ratio"], rows))
+                          "GO make graph Meps (unsorted)",
+                          "Gnomon ingest Meps (queryable)",
+                          "Gnomon +finalize Meps (time-sorted)",
+                          "like-for-like ratio"], rows))
         buf.append("")
 
     wq = [r for r in go if r.get("window_ns_per_delivered") and r.get("job") == "28"]
