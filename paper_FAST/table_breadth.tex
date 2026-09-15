@@ -1,0 +1,33 @@
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{3.4pt}
+\caption{Breadth across 13 public corpora spanning four orders of
+magnitude. Ingestion is what the stream sees; compaction is the one
+optional pass that makes neighborhood expansion binary-searchable.
+Traversal is the median time-respecting forward traversal over a 1\%
+window. Resident bytes per edge are against a 20\,B packed edge; the
+remainder is the vertex index and block headers. Eight threads.}
+\label{tab:breadth}
+\begin{tabular}{@{}lrrrrrrr@{}}
+\toprule
+Corpus & Edges & $|V|$ & Span & Ingest & Comp. & Trav. & B/ \\
+ & & & (d) & (Meps) & (s) & ($\mu$s) & edge \\
+\midrule
+CollegeMsg & 60K & 2K & 194 & 5.2 & 0.00 & 1.0 & 158 \\
+email-Eu & 332K & 1K & 804 & 6.8 & 0.01 & 1.0 & 79 \\
+act-mooc & 412K & 7K & 30 & 9.0 & 0.01 & 0.5 & 87 \\
+mathoverflow & 507K & 25K & 2350 & 7.5 & 0.02 & 0.5 & 87 \\
+askubuntu & 964K & 159K & 2614 & 6.8 & 0.04 & 0.5 & 91 \\
+superuser & 1.4M & 194K & 2773 & 7.0 & 0.06 & 0.5 & 88 \\
+wiki-talk & 7.8M & 1.1M & 2320 & 6.2 & 0.34 & 0.5 & 68 \\
+cit-Patents & 16.5M & 6.0M & 1826 & 7.4 & 0.76 & 0.5 & 77 \\
+TC-CADETS & 22.5M & 2.9M & 11 & 5.8 & 0.86 & 0.5 & 65 \\
+stackoverflow & 63.5M & 2.6M & 2774 & 5.8 & 3.11 & 0.5 & 66 \\
+LiveJournal & 69.0M & 4.8M & 1157 & 5.3 & 3.50 & 0.7 & 71 \\
+TC-THEIA & 97.3M & 6.9M & 10 & 4.9 & 3.45 & 0.5 & 63 \\
+bitcoin & 113.1M & 48.1M & 2585 & 1.9 & 5.96 & 0.5 & 107 \\
+\midrule
+\multicolumn{8}{@{}l@{}}{\emph{plus} LANL, 1.05B edges (\S\ref{sec:eval-ingest}, \S\ref{sec:eval-stream})}\\
+\bottomrule
+\end{tabular}
+\end{table}

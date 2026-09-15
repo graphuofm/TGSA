@@ -211,46 +211,46 @@ def fig_temporal():
 # Fig. structural: the concession, priced across corpora and algorithms
 # =====================================================================
 def fig_structural():
-    """The concession, priced. Horizontal layout keeps corpus names legible;
-    series are labelled in place rather than by legend, saving column space."""
-    fig, ax = plt.subplots(figsize=(3.34, 2.45))
-    rows = load('e13_storage/e13_full.csv') + load('e13_storage/e13_lanl.csv')
-    g = defaultdict(list)
+    """The concession, priced across 11 corpora and 3 algorithms.
+
+    Ratio against the topology-only CSR optimum, plotted against corpus size so
+    the two regimes separate: frontier-driven traversal touches only reached
+    vertices, whole-graph iteration walks every bucket chain every round.
+    """
+    fig, ax = plt.subplots(figsize=(3.34, 2.15))
+    rows = (load('e13_storage/e13_full.csv') + load('e13_storage/e13_lanl.csv')
+            + load('e13_storage/e13_more.csv'))
+    g, size = defaultdict(list), {}
     for r in rows:
         if r['algo'] in ('bfs', 'pr', 'cc') and int(r['edges_delivered']) > 1000:
             g[(r['dataset'], r['algo'], r['engine'])].append(float(r['storage_sec']))
-    order = [('lanl-auth', 'LANL (1.05B)'), ('wiki-talk-temporal', 'wiki-talk (7.8M)'),
-             ('sx-askubuntu', 'askubuntu (964K)'), ('sx-mathoverflow', 'mathoverflow (507K)'),
-             ('email-Eu-core-temporal', 'email-Eu (332K)'), ('CollegeMsg', 'CollegeMsg (60K)')]
-    algos = [('bfs', 'BFS', '#000000', ''),
-             ('pr', 'PageRank', '#0072B2', '///'),
-             ('cc', 'label prop.', '#E69F00', '...')]
-    H, yt, yl, allr = 0.25, [], [], []
-    for di, (dsname, disp) in enumerate(order):
-        for ai, (al, aname, col, hat) in enumerate(algos):
-            base, ours = g.get((dsname, al, 'csr')), g.get((dsname, al, 'barry'))
-            if not (base and ours): continue
-            ratio = med(ours) / med(base); allr.append(ratio)
-            ypos = di + (1 - ai) * H
-            ax.barh(ypos, ratio, height=H*0.86, color=col, hatch=hat,
-                    edgecolor='white', linewidth=0.5, zorder=3)
-            ax.text(ratio + 0.05, ypos, f'{ratio:.1f}', va='center', fontsize=6.2)
-            if di == len(order) - 1:      # label the series in place, top group
-                ax.text(0.08, ypos, aname, va='center', fontsize=6.2,
-                        color='white' if ai == 0 else '#222222', zorder=4,
-                        fontweight='bold')
-        yt.append(di); yl.append(disp)
-    ax.axvspan(min(allr), max(allr), color='#000000', alpha=0.045, zorder=0)
-    ax.axvline(1.0, color='#009E73', lw=1.3, ls=(0, (1, 1)), zorder=4)
-    ax.set_yticks(yt); ax.set_yticklabels(yl, fontsize=6.9)
-    ax.set_xlabel('adjacency delivery, $\\times$ topology-only CSR', fontsize=7.5)
-    ax.set_xlim(0, 3.3); ax.set_ylim(-0.55, len(order) - 0.3)
-    ax.text(1.07, -0.48, 'topology-only CSR: optimum,\nno ingest path',
-            fontsize=6.1, color='#007a58', style='italic', va='bottom')
-    ax.text(3.24, len(order) - 0.38,
-            f'{min(allr):.1f}–{max(allr):.1f}$\\times$ overall,'
-            f'  median {sorted(allr)[len(allr)//2]:.1f}$\\times$',
-            fontsize=6.5, ha='right', va='top')
+    edges = {'CollegeMsg': 5.98e4, 'email-Eu-core-temporal': 3.32e5, 'act-mooc': 4.12e5,
+             'sx-mathoverflow': 5.07e5, 'sx-askubuntu': 9.64e5, 'sx-superuser': 1.44e6,
+             'wiki-talk-temporal': 7.83e6, 'cit-Patents': 1.65e7, 'sx-stackoverflow': 6.35e7,
+             'soc-LiveJournal1': 6.90e7, 'lanl-auth': 1.05e9}
+    series = [('bfs', 'BFS (frontier-driven)', '#000000', 'o', '-'),
+              ('pr', 'PageRank (all vertices)', '#0072B2', 's', '--'),
+              ('cc', 'label prop. (all vertices)', '#E69F00', '^', '-.')]
+    allr = []
+    for al, lbl, col, mk, ls in series:
+        xs, ys = [], []
+        for ds, n in sorted(edges.items(), key=lambda kv: kv[1]):
+            if g.get((ds, al, 'csr')) and g.get((ds, al, 'barry')):
+                xs.append(n); ys.append(med(g[(ds, al, 'barry')]) / med(g[(ds, al, 'csr')]))
+        allr += ys
+        ax.plot(xs, ys, marker=mk, ls=ls, color=col, label=lbl, ms=3.6, lw=1.1, zorder=3)
+    ax.axhline(1.0, color='#009E73', lw=1.3, ls=(0, (1, 1)), zorder=4)
+    ax.text(1.3e9, 0.82, 'topology-only CSR: optimum,\nno ingest path', ha='right',
+            fontsize=6.0, color='#007a58', style='italic', va='bottom')
+    ax.set_xscale('log')
+    ax.set_xlabel('corpus size (edges)')
+    ax.set_ylabel('adjacency delivery,\n$\\times$ topology-only CSR')
+    ax.set_ylim(0.3, 6.8)
+    ax.legend(frameon=False, loc='upper left', fontsize=6.5, handlelength=1.9,
+              handletextpad=0.5, borderpad=0.15, labelspacing=0.3)
+    ax.annotate(f'{len(allr)} measurements, 11 corpora:\n'
+                f'{min(allr):.1f}–{max(allr):.1f}$\\times$, median {sorted(allr)[len(allr)//2]:.1f}$\\times$',
+                xy=(0.97, 0.30), xycoords='axes fraction', ha='right', fontsize=6.4)
     fig.tight_layout(pad=0.35)
     fig.savefig(FIG + 'fig_structural.pdf'); plt.close(fig)
 

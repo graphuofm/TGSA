@@ -53,73 +53,72 @@ conceding bounded, measured costs on the structural axis.
 \section{Introduction}
 \label{sec:intro}
 
-A growing class of graphs is built from \emph{events}: a system call
-touches a file, an agent invokes a tool, a host authenticates to
-another, a user replies to a message. Each edge carries the moment it
+A growing class of graphs is built from \emph{events}. A system call
+touches a file; an agent invokes a tool; a host authenticates to
+another; a user replies to a message. Each edge carries the moment it
 happened, never changes afterwards, and arrives as part of a stream
-that does not end. The queries such graphs exist to answer are
-temporal and causal: \emph{what could have influenced this state},
-\emph{what did this event go on to touch}, \emph{what did the
-neighborhood look like at time $t$}, \emph{how much happened in this
-window}. And because the value of an event fades with age, the data is
-governed by time-based retention.
+that does not end. The queries these graphs exist to answer are
+temporal and causal: what could have influenced this state, what did
+this event go on to touch, what did a neighborhood look like at time
+$t$, how much happened in this window. And because an event's value
+fades with age, the data is governed by time-based retention.
 
-Every mature storage engine approaches this workload with a layout
-built for something else. Dynamic graph stores---packed-memory-array,
-tree, and adjacency-list designs~\cite{wheatman2021ppcsr, shen2026dcsr,
-dhulipala2019aspen, fuchs2023sortledton}---key storage on source-vertex
-identity and treat the timestamp as payload, so any time-constrained
-query degrades to a structural scan with per-edge filtering, and any
-retention pass must find expired edges wherever vertex order scattered
-them. Columnar and LSM engines~\cite{raasveldt2019duckdb} invert the
-failure: ordered by time, they answer range filters well, but every
-hop of a traversal becomes a fresh join against the edge table.
-Versioned temporal graph databases~\cite{li2026tva, hou2024aeong}
-solve a genuinely different problem---retrieving the valid
-\emph{version} of an updated entity---and their machinery presumes few,
-property-rich versions per entity, an assumption an event stream
-violates by design. Finally, a statically time-sorted CSR answers
-temporal queries near-optimally and is not a storage engine at all:
-its only update path is a rebuild, during which it is blind.
+Existing storage engines all approach this workload with a layout
+designed for something else. Dynamic graph
+stores~\cite{wheatman2021ppcsr, shen2026dcsr, dhulipala2019aspen,
+fuchs2023sortledton} key storage on source-vertex identity and treat
+the timestamp as payload. A time-constrained query then becomes a
+structural scan with a per-edge filter, and a retention pass has to
+find expired edges wherever vertex order scattered them. Columnar and
+LSM engines~\cite{raasveldt2019duckdb} have the opposite problem:
+ordered by time, they answer range filters well, but every hop of a
+traversal is a fresh join against the edge table. Versioned temporal
+graph databases~\cite{li2026tva, hou2024aeong} solve a different
+problem---retrieving the valid \emph{version} of an updated
+entity---and their structures assume few, property-rich versions per
+entity, which an event stream violates by construction. A statically
+time-sorted CSR answers temporal queries close to optimally, but it is
+not a storage engine: its only update path is a full rebuild, and
+during that rebuild it is blind.
 
-\sys starts from an address-space observation: a 64-bit virtual
-address space is orders of magnitude larger than the time range of any
-recorded workload. Rather than maintaining an index from timestamp to
-location, \sys makes the timestamp \emph{be} the location:
+\sys keys storage on time. The starting observation is that a 64-bit
+virtual address space is orders of magnitude larger than the time
+range of any recorded workload, so instead of maintaining an index
+from timestamp to location, we let the timestamp \emph{be} the
+location:
 \begin{equation}
 A(T) \;=\; A_{\mathrm{base}} + \big((T - T_{\mathrm{start}}) \gg S\big)\times P,
 \label{eq:mapping}
 \end{equation}
-a subtraction and a shift, with the operating system's demand paging
-absorbing sparsity at zero data-structure cost. The properties the
-workload needs then fall out of the layout rather than being
-engineered on top of it. Because an edge's home is computed, not
-searched, ingestion is a wait-free slot claim; because the computation
-ignores arrival order, out-of-order and late events cost nothing;
-because retention is a monotone time predicate, expiry is a release of
-an address prefix; and because nothing is ever updated in place,
-crash recovery collapses to replaying an append-only log through the
-normal insert path.
+one subtraction and one shift, with the operating system's demand
+paging absorbing temporal sparsity at no data-structure cost.
 
-This design has costs, and a storage paper owes their measurement as
-much as their mitigation. A layout that refuses to organize by entity
-must pay something on entity-keyed operations; a layout that never
-sorts on ingest must either scan unsorted neighborhoods or compact
-them later. We quantify both, delimit them with an explicit
-compaction contract---\emph{always appendable, always correct,
-including mid-ingest; fast neighborhood expansion after a compaction
-schedulable at leisure}---and show the concessions are bounded
-constants while the wins are orders of magnitude (\cref{sec:eval}).
+What follows from that layout is the point of the paper. An edge's
+home is computed, not searched, so ingestion is a wait-free slot
+claim. The computation ignores arrival order, so out-of-order and late
+events cost nothing extra. Retention is a monotone predicate on time,
+so expiry is the release of an address prefix. Nothing is updated in
+place, so crash recovery is replaying an append-only log through the
+normal insert path. None of these is engineered on top of the layout;
+each is a consequence of it.
+
+The design also has costs, and a storage paper owes their measurement
+as much as their mitigation. A layout that refuses to organize by
+entity must pay something on entity-keyed operations. A layout that
+never sorts during ingestion must either scan unsorted neighborhoods
+or sort them later. We measure both, bound the second with an explicit
+compaction contract, and report the one operation where a competing
+design beats us outright (\cref{sec:eval}).
 
 We contribute: (i)~a storage design that keys temporal graphs on time,
-with formal guarantees for its addressing, space, granularity
-selection, concurrency, and recovery (\cref{sec:design}); (ii)~a
-concurrent-correctness protocol under which readers never observe a
-torn or unpublished edge during lock-free multi-writer ingestion;
-and (iii)~an evaluation methodology that verifies element-wise answer
-equality across engines before reporting any latency, decomposes
-algorithm time into storage-read share, and measures what a static
-structure silently loses while rebuilding (\cref{sec:eval}).
+with proofs for its addressing, space, granularity, and concurrency
+properties (\cref{sec:design}); (ii)~a publication protocol under
+which readers never observe a torn or unpublished edge during
+lock-free multi-writer ingestion (\cref{thm:conc}); and (iii)~an
+evaluation across fourteen corpora and five competing layouts that
+verifies element-wise answer equality before reporting any latency,
+separates storage cost from algorithm cost, and measures what a static
+structure silently loses while it rebuilds (\cref{sec:eval}).
 
 % =====================================================================
 \section{Design}
@@ -183,90 +182,155 @@ insertion---sorts.}
 \end{figure}
 
 \subsection{Time-keyed addressing}
-\Cref{eq:mapping} maps a timestamp to a slot in a single anonymous
-memory mapping (\cref{fig:arch}). Two properties make this an engine
-rather than a trick.
+\Cref{eq:mapping} maps a timestamp to a slot in one anonymous memory
+mapping (\cref{fig:arch}). Two properties turn that arithmetic into a
+storage layout.
 
 \begin{theorem}[Addressing]
 \label{thm:addr}
 For any timestamp $t$, the slot holding every edge stamped $t$ is
 computed in $O(1)$ worst case, with no data-dependent memory access.
 \end{theorem}
+\begin{proof}
+The map is one subtraction and one shift. Two timestamps land in the
+same slot exactly when $\lfloor (t-T_0)/2^S \rfloor = \lfloor
+(t'-T_0)/2^S \rfloor$, i.e.\ when they share a window, so every edge
+stamped $t$ is registered under that one index and no other slot can
+hold one. No search structure is consulted, so the bound is
+unconditional rather than expected-case. A B-tree or LSM index gives
+$O(\log E)$ with pointer chases; a hash index gives \emph{expected}
+$O(1)$ with worst-case collisions.
+\end{proof}
 
 \begin{theorem}[Space]
 \label{thm:space}
-With page size $P$ and $W_{occ}$ non-empty windows, resident timeline
-memory is at most $W_{occ}\cdot P$ plus lazily materialized page-table
-overhead; untouched windows cost zero bytes.
+Let $P$ be the page size and $W_{occ}$ the number of non-empty
+windows. Resident timeline memory is at most $W_{occ}\cdot P$ plus
+page-table overhead the kernel materializes lazily; untouched windows
+cost zero bytes, whatever the virtual reservation.
 \end{theorem}
+\begin{proof}
+The timeline is an anonymous mapping of pointer slots. A page becomes
+resident only when first written, and a slot is written only when its
+window receives its first edge. Resident pages are therefore at most
+the number of pages holding at least one occupied slot, which is at
+most $W_{occ}$ since each occupied slot dirties one page. Untouched
+ranges are never faulted in and never appear in the page table.
+\end{proof}
 
-Sparsity is absorbed by the MMU, not by a structure the engine
-maintains. The mapping is \emph{anonymous}---no file backing---so the
-documented failure modes of file-backed mmap buffer
-management~\cite{crotty2022mmap} (torn file pages, SIGBUS on
-truncation, eviction stalls) do not arise; \sys uses mmap the way an
-allocator reserves address space, not as a buffer pool. The shift $S$
-is chosen adaptively from stream statistics; the selected window
-occupancy is provably within $[\mathrm{target}/2,\,
-4\cdot\mathrm{target})$, the factor-of-two slack on each side being
-the honest price of power-of-two addressing. Proofs of all theorems
-appear in the anonymized supplemental report.
+Sparsity is thus absorbed by the MMU, not by a structure the engine
+maintains. The mapping is \emph{anonymous}, with no file behind it, so
+the failure modes catalogued against mmap in
+databases~\cite{crotty2022mmap}---torn file pages, SIGBUS on
+truncation, eviction stalls---do not apply: we use mmap the way an
+allocator reserves address space, not as a buffer pool.
+
+The shift $S$ sets how much time one slot covers. Too coarse and
+windows overfill; too fine and the timeline sprawls. \sys picks $S$
+from stream statistics, and the choice is bounded.
+
+\begin{theorem}[Granularity]
+\label{thm:shift}
+For $E \ge 2\tau$ events with target occupancy $\tau$, the selected
+shift yields mean window occupancy $\mu \in [\tau/2,\, 4\tau)$.
+\end{theorem}
+\begin{proof}
+The selector computes $D=\lfloor E/\tau \rfloor$ desired windows, a
+desired width $w=\lfloor S_{\mathrm{span}}/D \rfloor$, and takes the
+smallest $S$ with $2^S \ge w$, so $2^S \in [w, 2w)$. The realized
+window count $W=\lceil S_{\mathrm{span}}/2^S \rceil$ then satisfies
+$D/2 < W \le D+1$, giving $\mu = E/W \ge E/(D+1) \ge \tau/2$ and
+$\mu < 2E/D < 4\tau$.
+\end{proof}
+
+The two factors of two are real, not slack in the analysis: one comes
+from rounding the window width up to a power of two, which shift
+addressing cannot avoid, and one from the ceiling on the window count.
+Across our corpora a single target yields per-window densities from 32
+to 32{,}768 edges, and the bound holds at both ends.
 
 \subsection{Lock-free ingestion, correct concurrent reads}
 \label{sec:design-ingest}
 An insert computes its slot (\cref{thm:addr}), claims an index in the
-window's current block by a single \texttt{fetch\_add}, and installs
-overflow blocks by CAS; every CAS failure implies another insert
-succeeded, so ingestion is lock-free with wait-free slot claims.
-Nothing sorts, nothing rebalances, and arrival order is
-irrelevant---the property that separates \sys from every
-sorted-on-ingest design the moment events straggle.
+window's block with one \texttt{fetch\_add}, and installs overflow
+blocks by CAS. Every failed CAS means some other insert succeeded, so
+ingestion is lock-free and the slot claim itself is wait-free. Nothing
+sorts and nothing rebalances, so arrival order does not matter---which
+is what separates \sys from every sorted-on-ingest design as soon as
+events arrive late or out of order.
 
-Concurrent readers are protected by a publication protocol rather
-than locks. A writer fills an edge's payload first and stores its
-timestamp \emph{last} with release semantics; since fresh arena pages
-are zero-filled, a zero timestamp identifies an unpublished slot, and
-readers acquire-load and skip it. Vertex-index refs publish through
-their block pointer identically. One ordering rule makes the
-optimized read path sound as well: an append clears the bucket's
-\emph{sorted} flag \emph{before} bumping its counter, so any reader
-that still observes the flag after an acquiring counter-read is
-provably looking at a fully compacted, fully published prefix, and
-may binary-search it.
+Readers are protected by a publication protocol instead of locks. A
+writer fills an edge's payload first and stores its timestamp
+\emph{last} with release semantics. Fresh arena pages are zero-filled,
+so a zero timestamp marks a slot that is not yet published; readers
+acquire-load the timestamp and skip those. Vertex-index references
+publish through their block pointer the same way. One extra ordering
+rule makes the fast read path safe as well: an append clears the
+bucket's \emph{sorted} flag \emph{before} it bumps the bucket counter.
 
 \begin{theorem}[Concurrent reads]
 \label{thm:conc}
-Under the publication protocol, no query observes a torn, partial, or
-unpublished edge during concurrent multi-writer ingestion, and every
-query result equals that of some serially consistent state.
+Under this protocol no query observes a torn, partial, or unpublished
+edge during concurrent multi-writer ingestion, and a reader that finds
+the sorted flag set may binary-search the counted prefix.
 \end{theorem}
+\begin{proof}
+For the first claim: a reader only accepts a slot whose timestamp is
+non-zero, and the writer's release store of the timestamp happens
+after its payload writes, so an acquiring reader that sees the
+timestamp also sees the payload. A slot is written once and never
+mutated, so no torn state exists after publication.
+
+For the second: a reader loads the counter (acquire) and then the
+flag. Suppose it observes the flag still set. Any append that could
+have extended the counted prefix cleared the flag before bumping the
+counter, and the reader's acquire on the counter synchronizes with
+every bump it observes; so if any such bump were visible, the
+corresponding clear would be visible too and the flag would be unset.
+The observed prefix is therefore exactly the one compaction verified
+and published, and binary search over it is sound.
+\end{proof}
 
 \subsection{The compaction contract}
 Appends leave a vertex's neighborhood in arrival order, so a
-time-windowed expansion costs $O(d)$. An explicit
-\texttt{compact()} pass sorts each neighborhood by timestamp once,
-after which expansion binary-searches in $O(\log d + k)$. Compaction
-is deliberately \emph{not} on the insert path: folding it in would
-make every batch pay for the whole index and forfeit streaming.
-Queries are correct in either state---compaction changes cost, never
-answers. The resulting contract is the paper's central trade: a
-statically sorted structure gets its speed by making sorting
-\emph{mandatory} and paying with a blind rebuild window
-(\cref{sec:eval-stream}); \sys makes sorting \emph{optional} and pays
-a bounded constant until it runs.
+time-windowed expansion has to scan it: $O(d)$. An explicit
+\texttt{compact()} pass sorts each neighborhood by timestamp once, and
+afterwards expansion binary-searches in $O(\log d + k)$ for $k$
+results. Compaction is deliberately \emph{not} on the insert path. We
+measured what happens when it is: an early build that compacted after
+every batch ingested at 11K events/s, because each batch re-walked the
+whole index, against 3.3M events/s once the pass was moved off the
+path---the same $O(\text{index})$-per-batch cost a sorted structure
+pays by design.
+
+Queries are correct in both states; compaction changes their cost, not
+their answers. This is the paper's central trade. A statically sorted
+structure gets its query speed by making sorting \emph{mandatory}, and
+pays for it with a rebuild window during which its answers are wrong
+(\cref{sec:eval-stream}). \sys makes sorting \emph{optional} and pays
+a bounded constant until it runs. The contract is: \emph{always
+appendable, always correct including mid-ingest; fast expansion after
+a compaction you schedule when convenient.}
 
 \subsection{Retention and durability}
-Retention is a monotone time predicate, so under \cref{eq:mapping} it
-is an address-prefix operation: \texttt{evict\_before($t$)} walks the
-timeline prefix, merges block extents, and returns whole pages with
-\texttt{madvise}; readers of other windows are undisturbed. For
-durability, \sys exploits a property databases rarely enjoy: engine
-state is a pure function of the edge multiset. The write-ahead log is
-therefore just framed, checksummed batches of raw edges, an
-asynchronous writer overlaps it with insertion, and recovery is
-replaying the log through the normal insert path---no undo, no redo,
-no idempotence bookkeeping; a torn tail frame is detected and
-discarded.
+Retention is a monotone predicate on time, so under
+\cref{eq:mapping} it is an operation on an address prefix.
+\texttt{evict\_before($t$)} walks the timeline prefix, merges the block
+extents it finds, and returns whole pages to the OS with
+\texttt{madvise}; readers of other windows are untouched. There is no
+scan of the edge set and no tombstone compaction, because expiry and
+address order are the same order.
+
+Durability uses a property most databases do not have: engine state is
+a pure function of the edge multiset. Edges are immutable, never
+updated, and deletion is retention policy rather than semantics. The
+log is therefore just framed, checksummed batches of raw edges; an
+asynchronous writer overlaps it with insertion; and recovery is
+replaying the log through the ordinary insert path. There is no undo
+phase, no redo phase, and no idempotence bookkeeping, because
+replaying a batch twice is indistinguishable from the multiset having
+contained it twice---and it cannot, since each batch is framed once. A
+torn tail frame fails its length or checksum test and is discarded.
 
 % =====================================================================
 \section{Implementation}
@@ -287,22 +351,23 @@ be released.
 \label{sec:eval}
 
 \textbf{Setup.} 20-core Xeon, 188\,GB RAM, Ubuntu 20.04. Fourteen
-datasets: LANL enterprise authentication (1.05B events, 17,666 hosts,
-58 days)~\cite{lanl2015data}, DARPA TC whole-system provenance
-(CADETS 22.5M and THEIA 97.3M information-flow edges over 2.9M/6.9M
-entities), and 12 SNAP temporal graphs (60K--646M edges). Baselines:
-DuckDB v1.5.5 through its C API in the same process; a time-sorted
-CSR (\texttt{tcsr}, the strongest static competitor); an
-arrival-order entity CSR (\texttt{ucsr}, what an ingesting
-entity-keyed store holds between rebuilds); the topology-only CSR;
-and TVA~\cite{li2026tva}, the most recent PVLDB temporal graph store,
-via its released artifact. Every cross-engine latency in this section
-is preceded by element-wise answer verification. Latency
-distributions on this workload are heavy-tailed; we report medians
-with tails or size-binned results, never means.
+corpora spanning five orders of magnitude in size
+(\cref{tab:breadth}): LANL enterprise
+authentication~\cite{lanl2015data} (1.05B events, 17,666 hosts, 58
+days), DARPA TC whole-system provenance (CADETS 22.5M and THEIA 97.3M
+information-flow edges), and 12 public temporal graphs from 60K to
+113M edges. Baselines: DuckDB v1.5.5 through its C API in the same
+process; a time-sorted CSR (\texttt{tcsr}, the strongest static
+competitor); an arrival-order entity CSR (\texttt{ucsr}, what an
+ingesting entity-keyed store holds between rebuilds); a topology-only
+CSR; and TVA~\cite{li2026tva} via its released artifact. Before any
+latency is reported, we check that the engines returned the same
+answer element by element. Latencies here are heavy-tailed, so we
+report medians with tails or results binned by answer size, never
+means.
 
-\subsection{Ingestion}
-\label{sec:eval-ingest}
+\input{table_breadth}
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_streaming.pdf}
@@ -316,42 +381,32 @@ static structure's pre-rebuild snapshot are not stale but silently
 incomplete; \sys never has a rebuild window, at any corpus size.}
 \label{fig:streaming}
 \end{figure*}
-\begin{table}[t]
-\centering\small
-\caption{Cross-engine operations, identical data and thread count.
-Snapshot = full-graph as-of scan. TVA row is a bound (DNF at the
-90-minute cutoff); a sorted CSR has no ingest path to measure.}
-\label{tab:e15}
-\begin{tabular}{@{}llrrrr@{}}
-\toprule
-Engine & Dataset & Ingest & Pt.\ scan & Snapshot & RSS \\
-\midrule
-\sys & wiki-talk & 0.60\,s & 0.2\,$\mu$s & 0.65\,s & 0.7\,GB \\
-\sys & CADETS    & 1.45\,s & 0.1\,$\mu$s & 218\,s  & 1.8\,GB \\
-\sys & THEIA     & 8.16\,s & 0.4\,$\mu$s & 45.8\,s & 7.7\,GB \\
-TVA  & wiki-talk & $>$5,415\,s & --- & --- & $>$41.6\,GB \\
-\bottomrule
-\end{tabular}
-\end{table}
-\sys ingests at 11.9--15.5M events/s single-threaded across
-wiki-talk, CADETS, and THEIA (\cref{tab:e15}), and sustains 6.8M events/s on the
-billion-edge LANL corpus under 12 concurrent writers \emph{while} 4
-readers issue validated queries (48,636 queries, 780M edges checked,
-zero protocol violations, final count exact). With the write-ahead
-log enabled, durable ingestion reaches 4.2M events/s under 64\,MB
-group commit against 7.4M volatile---bounded by the disk's measured
-156\,MB/s sequential bandwidth, not by the engine---and 1.2M with an
-fsync per batch. Driving TVA's artifact with the same single-threaded
-event stream did not complete wiki-talk within a 90-minute cutoff at
-41.6\,GB RSS (\cref{fig:streaming}): under event streams, every repeated
-$(src,dst)$ contact extends one edge's version chain, the structure
-its hopscotch layout must keep within bounded offsets, and its
-design assumption---few, property-rich versions per entity---inverts.
-A statically sorted CSR is absent from this comparison for the
-simplest reason: it has no ingest path at all.
 
-\subsection{Time-respecting traversal}
-\label{sec:eval-traversal}
+\subsection{Ingestion}
+\label{sec:eval-ingest}
+Across the 13 corpora of \cref{tab:breadth}, \sys ingests at
+1.9--9.0M~events/s on eight threads, and the one optional compaction
+pass costs at most 6.0\,s on the largest of them (113M edges). Single-threaded, matched against
+the competing engine's own thread count, the rates are 11.9--15.5M
+events/s. On the billion-edge LANL corpus \sys sustains 6.8M events/s
+under 12 concurrent writers \emph{while} four readers issue validated
+queries: 48,636 queries, 780M delivered edges checked, zero protocol
+violations, and a final edge count that matches exactly. With the
+write-ahead log on, durable ingestion reaches 4.2M events/s under
+64\,MB group commit against 7.4M volatile---the limit there is the
+disk's measured 156\,MB/s sequential bandwidth, not the engine---and
+1.2M with an fsync per batch.
+
+Driving TVA's artifact with the same single-threaded event stream did
+not complete wiki-talk's 7.8M events within a 90-minute cutoff, at
+41.6\,GB RSS (\cref{fig:streaming}a). The cause is structural rather
+than incidental: in an event stream every repeated $(src,dst)$ contact
+extends one edge's version chain, which is exactly the structure its
+hopscotch layout must keep within bounded offsets, so its design
+assumption---few, property-rich versions per entity---inverts. A
+statically sorted CSR is absent from this comparison for a simpler
+reason: it has no ingest path to measure.
+
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_temporal.pdf}
@@ -370,73 +425,102 @@ event streams occupy. \textbf{(c)}~Sparse temporal reachability makes
 query cost track the answer rather than the graph.}
 \label{fig:temporal}
 \end{figure*}
-On multi-hop time-respecting traversal run to fixpoint, \sys leads
-DuckDB by $150$--$700\times$ across all answer sizes---at
-$|R|>1{,}000$ the median is 12\,ms against 2.43\,s---because each hop
-costs a relational engine a join against the edge table
-(\cref{fig:temporal}a). The time-sorted CSR remains
-$2.7\times$ faster than \sys at high degree: that is the measured
-price of refusing to sort on ingest, and \cref{sec:eval-stream}
-prices what the CSR pays for the privilege. Against the
-\emph{ingesting} entity-keyed layout the ordering flips with degree
-(\cref{fig:temporal}b): at mean degree 20 \texttt{ucsr} wins
-on contiguity, at 337 \sys reaches parity, and at LANL's mean degree
-of 59,517 \sys leads by $104\times$ (4.2\,ms vs.\ 435\,ms)---the
-crossover lands where event-stream workloads actually live. On
-time-\emph{range} filtering, DuckDB's home ground, \sys's vectorized
-scan wins the median $10.6\times$ (77\,$\mu$s vs.\ 819\,$\mu$s,
-five seeds) with p95 at parity (981 vs.\ 1{,}105\,$\mu$s,
-overlapping ranges). Decomposing classic graph algorithms (BFS,
-PageRank, label propagation) into storage-read share under identical,
-checksum-verified executions bounds the structural concession:
-\sys delivers adjacency at $0.9$--$2.9\times$ the topology-only CSR
-optimum (median $1.7\times$), and the ratio \emph{improves} with
-scale---$1.4\times$ on the billion-edge corpus, where long bucket
-chains amortise---while \sys is the only layout of the four that
-ingests at all (\cref{fig:structural}). \sys's weakest operation is the
-full-graph as-of snapshot (enumerate-then-reduce; 218\,s on CADETS,
-whose hottest vertices carry millions of events): precisely the
-operation TVA's version-skipping is built to serve, and we report it
-as its win.
 
-\subsection{Rebuild versus stream}
-\label{sec:eval-stream}
+\subsection{Time-respecting traversal}
+\label{sec:eval-traversal}
+On multi-hop time-respecting traversal run to fixpoint, \sys leads
+DuckDB by $150$--$700\times$ across all answer sizes; at $|R|>1{,}000$
+the median is 12\,ms against 2.43\,s (\cref{fig:temporal}a). The
+reason is structural: each hop costs a relational engine a join
+against the edge table. The time-sorted CSR stays $2.7\times$ faster
+than \sys at high degree, which is the measured price of refusing to
+sort during ingestion; \cref{sec:eval-stream} prices what the CSR pays
+for that privilege.
+
+Against the \emph{ingesting} entity-keyed layout the ordering flips
+with graph density (\cref{fig:temporal}b). We normalise to cost per
+delivered edge, because the corpora span 60K to 1.05B edges and
+absolute times are not comparable across them. An arrival-order
+adjacency has to scan a whole neighborhood to find the edges inside
+the query window, so its per-edge cost rises from 26\,ns at degree 6
+to 1{,}500\,ns at degree 59{,}517. \sys's compacted buckets amortise a
+binary search over the same neighborhood, so its per-edge cost
+\emph{falls} from 54\,ns to 15\,ns. The crossover sits near degree
+100, inside the range event-stream workloads occupy.
+
+Two more results bound the picture. On time-\emph{range} filtering,
+DuckDB's home ground, \sys's vectorized scan wins the median
+$10.6\times$ (77\,$\mu$s against 819\,$\mu$s over five seeds) with p95
+at parity (981 against 1{,}105\,$\mu$s, overlapping ranges). And on
+structure-only algorithms we decompose each run into the share spent
+delivering adjacency, under executions verified identical by checksum.
+Over 29 measurements on 11 corpora, \sys delivers at
+$0.9$--$5.8\times$ the topology-only CSR optimum, median
+$2.1\times$, and the spread separates into two regimes
+(\cref{fig:structural}). Frontier-driven traversal touches only the
+vertices it reaches and stays at $1.4$--$2.2\times$ regardless of
+corpus size, including $1.4\times$ on the billion-edge corpus.
+Whole-graph iteration such as PageRank or label propagation walks
+every vertex's bucket chain on every round, where a CSR walks one
+contiguous array, and that gap widens with size: $5.8\times$ at 69M
+edges. This is the concession, it is the price of not organising by
+entity, and it buys an ingest path the optimum does not have.
+
+\sys's weakest operation is the full-graph as-of snapshot, which it
+answers by enumerating and reducing: 218\,s on CADETS, whose hottest
+vertices carry millions of events. That is precisely the operation
+TVA's version-skipping is built for, and we report it as its win.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_structural.pdf}
 \caption{The concession, priced. Adjacency delivery for structure-only
 algorithms against the topology-only CSR optimum, under identical
-checksum-verified executions. The cost is a small constant that
-\emph{improves} with scale, and it buys an ingest path the optimum
-does not have.}
+checksum-verified executions, across 11 corpora. The penalty separates
+by access pattern: frontier-driven traversal is flat in corpus size,
+whole-graph iteration is not, because it walks every bucket chain on
+every round.}
 \label{fig:structural}
 \end{figure}
-The time-sorted CSR's only update path is a full rebuild (28.4\,s on
-LANL). Queries about the live window served from the pre-rebuild
-snapshot are not stale but silently \emph{wrong}: on LANL, 68 of 100
-queries returned incomplete answers, losing 33.2\% of the true result
-on average and 99.5\% in the worst case; an independent wiki-talk
-measurement gives 34.1\%/96.7\% (\cref{fig:streaming}b). \sys ingests
-the same arrivals incrementally at 3.3M events/s and has no blind
-window. \sys's own optional compaction costs more than the CSR
-rebuild (76\,s vs.\ 28\,s on LANL; an arena-order timestamp resolve
-would close this and is future work)---but it sits on the
-performance path, not the correctness path, which is the entire
-point of the contract.
+
+\subsection{Rebuild versus stream}
+\label{sec:eval-stream}
+The time-sorted CSR's only update path is a full rebuild: 28.4\,s on
+LANL. A query about the live window served from the pre-rebuild
+snapshot is not stale but silently \emph{wrong}. On LANL, 68 of 100
+such queries returned incomplete answers, losing 33.2\% of the true
+result on average and 99.5\% in the worst case; an independent
+wiki-talk measurement gives 34.1\% and 96.7\%
+(\cref{fig:streaming}b). \sys ingests the same arrivals incrementally
+at 3.3M events/s and has no blind window at all.
+
+\sys's own optional compaction costs more than the CSR's rebuild on
+LANL (76\,s against 28\,s), because it resolves a timestamp per
+reference by chasing a pointer into the arena; resolving in arena
+order instead would close most of that, and is future work. But the
+comparison is between two different kinds of cost. The CSR's rebuild
+is on the correctness path---without it the answers are wrong.
+\sys's compaction is on the performance path---without it the answers
+are right and expansion is slower. That difference is the whole point
+of the contract.
 
 \subsection{Retention, scale, and a real workload}
-\texttt{evict\_before} releases 90\% of a 16.5M-edge history in
-18\,ms and returns 331\,MB of resident memory, $5$--$29\times$ faster
-than a columnar \texttt{DELETE}; both reclaim memory fully, so the
-win is speed alone. LANL loads in 255\,s at 96\,GB RSS with the
-reverse index; the 646M-edge reddit corpus runs in 39.6\,GB. As an
-end-to-end grounding on real ground truth: tracing all 749 labelled
-red-team alerts of the LANL corpus to causal fixpoint takes 46.5\,s
-total (median 24.6\,$\mu$s, p95 353\,ms), and on DARPA CADETS a
-forward trace from the documented exploit source reconstructs the
-full published attack chain---implant drop, privilege escalation,
-C2, injection target---in causal order within an impact set of
-0.0093\% of the graph, at 133\,$\mu$s.
+\texttt{evict\_before} releases 90\% of a 16.5M-edge history in 18\,ms
+and returns 331\,MB of resident memory, $5$--$29\times$ faster than a
+columnar \texttt{DELETE}. Both reclaim memory fully, so the win here
+is speed alone---we had expected the columnar engine to mark rows
+without reclaiming, and it does not. Across the corpora of \cref{tab:breadth} resident memory is
+63--158\,B per edge against a 20\,B packed edge; the rest is the
+vertex index and block headers. LANL loads in 255\,s at 96\,GB RSS with the reverse
+index enabled.
+
+As an end-to-end check on real ground truth: tracing all 749 labelled
+red-team alerts of the LANL corpus to causal fixpoint takes 46.5\,s in
+total (median 24.6\,$\mu$s, p95 353\,ms). On DARPA CADETS, a forward
+trace from the documented exploit source reconstructs the published
+attack chain---implant drop, privilege escalation, C2, injection
+target---in causal order, inside an impact set that is 0.0093\% of the
+graph, at 133\,$\mu$s.
 
 \subsection{Negative results, kept}
 For the record: caching timestamps in vertex-index refs (+50\%
