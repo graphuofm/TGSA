@@ -13,6 +13,17 @@
 
 \newcommand{\sys}{Gnomon\xspace}
 
+% Float separation is not specified by usenix2019_v3.sty, so LaTeX's article
+% defaults apply and they are loose for a two-column layout. Tightened here.
+% The title box and the section spacing are left exactly as the template sets
+% them: those the template does define, and changing them to win space would be
+% a formatting game rather than typesetting.
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
+
 \begin{document}
 
 % CFP: short papers carry the prefix in the submitted title; it is not published.
@@ -264,11 +275,12 @@ since \cref{eq:mapping} is evaluated per edge at insert time.}
 For $E \ge 2\tau$ events with target occupancy $\tau$, the selected
 shift yields mean window occupancy $\mu \in [\tau/2,\, 4\tau)$.
 \end{theorem}
-\begin{proof}[Proof sketch]
-The selector takes the smallest $S$ with $2^S \ge \lfloor L/D \rfloor$
-for $D=\lfloor E/\tau \rfloor$ desired windows, so the realized count
-$W=\lceil L/2^S \rceil$ obeys $D/2 < W \le D+1$ and $\mu=E/W$ falls in
-the stated interval. The artifact carries the full derivation.
+\begin{proof}
+The selector computes $D=\lfloor E/\tau \rfloor$ desired windows, a
+desired width $w=\lfloor L/D \rfloor$, and takes the smallest $S$ with
+$2^S \ge w$, so $2^S \in [w, 2w)$. The realized window count
+$W=\lceil L/2^S \rceil$ then satisfies $D/2 < W \le D+1$, giving
+$\mu = E/W \ge E/(D+1) \ge \tau/2$ and $\mu < 2E/D < 4\tau$.
 \end{proof}
 
 The two factors of two are real, not slack: one from rounding the
