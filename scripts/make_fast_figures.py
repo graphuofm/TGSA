@@ -50,41 +50,50 @@ def load(path):
 # Fig. streaming: the dynamic axis -- ingest rate, and what static layouts lose
 # =====================================================================
 def fig_streaming():
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 1.60),
-                               gridspec_kw={'width_ratios': [1.35, 1]})
+    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 1.95),
+                               gridspec_kw={'width_ratios': [1.55, 1]})
 
-    # (a) single-thread ingestion, log scale. Three bar classes, redundantly
+    # (a) ingestion on eight threads, log scale. Four bar classes, redundantly
     # encoded by colour AND hatch so the ranking survives greyscale printing.
-    # Eight threads throughout. The three baseline bars are wiki-talk so the
-    # comparison is like for like; the Gnomon corpus bars show the range.
+    # The three baseline bars are wiki-talk so the comparison is like for like;
+    # the Gnomon corpus bars show the range across corpora.
+    #
+    # Labels are rotated rather than horizontal: nine bars in this width put
+    # "LiveGraph" and "GraphOne" on top of each other, and a figure whose axis
+    # is unreadable has failed at its only job.
     bars = [
         ('TVA',        1447,    '#CC79A7', '+++', 'versioned store (DNF bound)'),
         ('LiveGraph',  5.08e6,  '#E69F00', '///', 'other streaming stores'),
         ('GraphOne',  24.27e6,  '#E69F00', '///', None),
-        ('fsync\nper batch', 1.11e6, '#555555', '...', 'Gnomon, durable (WAL)'),
-        ('64 MB\ncommit',    6.48e6, '#555555', '...', None),
+        ('fsync/batch',  1.11e6, '#555555', '...', 'Gnomon, durable (WAL)'),
+        ('64 MB commit', 6.48e6, '#555555', '...', None),
         ('wiki-talk', 66.93e6, '#000000', '',    'Gnomon, volatile'),
         ('CADETS',    80.09e6, '#000000', '',    None),
         ('LANL',      77.53e6, '#000000', '',    None),
         ('THEIA',     94.64e6, '#000000', '',    None),
     ]
     for i, (lbl, v, col, hat, _) in enumerate(bars):
-        a.bar(i, v, width=0.68, color=col, hatch=hat,
+        a.bar(i, v, width=0.66, color=col, hatch=hat,
               edgecolor='white', linewidth=0.7, zorder=3)
-        a.text(i, v*1.45, (f"{v/1e6:.1f}M" if v >= 1e6 else f"$\\leq${v:,.0f}"),
-               ha='center', fontsize=7, zorder=4)
-    a.set_yscale('log'); a.set_ylim(500, 3e8)
-    a.set_ylabel('events / s ingested')
+        a.text(i, v * 1.6, (f"{v/1e6:.1f}M" if v >= 1e6 else f"$\\leq${v:,.0f}"),
+               ha='center', fontsize=6.4, zorder=4)
+    a.set_yscale('log')
+    # Headroom above the tallest bar for the value labels, and below for the
+    # legend, so neither can land on the other.
+    a.set_ylim(300, 4e9)
+    a.set_ylabel('events / s ingested', fontsize=7.5)
+    a.tick_params(axis='y', labelsize=6.5)
     a.set_xticks(range(len(bars)))
-    a.set_xticklabels([b[0] for b in bars], fontsize=6.0)
-    a.set_xlim(-0.8, len(bars)-0.2)
+    a.set_xticklabels([b[0] for b in bars], fontsize=6.4,
+                      rotation=38, ha='right', rotation_mode='anchor')
+    a.set_xlim(-0.75, len(bars) - 0.25)
     a.legend(handles=[Patch(facecolor=c_, hatch=h_, edgecolor='white', label=l_)
                       for _, _, c_, h_, l_ in bars if l_],
-             frameon=False, loc='upper left', fontsize=6.5,
-             handlelength=1.2, handletextpad=0.35, borderpad=0.1,
-             labelspacing=0.32, bbox_to_anchor=(-0.02, 1.03))
-    a.annotate('did not finish\nin 90 min', xy=(0, 2400), xytext=(0, 3.0e4),
-               fontsize=6.3, style='italic', ha='center',
+             frameon=False, loc='upper left', fontsize=6.2, ncol=2,
+             handlelength=1.1, handletextpad=0.3, borderpad=0.1,
+             columnspacing=0.8, labelspacing=0.22, bbox_to_anchor=(-0.02, 1.04))
+    a.annotate('did not finish\nin 90 min', xy=(0, 3000), xytext=(0.55, 4.5e4),
+               fontsize=6.0, style='italic', ha='center',
                arrowprops=dict(arrowstyle='->', lw=0.6, color='#777777'))
     a.set_title('(a) Streaming ingestion', loc='left', fontsize=8)
 
@@ -107,11 +116,14 @@ def fig_streaming():
     b.axhline(0, color='#000000', lw=1.2, zorder=5)
     b.set_xticks(x + [2.0])
     b.set_xticklabels(ds + ['Gnomon\nany size\n(no rebuild)'], fontsize=6.8)
-    b.set_ylabel('% of true answer\nsilently missing'); b.set_ylim(-6, 135)
+    b.set_ylabel('% of true answer\nsilently missing', fontsize=7.5)
+    b.tick_params(axis='y', labelsize=6.5)
+    b.set_ylim(-6, 138)
     b.set_xlim(-0.55, 2.5)
     b.legend(frameon=False, loc='upper center', ncol=2, columnspacing=1.0,
              handlelength=1.3, handletextpad=0.4, fontsize=6.8, borderpad=0.15)
-    b.set_title('(b) Queries served during a static rebuild', loc='left', fontsize=8)
+    # Shorter than the panel's subject deserves, but it has to fit the axes.
+    b.set_title('(b) Answers lost during a static rebuild', loc='left', fontsize=8)
     fig.tight_layout(pad=0.35, w_pad=1.8)
     fig.savefig(FIG + 'fig_streaming.pdf'); plt.close(fig)
 
