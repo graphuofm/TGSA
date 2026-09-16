@@ -53,8 +53,9 @@ becomes a page release over an address prefix; compaction is explicit
 and off the ingest path; queries remain correct \emph{during}
 concurrent ingestion through a per-slot publication protocol; and
 because engine state is a pure function of the edge multiset, recovery
-is re-ingestion. We evaluate \sys against a columnar engine, three CSR
-layouts, and the most recent versioned temporal graph store, with
+is re-ingestion. We evaluate \sys against two streaming graph stores, a
+columnar engine, three CSR layouts, and the most recent versioned
+temporal graph store, with
 element-wise answer verification, on fourteen datasets including a
 billion-edge enterprise corpus, and show that keying storage on time
 wins the streaming and traversal axes by orders of magnitude while
@@ -106,8 +107,9 @@ location:
 A(T) \;=\; A_{\mathrm{base}} + \big((T - T_{0}) \gg S\big)\times P,
 \label{eq:mapping}
 \end{equation}
-one subtraction and one shift, with the operating system's demand
-paging absorbing temporal sparsity at no data-structure cost.
+for page size $P$: one subtraction and one shift, with the operating
+system's demand paging absorbing temporal sparsity at no
+data-structure cost.
 
 What follows from that layout is the point of the paper. An edge's
 home is computed, not searched, so ingestion is a wait-free slot
@@ -258,7 +260,7 @@ mmap as an allocator reserves address space, not as a buffer pool.
 
 The shift $S$ sets how much time one slot covers. Too coarse and
 windows overfill; too fine and the timeline sprawls. \sys picks $S$
-from stream statistics, and the choice is bounded.
+from stream statistics (\cref{alg:shift}), and the choice is bounded.
 
 \begin{algorithm}[t]
 \small
@@ -310,8 +312,9 @@ writer fills an edge's payload first and stores its timestamp
 so a zero timestamp marks a slot that is not yet published; readers
 acquire-load the timestamp and skip those. Vertex-index references
 publish through their block pointer the same way. One extra ordering
-rule makes the fast read path safe as well: an append clears the
-bucket's \emph{sorted} flag \emph{before} it bumps the bucket counter.
+rule makes the fast read path safe as well (\cref{alg:publish}): an
+append clears the bucket's \emph{sorted} flag \emph{before} it bumps
+the bucket counter.
 
 \begin{algorithm}[t]
 \small
@@ -421,7 +424,7 @@ converters, and every experiment driver will be released.
 corpora spanning five orders of magnitude (\cref{tab:breadth}): LANL
 enterprise authentication~\cite{lanl2015data} (1.05B events, 17,666
 hosts, 58 days), DARPA TC whole-system provenance (CADETS 22.5M and
-THEIA 97.3M information-flow edges), and 12 public temporal
+THEIA 97.3M information-flow edges), and 11 public temporal
 graphs~\cite{leskovec2014snap} from 60K to 113M edges. Baselines, all driven in-process:
 GraphOne~\cite{kumar2019graphone} and LiveGraph~\cite{zhu2020livegraph}
 built from source; DuckDB v1.5.5 through its C API; a time-sorted CSR
@@ -520,14 +523,14 @@ DuckDB's home ground, \sys's vectorized scan wins the median
 $10.6\times$ (77\,$\mu$s against 819\,$\mu$s) with p95 at parity. And on
 structure-only algorithms, decomposing each run into the share spent
 delivering adjacency under checksum-verified executions, \sys delivers
-at $0.9$--$5.8\times$ the topology-only CSR optimum over 29 measurements
-on 11 corpora, median $2.1\times$. The spread separates by access
-pattern: frontier-driven traversal stays at $1.4$--$2.2\times$
-regardless of corpus size, including on the billion-edge corpus, while
-whole-graph iteration walks every bucket chain on every round where a
-CSR walks one contiguous array, reaching $5.8\times$ at 69M edges. This
-is the concession: the price of not organising by entity, paid for an
-ingest path the optimum does not have.
+at $1.3$--$5.9\times$ the topology-only CSR optimum over 29 measurements
+on 10 corpora, median $2.3\times$. The spread separates by access
+pattern: frontier-driven traversal stays at $1.3$--$2.4\times$
+regardless of corpus size, while whole-graph iteration walks every
+bucket chain on every round where a CSR walks one contiguous array,
+reaching $5.9\times$ at 69M edges. This is the concession: the price of
+not organising by entity, paid for an ingest path the optimum does not
+have.
 
 \sys's weakest operation is the full-graph as-of snapshot, answered by
 enumerating and reducing: 218\,s on CADETS. That is what TVA's
@@ -544,16 +547,16 @@ different question: 54 of 54 LiveGraph configurations and 9 of 9
 GraphOne corpora agree.
 
 Against LiveGraph~\cite{zhu2020livegraph}, ingestion is
-$2.7$--$15.7\times$ faster at roughly half the resident set, and
-windowed neighbour delivery $1.6$--$194\times$. Against
+$2.7$--$15.7\times$ faster in 56--87\% of the resident set, and windowed
+neighbour delivery $1.6$--$194\times$. Against
 GraphOne~\cite{kumar2019graphone} the ingest comparison is close,
 $0.92$--$2.76\times$ measured like for like against the point its
 archiving makes edges visible, and the separation is in the query:
-$1.4$--$16.3\times$, because its adjacency carries no order on time
-and selecting a window costs it a read amplification of $8$--$84\times$
-(4.3B edges scanned to deliver 51M on CADETS). Uncompacted we are
-within $1.3$--$1.7\times$ of GraphOne's scan rather than ahead of it;
-the separation is what compaction buys.
+$2.1$--$30\times$, because its adjacency carries no order on time and
+selecting a window costs it a read amplification of $8$--$84\times$
+(4.3B edges scanned to deliver 51M on CADETS). Uncompacted the two are
+comparable, ranging from $3.2\times$ ahead of GraphOne's scan to
+$1.7\times$ behind it; the separation is what compaction buys.
 
 Run end to end, extracting a window, computing over it with identical
 code, and writing results back, extraction on a 63.5M-edge corpus runs
