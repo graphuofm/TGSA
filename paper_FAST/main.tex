@@ -129,12 +129,17 @@ index to maintain, merge or recover, which is why compaction here is
 optional rather than structural and recovery is replay rather than log
 analysis~\cite{mohan1992aries}.
 
-The design also has costs, and a storage paper owes their measurement
-as much as their mitigation. A layout that refuses to organize by
-entity must pay something on entity-keyed operations, and one that
-never sorts during ingestion must either scan unsorted neighborhoods or
-sort them later. We measure both and report the operations where a
-competing design beats us outright (\cref{sec:eval}).
+The design also has costs, and we measure them rather than argue them
+away: a layout that refuses to organize by entity pays on entity-keyed
+operations, and one that never sorts during ingestion must scan
+unsorted neighborhoods or sort them later. We report the operations
+where a competing design beats us outright (\cref{sec:eval}). But the
+workload settles the trade. An event stream is interrogated by time and
+causality far more often than by structure: what happened in this
+window, what could have reached this host by now, what may be
+discarded, are all predicates on the write key. \sys spends the
+structural axis to buy the temporal one, and takes that one as far as
+it goes.
 
 We contribute: (i)~a storage design that keys temporal graphs on time,
 with proofs for its addressing, space, granularity, and concurrency
@@ -468,12 +473,10 @@ with a log written but never flushed, which is the contract GraphOne's
 log implements, against 6.5M under 64\,MB group commit and 1.1M with an
 fsync per batch.
 
-A versioned temporal store is the wrong shape for this load rather than
-merely slower: driving TVA's artifact with the same stream did not
-finish wiki-talk's 7.8M events in 90 minutes, at 41.6\,GB RSS
-(\cref{fig:streaming}a), because every repeated $(src,dst)$ contact
-extends one edge's version chain and inverts its assumption of few,
-property-rich versions per entity.
+A versioned temporal store is the wrong shape for this load, not merely
+slower: TVA did not finish wiki-talk's 7.8M events in 90 minutes at
+41.6\,GB RSS (\cref{fig:streaming}a), because every repeated contact
+extends one edge's version chain.
 
 \begin{figure*}[t]
 \centering
@@ -589,18 +592,16 @@ holds at 250--310\,MB, each eviction costing 0.3--0.4\,ms and leaving
 the ingest rate undisturbed. Against a columnar \texttt{DELETE},
 releasing 90\% of a 16.5M-edge history is $5$--$29\times$ faster; both
 reclaim fully, so the win is speed. Tracing all 749 labelled red-team alerts of LANL to
-causal fixpoint takes 46.5\,s in total (median 24.6\,$\mu$s, p95
-353\,ms), and on DARPA CADETS a forward trace reconstructs the
-published attack chain in causal order inside an impact set 0.0093\% of
-the graph, at 133\,$\mu$s.
+causal fixpoint takes 46.5\,s (median 24.6\,$\mu$s, p95 353\,ms), and on
+CADETS a forward trace reconstructs the published attack chain inside
+an impact set 0.0093\% of the graph, at 133\,$\mu$s.
 
 \textbf{Negative results, kept.} Backing the dense arenas with 2\,MB
 pages was implemented and measured
 and loses: on 240M LANL events it costs 28\% of ingest throughput and
-69\% more resident memory, so it ships disabled. Binary search into a
-sorted bucket likewise loses below roughly 32 refs. And this original
-retention hypothesis, that the columnar engine would mark deleted rows
-without reclaiming, was false.
+69\% more resident memory, so it ships disabled. And this comparison's
+original retention hypothesis, that the columnar engine would mark
+deleted rows without reclaiming, was false.
 
 % =====================================================================
 \section{Related Work}
@@ -651,12 +652,10 @@ the index becomes a shift, ingestion an order-indifferent lock-free
 append, retention a page release, and recovery a replay. Each follows
 from the address being the timestamp.
 
-The boundaries are as much a result as the speedups. The advantage
-scales with how little history a query asks for: over a narrow recent
-window \sys extracts a working set $70\times$ faster than an
-entity-keyed store, and over the whole history merely level with one.
-What is missing is a data model, not a mechanism: \sys stores edges,
-and properties, in-place updates and semantic deletion are outside it.
+The boundaries are a result too: the advantage scales with how little
+history a query asks for, $70\times$ over a narrow recent window and
+merely level over the whole. What is missing is a data model, not a
+mechanism: properties, in-place updates and deletion are outside \sys.
 
 \bibliographystyle{plain}
 \bibliography{references}
