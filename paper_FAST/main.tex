@@ -647,8 +647,16 @@ storage layer made retention affordable.
 % =====================================================================
 \section{Conclusion}
 Keying storage on time collapses the machinery an event stream needs:
-the index becomes a shift, ingestion an append, retention a page
-release, and recovery a replay.
+the index becomes a shift, ingestion an order-indifferent lock-free
+append, retention a page release, and recovery a replay. Each follows
+from the address being the timestamp.
+
+The boundaries are as much a result as the speedups. The advantage
+scales with how little history a query asks for: over a narrow recent
+window \sys extracts a working set $70\times$ faster than an
+entity-keyed store, and over the whole history merely level with one.
+What is missing is a data model, not a mechanism: \sys stores edges,
+and properties, in-place updates and semantic deletion are outside it.
 
 \bibliographystyle{plain}
 \bibliography{references}
