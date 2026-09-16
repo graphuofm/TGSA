@@ -523,12 +523,12 @@ DuckDB's home ground, \sys's vectorized scan wins the median
 $10.6\times$ (77\,$\mu$s against 819\,$\mu$s) with p95 at parity. And on
 structure-only algorithms, decomposing each run into the share spent
 delivering adjacency under checksum-verified executions, \sys delivers
-at $1.3$--$5.9\times$ the topology-only CSR optimum over 29 measurements
-on 10 corpora, median $2.3\times$. The spread separates by access
+at $1.3$--$6.1\times$ the topology-only CSR optimum over 30 measurements
+on 10 corpora, median $2.4\times$. The spread separates by access
 pattern: frontier-driven traversal stays at $1.3$--$2.4\times$
 regardless of corpus size, while whole-graph iteration walks every
 bucket chain on every round where a CSR walks one contiguous array,
-reaching $5.9\times$ at 69M edges. This is the concession: the price of
+reaching $6.1\times$ at 69M edges. This is the concession: the price of
 not organising by entity, paid for an ingest path the optimum does not
 have.
 
