@@ -117,6 +117,18 @@ if(EXISTS "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
     set_target_properties(bench_e19_livegraph PROPERTIES
         BUILD_RPATH "${LIVEGRAPH_ROOT}/build;${CMAKE_SOURCE_DIR}/baselines/tbb_install/lib")
     message(STATUS "LiveGraph found -- building bench_e19_livegraph")
+    # E22 needs LiveGraph and DuckDB together: it runs the same pipeline through
+    # all three stores in one process so the algorithm code is literally shared.
+    if(EXISTS "${DUCKDB_ROOT}/duckdb.h" AND EXISTS "${DUCKDB_ROOT}/libduckdb.so")
+        add_executable(bench_e22_pipeline benchmark/bench_e22_pipeline.cpp)
+        target_include_directories(bench_e22_pipeline PRIVATE
+            ${CMAKE_SOURCE_DIR}/benchmark ${LIVEGRAPH_ROOT}/bind ${DUCKDB_ROOT})
+        target_link_libraries(bench_e22_pipeline PRIVATE barry
+            "${LIVEGRAPH_ROOT}/build/liblivegraph.so" "${DUCKDB_ROOT}/libduckdb.so")
+        set_target_properties(bench_e22_pipeline PROPERTIES
+            BUILD_RPATH "${LIVEGRAPH_ROOT}/build;${CMAKE_SOURCE_DIR}/baselines/tbb_install/lib;${DUCKDB_ROOT}")
+        message(STATUS "LiveGraph + DuckDB found -- building bench_e22_pipeline")
+    endif()
 else()
     message(STATUS "LiveGraph not built -- skipping bench_e19_livegraph")
 endif()

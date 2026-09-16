@@ -10,6 +10,9 @@ namespace barry {
 
 static constexpr uint32_t kInitialBucketCap = 8;
 
+// Below this many refs, scanning a sorted bucket beats seeking into it.
+static constexpr uint32_t kBinarySearchMin = 32;
+
 static void* try_mmap(size_t bytes) {
     return mmap(nullptr, bytes, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -196,7 +199,21 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
     const EdgeRef* refs = refs_of(b);
     if (cnt == 0) return;
 
+    // Binary search only when the bucket is big enough to pay for it. A sorted
+    // bucket of a low-degree vertex holds a handful of refs, and seeking into it
+    // costs more than reading it: cit-Patents (average degree 2.7) was the case
+    // that showed this, where compaction made windowed delivery *slower* than
+    // the uncompacted scan. Below the threshold the sorted path still stops
+    // early on t_hi, which the unsorted path cannot do.
     if (b->flags.load(std::memory_order_acquire) & kBucketSorted) {
+        if (cnt < kBinarySearchMin) {
+            for (uint32_t i = 0; i < cnt; ++i) {
+                const uint64_t ts = refs[i].ts;
+                if (ts > t_hi) break;
+                if (ts >= t_lo) out.push_back(TemporalRef{refs[i].dst, ts});
+            }
+            return;
+        }
         uint32_t lo = 0, hi = cnt;
         while (lo < hi) {
             uint32_t mid = lo + (hi - lo) / 2;
