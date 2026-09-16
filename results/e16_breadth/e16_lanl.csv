@@ -1,0 +1,2 @@
+dataset,edges,vertices,span_days,ingest_sec,ingest_Meps,compact_sec,ready_sec,ready_Meps,traverse_med_us,traverse_p95_us,avg_result,rss_MB,bytes_per_edge,threads
+lanl-auth,1051430459,17666,57.9999769,13.5624454,77.5251386,55.7009642,69.2634096,15.1801718,27333.498,59879.1242,153.915,64949,64.7726743,8

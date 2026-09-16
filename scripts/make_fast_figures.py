@@ -32,7 +32,7 @@ plt.rcParams.update({
 
 # Okabe-Ito, colorblind-safe; luminance-separated so greyscale still ranks them.
 STYLE = {
-    'barry':  dict(c='#000000', m='o', ls='-',   h='',    lbl='Barry'),
+    'barry':  dict(c='#000000', m='o', ls='-',   h='',    lbl='Gnomon'),
     'tcsr':   dict(c='#0072B2', m='s', ls='--',  h='///',  lbl='sorted CSR (static)'),
     'ucsr':   dict(c='#E69F00', m='^', ls='-.',  h='\\\\\\', lbl='arrival CSR (ingesting)'),
     'csr':    dict(c='#009E73', m='D', ls=(0,(1,1)), h='xxx', lbl='topology CSR (optimum)'),
@@ -50,19 +50,23 @@ def load(path):
 # Fig. streaming: the dynamic axis -- ingest rate, and what static layouts lose
 # =====================================================================
 def fig_streaming():
-    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 1.82),
+    fig, (a, b) = plt.subplots(1, 2, figsize=(7.0, 1.60),
                                gridspec_kw={'width_ratios': [1.35, 1]})
 
     # (a) single-thread ingestion, log scale. Three bar classes, redundantly
     # encoded by colour AND hatch so the ranking survives greyscale printing.
+    # Eight threads throughout. The three baseline bars are wiki-talk so the
+    # comparison is like for like; the Gnomon corpus bars show the range.
     bars = [
-        ('TVA',       1447,    '#CC79A7', '+++', 'versioned store (DNF bound)'),
-        ('fsync\nper batch', 1.22e6, '#555555', '...', 'Barry, durable (WAL)'),
-        ('64 MB\ncommit',    4.22e6, '#555555', '...', None),
-        ('wiki-talk', 13.14e6, '#000000', '',    'Barry, volatile'),
-        ('CADETS',    15.53e6, '#000000', '',    None),
-        ('THEIA',     11.92e6, '#000000', '',    None),
-        ('LANL\n12 writers', 6.76e6, '#000000', '', None),
+        ('TVA',        1447,    '#CC79A7', '+++', 'versioned store (DNF bound)'),
+        ('LiveGraph',  5.08e6,  '#E69F00', '///', 'other streaming stores'),
+        ('GraphOne',  24.27e6,  '#E69F00', '///', None),
+        ('fsync\nper batch', 1.11e6, '#555555', '...', 'Gnomon, durable (WAL)'),
+        ('64 MB\ncommit',    6.48e6, '#555555', '...', None),
+        ('wiki-talk', 66.93e6, '#000000', '',    'Gnomon, volatile'),
+        ('CADETS',    80.09e6, '#000000', '',    None),
+        ('LANL',      77.53e6, '#000000', '',    None),
+        ('THEIA',     94.64e6, '#000000', '',    None),
     ]
     for i, (lbl, v, col, hat, _) in enumerate(bars):
         a.bar(i, v, width=0.68, color=col, hatch=hat,
@@ -72,7 +76,7 @@ def fig_streaming():
     a.set_yscale('log'); a.set_ylim(500, 3e8)
     a.set_ylabel('events / s ingested')
     a.set_xticks(range(len(bars)))
-    a.set_xticklabels([b[0] for b in bars], fontsize=6.6)
+    a.set_xticklabels([b[0] for b in bars], fontsize=6.0)
     a.set_xlim(-0.8, len(bars)-0.2)
     a.legend(handles=[Patch(facecolor=c_, hatch=h_, edgecolor='white', label=l_)
                       for _, _, c_, h_, l_ in bars if l_],
@@ -95,14 +99,14 @@ def fig_streaming():
     for i in x:
         b.text(i-0.19, mean_loss[i]+3, f"{mean_loss[i]:.0f}%", ha='center', fontsize=7)
         b.text(i+0.19, worst_loss[i]+3, f"{worst_loss[i]:.0f}%", ha='center', fontsize=7)
-    # Barry occupies the same axis at zero: no rebuild, so no blind window.
+    # Gnomon occupies the same axis at zero: no rebuild, so no blind window.
     b.bar([2.0], [0.6], width=0.5, color='#009E73', edgecolor='white',
           linewidth=0.7, zorder=3)
     b.text(2.0, 5, '0%', ha='center', fontsize=7.5, fontweight='bold',
            color='#007a58')
     b.axhline(0, color='#000000', lw=1.2, zorder=5)
     b.set_xticks(x + [2.0])
-    b.set_xticklabels(ds + ['Barry\nany size\n(no rebuild)'], fontsize=6.8)
+    b.set_xticklabels(ds + ['Gnomon\nany size\n(no rebuild)'], fontsize=6.8)
     b.set_ylabel('% of true answer\nsilently missing'); b.set_ylim(-6, 135)
     b.set_xlim(-0.55, 2.5)
     b.legend(frameon=False, loc='upper center', ncol=2, columnspacing=1.0,
@@ -115,7 +119,7 @@ def fig_streaming():
 # Fig. temporal: the time axis -- three ways time-keyed storage pays off
 # =====================================================================
 def fig_temporal():
-    fig, (a, b, c) = plt.subplots(1, 3, figsize=(7.0, 1.80))
+    fig, (a, b, c) = plt.subplots(1, 3, figsize=(7.0, 1.58))
 
     # (a) traversal-to-fixpoint vs query window, two corpora
     rows = load('e9_columnar/e9_pilot.csv')
