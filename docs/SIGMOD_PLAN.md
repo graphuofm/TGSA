@@ -110,20 +110,20 @@ Intro 1.25 / 背景+模型 1 / §3 抽象 1 / §4 存储 2.5 / §5 查询 1.5 / 
 | Fig 7(a)(b) | 时序查询 Q1–Q4、随操作量 | 窗口查询/遍历/范围过滤（E19/E7/E9） | 已有 |
 | Fig 7(c) | hot/warm/cold 频率 | E22 窗口新近度扫描 0.01%→100% | 已有 |
 | Fig 7(d)(e)(f) | 大图压测、竞品 OOM | wiki-talk 上 TVA 90min DNF @41.6GB；LANL 10.5亿 | 已有 |
-| Fig 7(g)(h) | vs 通用系统 PostgreSQL/RocksDB | vs DuckDB(+ts索引) 已有；**RocksDB 待加（KV 代表，TVA 对齐项）** | 缺 RocksDB |
+| Fig 7(g)(h) | vs 通用系统 PostgreSQL/RocksDB | vs DuckDB(+ts索引)；RocksDB v9.7.4 时间编码键 E24（0 校验不符；邻居差 784–59,400x） | 已有 |
 | Fig 7(i) | 非时序负载开销检查 | E13 纯拓扑轴（我们的弱轴打满） | 已有 |
 | Fig 7(j) | 属性密集负载 | 不适用（我们无属性，§6 诚实声明数据模型边界） | 声明代替 |
 | Fig 8(a)(b) | 当前图存储/插入 vs GraphOne/Stinger/Sortledton | E19/E20 vs GraphOne/LiveGraph（checksum 校验） | 已有 |
 | Fig 9 | BFS/PR/SSSP/WCC 归一化 | E22 compute 三系统逐位一致 + E13 分解 | 已有 |
 | Fig 10(a) | TemporalChain 长版本链有效性 | 压缩 vs 未压缩查询代价随度数（26→1500 vs 54→15ns 曲线） | 已有 |
 | Fig 10(b)(c) | 持久化两模式开销 + WAL 开销 | E18 cost 六档阶梯（none→fsync/batch）；**外加 TVA 没有的：崩溃/截断注入、重放曲线** | 已有+超出 |
-| Fig 11(a) | Zipf 偏斜下 hop 距离（结构参数在真实偏斜下守界） | τ 目标占用扫描：μ∈[τ/2,4τ) 界在 13 语料实测密度 32–32768 下验证 + 性能随 τ | 有 E11 底子，需在新引擎重跑 |
+| Fig 11(a) | Zipf 偏斜下 hop 距离（结构参数在真实偏斜下守界） | E23 tau 扫描：μ∈[τ/2,4τ) 18/18 全过，查询代价对 τ 平坦 | 已有 |
 | Fig 11(b) | vs 版本链基线加速 | sorted-flag 二分 vs 线性扫描（同一引擎两态） | 已有（E19 两态） |
-| Fig 11(c) | SIMD 有效性 | AVX2 边界扫描开/关 | **缺开关** |
-| Fig 11(d) | 迁移阈值选择 | 小桶二分阈值(32)扫描：8/16/32/64/128 | **缺扫描** |
-| Fig 11(e) | 线程扩展 | batchsize×threads 网格已测，出扩展曲线 | 有数据 |
-| Fig 11(f) | 读写混合比 | E21 concurrent 加 R/W 比例参数扫描 | **缺参数化** |
-| （无对应） | — | **TGSR 独有 ablation**：run-claim 开/关（14.5→52.8）、EdgeRef 时间戳缓存开/关（查询 2–5x vs 结构轴 2.1→2.4）、THP 开/关（负结果） | 缺开关化 |
+| Fig 11(c) | SIMD 有效性 | AVX2 边界扫描开/关：20 格全负，默认关（诚实负结果=TVA 对齐的反向版） | 已有 |
+| Fig 11(d) | 迁移阈值选择 | E23 threshold：1–256 平台 + 关闭悬崖（wiki 2.8x、CADETS 26x） | 已有 |
+| Fig 11(e) | 线程扩展 | runclaim A/B 线程扩展曲线（开：21→73；关：12→6 反转）fig_ablation(a) | 已有 |
+| Fig 11(f) | 读写混合比 | rw_ratio 8:1→1:8 已测，settled 校验全 0，fig_ablation(d) | 已有 |
+| （无对应） | — | **TGSR 独有 ablation**：run-claim 开/关（73.2 vs 6.1 @8T，已记录 runclaim_*.csv）、ts 缓存 16/24B 双构建（时序 2.1–5.5x，结构轴噪声内）、THP（负结果关闭） | 已有 |
 
 ### 需要新做的引擎开关
 1. `run_claim`（运行时，GraphConfig）：关闭→逐边 insert 回退
@@ -136,3 +136,18 @@ Intro 1.25 / 背景+模型 1 / §3 抽象 1 / §4 存储 2.5 / §5 查询 1.5 / 
 6. E21 加 `--rw_ratio` 扫描
 7. E11 τ 扫描在当前引擎重跑
 8. RocksDB 基线（时间编码键 `ts:src:dst`，与 TVA Full Mode 键设计同族）——工作量中等，排最后
+
+## 进度（2026-09-17，自动更新）
+
+paper_SIGMOD/main.tex：全文初稿 11 页编译通过。已完成：摘要、§1（Fig1 时间线图 +
+CADETS 例）、§2 背景（模型 + demand paging）、§3 tmap 五条款 + 反例客户端、
+§4 存储设计（Thm 1–4 + 移植 FAST 证明 + shift/发布协议两个算法 + run-claim +
+EdgeRef Discussion + 保留/持久化 + Thm 恢复）、§5 查询引擎（每操作 I/O Analysis）、
+§6 实现（一致性模型直说：无多边事务）、§7 评测五小节（全部对齐已记录 CSV）、
+§8 相关工作四组、§9 结论。图 9 张全部由 scripts/make_sigmod_figures.py 从
+results/ 生成：motivation、架构（TikZ, 色锁 Example 2）、ingest、baselines、
+temporal、structural、recovery、ablation、pipeline；corpora 表 table_breadth.tex。
+
+尚未做：GraphOne stream-view / LiveGraph MVCC 并发对打（现仅自测并发）；LDBC-SNB
+（未定）；Timeline 换 Tmap 实例化重构（刻意推迟）；投稿格式（匿名化/PVLDB vs
+SIGMOD 模板确认）；参考文献补 lsm/oneil1996 等新引 key 的核对。
