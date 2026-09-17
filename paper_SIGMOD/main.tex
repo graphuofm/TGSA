@@ -684,11 +684,13 @@ artifact reproduces both sides of each switch.
 % (in-process, element-wise checksums, indexes granted), 14 corpora to 1.05B.
 \subsection{Experiment Setup}\label{sec:eval-setup}
 \textbf{Hardware and corpora.} 20-core Xeon, 188\,GB RAM, Ubuntu
-20.04. Fourteen corpora spanning five orders of magnitude: LANL
-enterprise authentication (1.05B events, 17{,}666 hosts, 58 days),
-DARPA Transparent Computing whole-system provenance (CADETS 22.5M and
-THEIA 97.3M information-flow edges), and eleven public temporal graphs
-from 60K to 113M edges.
+20.04. Fourteen corpora spanning five orders of magnitude
+(\cref{tab:breadth}): LANL enterprise authentication (1.05B events,
+17{,}666 hosts, 58 days), DARPA Transparent Computing whole-system
+provenance (CADETS 22.5M and THEIA 97.3M information-flow edges), and
+eleven public temporal graphs from 60K to 113M edges.
+
+\input{table_breadth}
 
 \textbf{Baselines, in two categories.} Temporal competitors: TVA via
 its released artifact (build repairs scripted in ours), DuckDB v1.5.5
@@ -780,6 +782,20 @@ selectivity exactly (cit-Patents delivers 2{,}330 edges from a
 16.5M-edge window: $59{,}400\times$). Keying on time is necessary and
 insufficient; the vertex index is not optional equipment.
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_temporal.pdf}
+  \caption{The temporal axis. \textbf{(a)}~Time-respecting traversal
+  latency against window width on two corpora (filled markers:
+  mathoverflow; open: wiki-talk); the columnar engine pays a join per
+  hop. \textbf{(b)}~Windowed BFS cost per delivered edge against mean
+  out-degree: the arrival-order entity layout degrades with density
+  while \sys tracks the sorted static optimum into the event-stream
+  regime. \textbf{(c)}~Sparse reachability cost tracks the answer
+  size, not the graph size.}
+  \label{fig:temporal}
+\end{figure*}
+
 \textbf{Causal traversal.} On CADETS the published attack chain
 (implant, escalation, command-and-control, injection) reconstructs
 forward from the implant event in 133\,$\mu$s, inside an impact set
@@ -809,14 +825,25 @@ extract-compute-writeback loop \sys is $1.2$--$1.9\times$ faster
 end-to-end, and against LiveGraph $3$--$10\times$, with extraction
 dominating their loop (68--94\% of time) and not ours.
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_structural.pdf}
+  \caption{The conceded axis, priced in full: adjacency delivery for
+  three whole-graph algorithms against a topology-only CSR that
+  cannot ingest, across eleven corpora to 1.05B edges.}
+  \label{fig:structural}
+\end{figure}
+
 \subsection{Structural Workloads}\label{sec:eval-structural}
 This is the axis \sys concedes by design, and we play it in full
 rather than sampling it kindly. Isolating the storage layer's share
 (identical algorithm code consuming adjacency from each layout,
 results checksum-verified identical), \sys delivers adjacency for
-BFS, PageRank, and connected components at a median $2.4\times$ the
-cost of a topology-only CSR across thirty corpus/algorithm
-measurements (range $1.3$--$6.1\times$). The constant is bounded
+BFS, PageRank, and label propagation at a median $2.1\times$ the cost
+of a topology-only CSR across 29 corpus/algorithm measurements on
+eleven corpora (range $0.9$--$5.8\times$; on the smallest corpora,
+where everything is cache-resident, \sys reaches parity and below).
+The constant is bounded
 because delivery is a linear walk of reference chains, not a pointer
 chase per edge. End-to-end gaps reported against entity-keyed stores
 in earlier drafts ($5$--$15\times$) were algorithm-implementation
