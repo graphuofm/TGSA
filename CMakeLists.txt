@@ -145,6 +145,10 @@ endif()
 
 # tests
 enable_testing()
+add_executable(test_tmap tests/test_tmap.cpp)
+target_include_directories(test_tmap PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_link_libraries(test_tmap PRIVATE Threads::Threads)
+
 add_executable(test_smoke tests/test_smoke.cpp)
 target_link_libraries(test_smoke PRIVATE barry)
 add_test(NAME smoke COMMAND test_smoke)
