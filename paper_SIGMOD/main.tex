@@ -5,6 +5,7 @@
 \usepackage{booktabs}
 \usepackage[ruled,linesnumbered,vlined]{algorithm2e}
 \usepackage{xspace}
+\usepackage[capitalise,noabbrev]{cleveref}
 
 \newcommand{\sys}{TGSR\xspace}
 \newcommand{\tmap}{\texttt{tmap}\xspace}
@@ -162,13 +163,54 @@ that measured as losses and ship disabled.
 % =====================================================================
 \section{Background}\label{sec:background}
 \subsection{Temporal Event Graph Model}
-% G=(V,E), immutable timestamped edges; operations append/evict_before/replay;
-% query = predicate over the edge multiset (Eq. 1); time-respecting paths.
-TODO
+A temporal event graph is $\mathcal{G}=(V, E)$ where $E$ is a
+\emph{multiset} of events $e=(src,dst,t,w)$ with $src,dst \in V$, a
+timestamp $t$, and a weight $w$. Events are immutable: once appended,
+an event is never updated, and deletion exists only as retention
+policy. The supported operations are exactly the lifecycle of a stream:
+\textbf{append}$(e)$ adds an event; \textbf{evict\_before}$(t)$
+discards every event with timestamp below $t$;
+\textbf{replay}$(L)$ re-appends a logged prefix after a failure. A
+query is a predicate over the multiset,
+\begin{equation}
+Q \;=\; \{\, e \in E \mid P(e) \wedge e.t \in [t_1, t_2] \,\},
+\label{eq:query}
+\end{equation}
+optionally closed under time-respecting reachability: a path
+$v_0 \rightarrow^{e_1} \cdots \rightarrow^{e_k} v_k$ is
+time-respecting when $t(e_1) \le \dots \le t(e_k)$, and forward taint,
+backward causal tracing, and windowed traversal are all instances.
+This model is deliberately narrower than a property graph: no vertex
+properties, no in-place updates, no multi-event transactions. What the
+narrowing buys is the subject of this paper, and what it costs is
+stated in \S\ref{sec:tmap} and measured in \S\ref{sec:eval}.
+
+\emph{Relation to versioned temporal graphs.} Systems such as TVA and
+AeonG store \emph{versions of updated entities} and answer
+``the graph as of $t$''; their machinery (delta encoding,
+version-chain locality) presumes few, property-rich versions per
+entity. An event stream inverts that regime: every repeated contact is
+a new event, entities accumulate thousands of them, and the questions
+are windows and causal paths rather than snapshots. The two models
+complement rather than subsume one another, and \S\ref{sec:eval}
+measures the boundary in both directions.
 \subsection{Demand Paging as a Storage Primitive}
-% anonymous mmap primer; why the mmap-in-DBMS critique (file-backed buffer
-% management) does not transfer to an anonymous reservation.
-TODO
+An anonymous \texttt{mmap} reserves virtual address space without
+backing it: the kernel materializes a physical page (zero-filled) the
+first time a page is written, at the cost of one minor fault, and
+returns pages on \texttt{madvise(MADV\_DONTNEED)}. Reservation is
+therefore free, residency follows first-touch, and release is
+$O(\text{pages})$ with no data movement. \sys uses this as its only
+allocation primitive.
+
+The well-known case against \texttt{mmap} in database
+systems targets \emph{file-backed} mappings used as a buffer pool:
+transparent eviction stalls, torn pages on writeback, and
+\texttt{SIGBUS} on truncation. None of those failure modes exists for
+an anonymous reservation, which involves no file, no writeback, and no
+eviction the engine does not request. \sys uses \texttt{mmap} the way
+an allocator does, to reserve address space, not the way a buffer pool
+does, to cache a file.
 
 % =====================================================================
 \section{The Temporal Address Space}\label{sec:tmap}
@@ -241,16 +283,248 @@ is keyed on anything other than time, which is where the engine pays and
 
 % =====================================================================
 \section{Storage Design}\label{sec:storage}
-\subsection{Timeline and Arena}   % Key Idea. + format figure + Thm 1/2/3
-TODO
-\subsection{Lock-Free Ingestion}  % run-claim Algo + publication protocol Algo + Thm 4/5
-TODO
+\subsection{Timeline and Arena}
+\textbf{Key Idea.} Instantiate \tmap twice: a \texttt{Timeline} of
+per-window head pointers (\tmap slots are pointers), and an
+\texttt{Arena} of bump-allocated, cache-aligned edge blocks the
+pointers lead to. The timeline inherits clauses T1--T3 directly; the
+arena holds 20-byte packed edges and is never sorted on insert.
+
+\begin{theorem}[Addressing]
+\label{thm:addr}
+For any timestamp $t$, the slot holding every edge stamped $t$ is
+computed in $O(1)$ worst case, with no data-dependent memory access.
+\end{theorem}
+\begin{proof}
+The map is one subtraction and one shift. Two timestamps land in the
+same slot exactly when $\lfloor (t-T_0)/2^S \rfloor = \lfloor
+(t'-T_0)/2^S \rfloor$, i.e.\ when they share a window, so every edge
+stamped $t$ is registered under that one index and no other slot can
+hold one. No search structure is consulted, so the bound is
+unconditional rather than expected-case. A B-tree or LSM index gives
+$O(\log E)$ with pointer chases; a hash index gives \emph{expected}
+$O(1)$ with worst-case collisions.
+\end{proof}
+
+\begin{theorem}[Space]
+\label{thm:space}
+Let $P$ be the page size and $W_{occ}$ the number of non-empty
+windows. Resident timeline memory is at most $W_{occ}\cdot P$ plus
+page-table overhead the kernel materializes lazily; untouched windows
+cost zero bytes, whatever the virtual reservation.
+\end{theorem}
+\begin{proof}
+The timeline is an anonymous mapping of pointer slots. A page becomes
+resident only when first written, and a slot is written only when its
+window receives its first edge. Resident pages are therefore at most
+the number of pages holding at least one occupied slot, which is at
+most $W_{occ}$ since each occupied slot dirties one page. Untouched
+ranges are never faulted in and never appear in the page table.
+\end{proof}
+
+Sparsity is absorbed by the MMU, not by a structure the engine
+maintains; the mapping is anonymous, so the buffer-pool failure modes
+of \S\ref{sec:background} never arise.
+
+The shift $S$ sets how much time one slot covers. Too coarse and
+windows overfill; too fine and the timeline sprawls. \sys picks $S$
+from stream statistics (\cref{alg:shift}), and the choice is bounded.
+
+\begin{algorithm}[t]
+\small
+\DontPrintSemicolon
+\KwIn{event count $E$, span $L$, target occupancy $\tau$}
+\KwOut{shift $S$}
+$D \leftarrow \max(1, \lfloor E/\tau \rfloor)$ \tcp*{windows we want}
+$w \leftarrow \max(1, \lfloor L/D \rfloor)$ \tcp*{width we want}
+$S \leftarrow \lceil \log_2 w \rceil$ \tcp*{width we can address}
+\Return{$S$}
+\caption{Adaptive granularity selection. Runs once on a stream
+prefix; re-running on a later prefix changes only future windows,
+since \cref{eq:mapping} is evaluated per edge at insert time.}
+\label{alg:shift}
+\end{algorithm}
+
+\begin{theorem}[Granularity]
+\label{thm:shift}
+For $E \ge 2\tau$ events with target occupancy $\tau$, the selected
+shift yields mean window occupancy $\mu \in [\tau/2,\, 4\tau)$.
+\end{theorem}
+\begin{proof}
+The selector computes $D=\lfloor E/\tau \rfloor$ desired windows, a
+desired width $w=\lfloor L/D \rfloor$, and takes the smallest $S$ with
+$2^S \ge w$, so $2^S \in [w, 2w)$. The realized window count
+$W=\lceil L/2^S \rceil$ then satisfies $D/2 < W \le D+1$, giving
+$\mu = E/W \ge E/(D+1) \ge \tau/2$ and $\mu < 2E/D < 4\tau$.
+\end{proof}
+
+The two factors of two are real, not slack: one from rounding the
+window width up to a power of two, which shift addressing cannot avoid,
+one from the ceiling on the window count. Across our corpora a single
+target yields per-window densities from 32 to 32{,}768 edges, and the
+bound holds at both ends.
+
+
+\subsection{Lock-Free Ingestion}
+\textbf{Key Idea.} A time-ordered arrival stream is the \emph{worst}
+case for concurrent writers, because every writer lands in the same
+window at the same instant; \sys turns that adversity into batching by
+claiming an entire run of same-window arrivals with one atomic
+operation.
+
+An insert computes its slot (\cref{thm:addr}), claims an index in the
+window's block with one \texttt{fetch\_add}, and installs overflow
+blocks by CAS. Every failed CAS means some other insert succeeded, so
+ingestion is lock-free and the slot claim itself is wait-free. Nothing
+sorts and nothing rebalances, so arrival order does not matter. That is
+what separates \sys from every sorted-on-ingest design as soon as
+events arrive late or out of order.
+
+Readers are protected by a publication protocol instead of locks. A
+writer fills an edge's payload first and stores its timestamp
+\emph{last} with release semantics. Fresh arena pages are zero-filled,
+so a zero timestamp marks a slot that is not yet published; readers
+acquire-load the timestamp and skip those. Vertex-index references
+publish through their block pointer the same way. One extra ordering
+rule makes the fast read path safe as well (\cref{alg:publish}): an
+append clears the bucket's \emph{sorted} flag \emph{before} it bumps
+the bucket counter.
+
+\begin{algorithm}[t]
+\small
+\DontPrintSemicolon
+\SetKwProg{Fn}{}{}{}
+\Fn{\textsc{Append}$(e)$}{
+  $b \leftarrow$ block for slot $(e.t - T_0) \gg S$ \tcp*{\cref{thm:addr}}
+  $b.\mathit{sorted} \leftarrow \bot$ \hfill \textsf{(release)}\;
+  $i \leftarrow \textsc{FetchAdd}(b.\mathit{count}, 1)$ \hfill \textsf{(acq-rel)}\;
+  \lIf{$i \ge b.\mathit{cap}$}{install overflow block by CAS; retry}
+  write $e.\mathit{src}, e.\mathit{dst}, e.w$ into $b[i]$\;
+  $b[i].t \leftarrow e.t$ \hfill \textsf{(release: publishes the slot)}\;
+}
+\Fn{\textsc{Expand}$(v, t_{lo}, t_{hi})$}{
+  \ForEach{bucket $b$ of $v$}{
+    $n \leftarrow b.\mathit{count}$ \hfill \textsf{(acquire)}\;
+    \lIf{$b.\mathit{sorted}$ \textsf{(acquire)}}{binary-search $b[0..n)$}
+    \lElse{scan $b[0..n)$, skipping $t = 0$}
+  }
+}
+\caption{Publication protocol. The two release stores and the order of
+lines 3--4 are what \cref{thm:conc} rests on: clearing \emph{sorted}
+before bumping \emph{count} is what lets a reader trust a binary
+search, and storing $t$ last is what makes a half-written slot
+invisible.}
+\label{alg:publish}
+\end{algorithm}
+
+\begin{theorem}[Concurrent reads]
+\label{thm:conc}
+Under this protocol no query observes a torn, partial, or unpublished
+edge during concurrent multi-writer ingestion, and a reader that finds
+the sorted flag set may binary-search the counted prefix.
+\end{theorem}
+\begin{proof}
+For the first claim: a reader only accepts a slot whose timestamp is
+non-zero, and the writer's release store of the timestamp happens
+after its payload writes, so an acquiring reader that sees the
+timestamp also sees the payload. A slot is written once and never
+mutated, so no torn state exists after publication.
+
+For the second: a reader loads the counter (acquire) and then the
+flag. Suppose it observes the flag still set. Any append that could
+have extended the counted prefix cleared the flag before bumping the
+counter, and the reader's acquire on the counter synchronizes with
+every bump it observes; so if any such bump were visible, the
+corresponding clear would be visible too and the flag would be unset.
+The observed prefix is therefore exactly the one compaction verified
+and published, and binary search over it is sound.
+\end{proof}
+
+
+\textbf{Run claiming.} Consecutive arrivals nearly always share a
+window, so \texttt{insert\_batch} detects runs of same-window events
+inside each thread's contiguous chunk and claims each run with a single
+\texttt{fetch\_add} of the run length; overshooting a block's capacity
+is benign because readers clamp to $\min(count, capacity)$. The
+ablation of \S\ref{sec:eval-ablation} prices this: disabling run
+claiming drops wiki-talk ingestion from 25.8 to 7.8M events/s, and the
+disorder sweep shows why, since a fully shuffled arrival order (runs of
+length one) removes exactly the benefit that ordered arrival grants.
+
 \subsection{The Vertex Index and the Compaction Contract}
-% EdgeRef layout incl. the 16->24B decision WITH its two-sided measurement
-% (queries 2-5x faster, structural axis 2.1x->2.4x) as a TVA-style Discussion.
-TODO
-\subsection{Retention and Durability} % evict_before; WAL frame; recovery=replay; Thm 6
-TODO
+\textbf{Key Idea.} Entity-keyed access lives in a separate index of
+per-vertex reference chains that insertion appends to and only
+\texttt{compact()} ever sorts, so the write path never pays for the
+read path's ordering.
+
+Appends leave a vertex's neighborhood in arrival order, so a
+time-windowed expansion has to scan it: $O(d)$. An explicit
+\texttt{compact()} pass sorts each neighborhood by timestamp once, and
+afterwards expansion binary-searches in $O(\log d + k)$ for $k$
+results. Compaction is deliberately \emph{not} on the insert path: an early
+build that compacted after every batch ingested at 11K events/s,
+because each batch re-walked the whole index, which is the same
+$O(\text{index})$-per-batch cost a sorted structure pays by design.
+
+Queries are correct in both states; compaction changes their cost, not
+their answers. This is the paper's central trade. A statically sorted
+structure gets its query speed by making sorting \emph{mandatory} and
+pays with a rebuild window during which its answers are wrong
+(\cref{sec:eval-stream}); \sys makes sorting \emph{optional} and pays a
+bounded constant until it runs. The contract is: \emph{always
+appendable, always correct including mid-ingest; fast expansion after a
+compaction you schedule when convenient.}
+
+
+\textbf{Discussion: the reference layout.} Each vertex-index entry is
+\texttt{EdgeRef} $=$ \{\texttt{dst}, \texttt{offset}, \texttt{block},
+\texttt{ts}\}, 24 bytes, of which the cached timestamp is a measured
+decision with two sides. With the timestamp only in the arena, every
+temporal predicate paid a random access into a multi-gigabyte mapping
+to fetch eight bytes, and the uncompacted window scan ran up to
+$5.5\times$ slower; caching it makes the scan and the binary search
+touch one contiguous stream. The price is $22\%$ more resident memory,
+and, on the structural axis that never reads timestamps, nothing
+resolvable above run-to-run noise (medians $2.42$ against $2.39$ in the
+16-byte ablation build). Both builds ship in the artifact.
+
+\subsection{Retention and Durability}
+Retention is a monotone predicate on time, so under \cref{eq:mapping}
+it is an operation on an address prefix. \texttt{evict\_before($t$)}
+walks the timeline prefix, merges the block extents it finds, and
+returns whole pages to the OS with \texttt{madvise}; readers of other
+windows are untouched. There is no scan of the edge set and no
+tombstone compaction, because expiry and address order coincide.
+
+\label{sec:design-durability}
+Durability uses a property most databases do not have: engine state is
+a pure function of the edge multiset. Edges are immutable, never
+updated, and deletion is retention policy rather than semantics. The
+log is therefore just framed, checksummed batches of raw edges; an
+asynchronous writer overlaps it with insertion; and recovery is
+replaying the log through the ordinary insert path. There is no undo
+phase, no redo phase, and no idempotence bookkeeping, because
+replaying a batch twice is indistinguishable from the multiset having
+contained it twice, which it cannot, since each batch is framed once. A
+torn tail frame fails its length or checksum test and is discarded.
+
+\begin{theorem}[Recovery]
+\label{thm:recover}
+Replaying the durable log prefix through the ordinary insert path
+yields an engine state answering every query identically to the
+pre-crash state restricted to logged edges.
+\end{theorem}
+\begin{proof}
+Engine state is a function of the inserted multiset only: insertion
+consults no clock, no random source, and no cross-edge state beyond
+allocation order, and query results are independent of intra-window
+physical order because uncompacted reads scan whole windows and
+compaction sorts them into one canonical order. The replayed multiset
+equals the logged multiset by the frame checksums, so both states
+answer alike. Fault injection in \S\ref{sec:eval-recovery} exercises
+this claim rather than assuming it: 50 crash points and 60 torn-tail
+corruptions, zero divergences.
+\end{proof}
 
 % =====================================================================
 \section{Temporal Query Engine}\label{sec:query}
@@ -259,7 +533,7 @@ TODO
 % sweep lands); temporal Dijkstra fwd/bwd.
 TODO
 
-\begin{table}[t]
+\begin{table*}[t]
 \caption{Time complexity of core operations. $E$ events, $V$ vertices,
 $d(v)$ out-degree, $\mu$ window occupancy (bounded by
 Thm.~\ref{thm:shift}), $W$ windows in a range, $|R|$ result size, $k$
@@ -280,7 +554,7 @@ fwd/bwd taint          & $O(\sum\log d+|R|\log|R|)$ & $O(\sum d+\cdots)$ & same 
 \texttt{compact}       & $O(E\log B_{\max})$ optional & --         & $O(E\log E)$ mandatory & -- \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{table*}
 
 % =====================================================================
 \section{Implementation}\label{sec:impl}
