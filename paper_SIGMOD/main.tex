@@ -150,7 +150,7 @@ We make the following contributions:
 time, with proofs of its addressing, space, granularity, concurrency,
 and recovery properties.
 \item We introduce the temporal address space, a storage abstraction
-whose contract (arithmetic placement, occupancy-proportional residency,
+whose contract (arithmetic placement, residency proportional to occupancy,
 prefix retention, replay recovery) is inherited by any client, and
 demonstrate a non-graph client alongside the graph engine.
 \item We design a run-claiming lock-free ingestion path under a per-slot
@@ -578,7 +578,7 @@ Queries are correct in both states; compaction changes their cost, not
 their answers. This is the paper's central trade. A statically sorted
 structure gets its query speed by making sorting \emph{mandatory} and
 pays with a rebuild window during which its answers are wrong
-(\cref{sec:eval-stream}); \sys makes sorting \emph{optional} and pays a
+(\cref{fig:ingest}b); \sys makes sorting \emph{optional} and pays a
 bounded constant until it runs. The contract is: \emph{always
 appendable, always correct including mid-ingest; fast expansion after a
 compaction you schedule when convenient.}
@@ -666,7 +666,7 @@ filters eight timestamps per iteration. Measured across four corpora
 and five window widths it never won once, losing up to $1.52\times$ at
 sub-slot widths and converging to parity at wide ones where the
 comparison-free interior dominates (\S\ref{sec:eval-ablation}).
-\texttt{\_mm256\_i64gather\_epi64} at a 20-byte stride is slower than
+The AVX2 64-bit gather at a 20-byte stride is slower than
 scalar loads on our microarchitecture, and a range scan only ever
 vector-filters its two boundary slots. The path ships disabled behind
 a config switch.
@@ -804,8 +804,8 @@ eleven public temporal graphs from 60K to 113M edges.
 its released artifact (build repairs scripted in ours), DuckDB v1.5.5
 through its C API with a timestamp index granted, and RocksDB v9.7.4
 with the strongest time-encoded key we could design
-(\texttt{ts:src:dst:seq}, big-endian, so a time range is one
-contiguous key range). Streaming graph stores: GraphOne and LiveGraph,
+(big-endian \texttt{ts:src:}\allowbreak\texttt{dst:seq}, so a time
+range is one contiguous key range). Streaming graph stores: GraphOne and LiveGraph,
 built from source and driven in-process. Structural references: a
 time-sorted CSR (\texttt{tcsr}, the strongest static competitor), an
 arrival-order entity CSR, and a topology-only CSR.
@@ -917,15 +917,15 @@ traversal medians across the breadth suite sit at
 0.24--0.95\,$\mu$s per expansion (\cref{tab:complexity} bounds apply
 per bucket).
 
-\begin{figure}[t]
+\begin{figure*}[t]
   \centering
-  \includegraphics[width=\linewidth]{figures/fig_pipeline.pdf}
+  \includegraphics[width=0.86\textwidth]{figures/fig_pipeline.pdf}
   \caption{The extract-to-analytics pipeline on wiki-talk.
   \textbf{(a)}~End-to-end pipeline time. \textbf{(b)}~Extraction's
   share of it: extraction dominates the baselines' loop across all
   window widths and never dominates ours.}
   \label{fig:pipeline}
-\end{figure}
+\end{figure*}
 
 \textbf{The extract-to-analytics pipeline.} When an analysis is
 structure-dominated, the measured escape hatch is extraction into a
