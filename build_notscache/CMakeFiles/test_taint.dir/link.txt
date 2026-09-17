@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -Wno-unused-parameter -O3 -march=native -DNDEBUG   CMakeFiles/test_taint.dir/tests/test_taint.cpp.o  -o test_taint  libbarry.a -lpthread -lz /usr/lib/gcc/x86_64-linux-gnu/9/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.so 

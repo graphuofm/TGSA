@@ -81,6 +81,16 @@ add_executable(barry_soak tools/soak_concurrent.cpp)
 target_link_libraries(barry_soak PRIVATE barry)
 target_include_directories(barry_soak PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
 
+# Ablation build: -DTGSR_NO_TS_CACHE=ON strips the cached timestamp from
+# EdgeRef (24 -> 16 bytes) so the design decision can be measured off. Use a
+# separate build directory; the flag changes a struct layout, so the whole
+# tree must agree on it.
+option(TGSR_NO_TS_CACHE "Ablation: no inline timestamp in EdgeRef" OFF)
+if(TGSR_NO_TS_CACHE)
+    add_compile_definitions(TGSR_NO_TS_CACHE)
+    message(STATUS "ABLATION build: TGSR_NO_TS_CACHE (16-byte EdgeRef)")
+endif()
+
 # benchmarks
 foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming)
     add_executable(bench_${B} benchmark/bench_${B}.cpp)

@@ -30,6 +30,22 @@ struct GraphConfig {
     bool     build_reverse_index = false;                // also index in-edges (needed for backward tracing)
     size_t   vertex_arena_reserve_bytes = 8ULL << 30;    // 8 GB virtual reserve
     uint32_t target_avg_edges_per_window = 64;           // for shift auto-select
+
+    // ------------------------------------------------------------------
+    // Ablation switches. Defaults are the shipping configuration; each
+    // exists so a design decision can be measured off as well as on,
+    // rather than argued from the commit history.
+    // ------------------------------------------------------------------
+    // Claim a run of same-window arrivals with one counter bump (the fix
+    // for time-ordered arrival being the worst case for parallel writers).
+    // Off: every edge takes the single-edge insert path.
+    bool     run_claim = true;
+    // AVX2 boundary-window scan in query_range. Off: scalar loop.
+    bool     simd_scan = true;
+    // Below this many refs, a sorted bucket is scanned rather than
+    // binary-searched (cit-Patents, mean degree 2.7, exposed the seek
+    // costing more than the read).
+    uint32_t binary_search_min = 32;
 };
 
 }  // namespace barry

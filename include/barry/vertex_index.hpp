@@ -28,7 +28,9 @@ struct EdgeRef {
     uint32_t     dst;       // cached peer id (destination, or source in the reverse index)
     uint32_t     offset;    // edge slot inside *block
     BlockHeader* block;     // owning block (needed for resolving the full Edge)
+#ifndef TGSR_NO_TS_CACHE
     uint64_t     ts;        // cached timestamp: the whole point of the extra 8 bytes
+#endif
 };
 // 24 rather than 16 bytes, and the reason is a measurement. With the timestamp
 // only in the Arena, every temporal predicate cost a random access into a
@@ -36,7 +38,14 @@ struct EdgeRef {
 // 6x slower than GraphOne's, whose adjacency stores (dst, weight) inline and
 // scans sequentially. Caching it here makes both the scan and the binary search
 // touch one contiguous stream. Anything needing src or weight still resolves.
+//
+// TGSR_NO_TS_CACHE removes the field (16-byte refs, every temporal read
+// resolves into the Arena): the ablation build that prices this decision.
+#ifndef TGSR_NO_TS_CACHE
 static_assert(sizeof(EdgeRef) == 24, "EdgeRef expected 24 bytes");
+#else
+static_assert(sizeof(EdgeRef) == 16, "EdgeRef expected 16 bytes (ablation)");
+#endif
 
 // A (peer, time) pair: everything a time-respecting expansion needs.
 struct TemporalRef {
@@ -76,7 +85,8 @@ public:
     VertexIndex(uint32_t num_vertices,
                 size_t   arena_reserve_bytes = (8ULL << 30),
                 bool     build_reverse = false,
-                bool     transparent_huge = true);
+                bool     transparent_huge = true,
+                uint32_t binary_search_min = 32);
     ~VertexIndex();
 
     VertexIndex(const VertexIndex&) = delete;
@@ -169,6 +179,7 @@ private:
     size_t                     bucket_reserved_;
     std::atomic<size_t>        bucket_bump_{0};
     std::atomic<size_t>        bucket_failures_{0};
+    uint32_t                   bs_min_ = 32;
 };
 
 }  // namespace barry

@@ -10,7 +10,14 @@
 
 namespace barry {
 
+// Runtime SIMD switch, set at engine construction. A translation-unit global
+// rather than a parameter because it gates an ablation, not per-call
+// semantics; the last-constructed engine's setting wins, which is fine for
+// benchmarks that build one engine per configuration.
+namespace { bool g_simd_scan = true; }
+
 Barry::Barry(const GraphConfig& cfg) : cfg_(cfg) {
+    g_simd_scan = cfg_.simd_scan;
     if (cfg_.t_max < cfg_.t_min) {
         std::fprintf(stderr, "[Barry] invalid config: t_max < t_min\n");
         std::abort();
@@ -41,7 +48,8 @@ Barry::Barry(const GraphConfig& cfg) : cfg_(cfg) {
     if (cfg_.num_vertices > 0) {
         vertex_index_ = std::make_unique<VertexIndex>(
             cfg_.num_vertices, cfg_.vertex_arena_reserve_bytes,
-            cfg_.build_reverse_index, cfg_.transparent_huge_pages);
+            cfg_.build_reverse_index, cfg_.transparent_huge_pages,
+            cfg_.binary_search_min);
     }
 }
 
@@ -193,13 +201,17 @@ void Barry::insert_batch(const Edge* edges, size_t n, int num_threads) {
     #pragma omp parallel for num_threads(num_threads) schedule(static)
     for (size_t c = 0; c < chunks; ++c) {
         const size_t lo = c * kChunk;
-        insert_span(edges, lo, std::min(n, lo + kChunk));
+        const size_t hi = std::min(n, lo + kChunk);
+        if (cfg_.run_claim) insert_span(edges, lo, hi);
+        else for (size_t i = lo; i < hi; ++i) insert(edges[i]);
     }
 #else
     (void)num_threads;
     for (size_t c = 0; c < chunks; ++c) {
         const size_t lo = c * kChunk;
-        insert_span(edges, lo, std::min(n, lo + kChunk));
+        const size_t hi = std::min(n, lo + kChunk);
+        if (cfg_.run_claim) insert_span(edges, lo, hi);
+        else for (size_t i = lo; i < hi; ++i) insert(edges[i]);
     }
 #endif
 }
@@ -272,6 +284,7 @@ inline void scan_block_filtered(const BlockHeader* b, const Edge* arr, uint32_t 
     // below upgrades the mask-dependent payload reads to acquire semantics.
 #endif
 #if defined(__AVX2__)
+    if (g_simd_scan) {
     const __m256i vidx = _mm256_setr_epi64x(8, 28, 48, 68);
     const __m256i vlo  = _mm256_set1_epi64x(static_cast<long long>(t_lo) - 1);
     const __m256i vhi  = _mm256_set1_epi64x(static_cast<long long>(t_hi) + 1);
@@ -288,6 +301,7 @@ inline void scan_block_filtered(const BlockHeader* b, const Edge* arr, uint32_t 
             const Edge& e = arr[i + j];
             if (is_alive(e)) out.push_back(e);
         }
+    }
     }
 #endif
     for (; i < cnt; ++i) {

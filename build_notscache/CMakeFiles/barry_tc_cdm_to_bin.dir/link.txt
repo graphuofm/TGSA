@@ -1,0 +1,1 @@
+/usr/bin/c++   -Wall -Wextra -Wno-unused-parameter -O3 -march=native -DNDEBUG   CMakeFiles/barry_tc_cdm_to_bin.dir/tools/tc_cdm_to_bin.cpp.o  -o barry_tc_cdm_to_bin  libbarry.a -lpthread -lz /usr/lib/gcc/x86_64-linux-gnu/9/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.so 

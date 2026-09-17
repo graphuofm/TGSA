@@ -1,0 +1,26 @@
+file(REMOVE_RECURSE
+  "CMakeFiles/barry.dir/src/algorithms/betweenness.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/bfs.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/connected_components.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/earliest_arrival.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/kcore.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/pagerank.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/sssp.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/taint.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/temporal_triangle.cpp.o"
+  "CMakeFiles/barry.dir/src/algorithms/triangle_counting.cpp.o"
+  "CMakeFiles/barry.dir/src/arena.cpp.o"
+  "CMakeFiles/barry.dir/src/engine.cpp.o"
+  "CMakeFiles/barry.dir/src/retention.cpp.o"
+  "CMakeFiles/barry.dir/src/time_mapper.cpp.o"
+  "CMakeFiles/barry.dir/src/timeline.cpp.o"
+  "CMakeFiles/barry.dir/src/vertex_index.cpp.o"
+  "CMakeFiles/barry.dir/src/wal.cpp.o"
+  "libbarry.a"
+  "libbarry.pdb"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang CXX)
+  include(CMakeFiles/barry.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

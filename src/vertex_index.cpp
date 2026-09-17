@@ -10,22 +10,21 @@ namespace barry {
 
 static constexpr uint32_t kInitialBucketCap = 8;
 
-// Below this many refs, scanning a sorted bucket beats seeking into it.
-static constexpr uint32_t kBinarySearchMin = 32;
-
 static void* try_mmap(size_t bytes) {
     return mmap(nullptr, bytes, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 }
 
 VertexIndex::VertexIndex(uint32_t num_vertices, size_t arena_reserve_bytes,
-                         bool build_reverse, bool transparent_huge)
+                         bool build_reverse, bool transparent_huge,
+                         uint32_t binary_search_min)
     : num_vertices_(num_vertices),
       heads_(nullptr),
       heads_in_(nullptr),
       bucket_base_(nullptr),
       bucket_reserved_(arena_reserve_bytes) {
 
+    bs_min_ = binary_search_min;
     if (num_vertices == 0) {
         std::fprintf(stderr, "[VertexIndex] num_vertices=0, disabled\n");
         return;
@@ -149,7 +148,12 @@ void VertexIndex::append_ref(std::atomic<VertexBucket*>* heads, uint32_t key, ui
         uint32_t pos = b->count.fetch_add(1, std::memory_order_acq_rel);
         if (pos < b->capacity) {
             EdgeRef* r = &refs_of(b)[pos];
-            r->dst = peer; r->offset = offset; r->ts = ts;
+            r->dst = peer; r->offset = offset;
+#ifndef TGSR_NO_TS_CACHE
+            r->ts = ts;
+#else
+            (void)ts;
+#endif
             // Publish protocol: block pointer last, release. Zero pages mean an
             // unpublished ref reads block == nullptr; every reader skips those.
             // The cached timestamp is written before it, so a reader that sees a
@@ -184,6 +188,17 @@ void VertexIndex::register_edge(uint32_t src, uint32_t dst, uint64_t ts,
     if (heads_in_ && dst < num_vertices_) append_ref(heads_in_, dst, ts, src, block, offset);
 }
 
+// Timestamp of a ref: from the inline cache, or resolved from the Arena in
+// the TGSR_NO_TS_CACHE ablation build.
+static Edge resolve(const EdgeRef& r);
+static inline uint64_t ref_ts(const EdgeRef& r) {
+#ifndef TGSR_NO_TS_CACHE
+    return r.ts;
+#else
+    return resolve(r).timestamp;
+#endif
+}
+
 static Edge resolve(const EdgeRef& r) {
     // Reading edges_of(block)[offset] is safe even if more edges have been
     // appended since: the block's slot for this offset is written exactly once.
@@ -194,7 +209,7 @@ static Edge resolve(const EdgeRef& r) {
 // time-ordered, seeks with a binary search (O(log n) resolves) and stops at the
 // first ref past t_hi; otherwise falls back to a full scan.
 static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
-                          std::vector<TemporalRef>& out) {
+                          std::vector<TemporalRef>& out, uint32_t bs_min) {
     uint32_t cnt = std::min(b->count.load(std::memory_order_acquire), b->capacity);
     const EdgeRef* refs = refs_of(b);
     if (cnt == 0) return;
@@ -206,9 +221,9 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
     // the uncompacted scan. Below the threshold the sorted path still stops
     // early on t_hi, which the unsorted path cannot do.
     if (b->flags.load(std::memory_order_acquire) & kBucketSorted) {
-        if (cnt < kBinarySearchMin) {
+        if (cnt < bs_min) {
             for (uint32_t i = 0; i < cnt; ++i) {
-                const uint64_t ts = refs[i].ts;
+                const uint64_t ts = ref_ts(refs[i]);
                 if (ts > t_hi) break;
                 if (ts >= t_lo) out.push_back(TemporalRef{refs[i].dst, ts});
             }
@@ -217,10 +232,10 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
         uint32_t lo = 0, hi = cnt;
         while (lo < hi) {
             uint32_t mid = lo + (hi - lo) / 2;
-            if (refs[mid].ts < t_lo) lo = mid + 1; else hi = mid;
+            if (ref_ts(refs[mid]) < t_lo) lo = mid + 1; else hi = mid;
         }
         for (uint32_t i = lo; i < cnt; ++i) {
-            const uint64_t ts = refs[i].ts;
+            const uint64_t ts = ref_ts(refs[i]);
             if (ts > t_hi) break;
             out.push_back(TemporalRef{refs[i].dst, ts});
         }
@@ -228,7 +243,7 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
     }
     for (uint32_t i = 0; i < cnt; ++i) {
         if (!__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE)) continue;   // unpublished
-        const uint64_t ts = refs[i].ts;
+        const uint64_t ts = ref_ts(refs[i]);
         if (ts >= t_lo && ts <= t_hi && ts != 0) out.push_back(TemporalRef{refs[i].dst, ts});
     }
 }
@@ -236,7 +251,7 @@ static void collect_range(const VertexBucket* b, uint64_t t_lo, uint64_t t_hi,
 void VertexIndex::neighbors_temporal_into(uint32_t src, uint64_t t_lo, uint64_t t_hi,
                                           std::vector<TemporalRef>& out) const {
     if (heads_ == nullptr || src >= num_vertices_) return;
-    for (VertexBucket* b = head_of(src); b; b = b->next) collect_range(b, t_lo, t_hi, out);
+    for (VertexBucket* b = head_of(src); b; b = b->next) collect_range(b, t_lo, t_hi, out, bs_min_);
 }
 
 size_t VertexIndex::finalize() {
@@ -271,7 +286,7 @@ size_t VertexIndex::finalize() {
                 bool ordered = true;
                 uint64_t prev = 0;
                 for (uint32_t i = 0; i < cnt; ++i) {
-                    uint64_t ts = refs[i].ts;
+                    uint64_t ts = ref_ts(refs[i]);
                     if (ts < prev) ordered = false;
                     prev = ts;
                     scratch.push_back(Keyed{ts, refs[i]});
@@ -306,7 +321,7 @@ void VertexIndex::neighbors_weighted_into(uint32_t src,
 void VertexIndex::in_neighbors_temporal_into(uint32_t dst, uint64_t t_lo, uint64_t t_hi,
                                              std::vector<TemporalRef>& out) const {
     if (heads_in_ == nullptr || dst >= num_vertices_) return;
-    for (VertexBucket* b = head_in_of(dst); b; b = b->next) collect_range(b, t_lo, t_hi, out);
+    for (VertexBucket* b = head_in_of(dst); b; b = b->next) collect_range(b, t_lo, t_hi, out, bs_min_);
 }
 
 void VertexIndex::neighbors_dst_into(uint32_t src,
