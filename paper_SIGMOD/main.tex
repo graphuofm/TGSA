@@ -160,7 +160,7 @@ during concurrent multi-writer ingestion.
 engine, a KV store, and a versioned temporal graph store across fourteen
 corpora up to 1.05B edges, verifying element-wise answer equality before
 reporting any latency, evaluating recovery by fault injection rather
-than asserting it, and ablating every design decision including three
+than asserting it, and ablating every design decision including two
 that measured as losses and ship disabled.
 \end{itemize}
 
@@ -862,10 +862,11 @@ window over a vertex-keyed layout visits every neighborhood the window
 might touch. GraphOne is closer on raw ingest ($0.92$--$2.76\times$,
 like-for-like with its durable path timed on both sides), and it is a
 well-engineered store; the axis that separates the designs is read
-amplification. Answering our windowed-neighborhood suite, GraphOne
-scans 8 to $84\times$ more edges than it delivers (CADETS: 4.30B
-scanned for 51.1M delivered), because its adjacency snapshots
-interleave all time; \sys scans the window.
+amplification. Answering the same checksummed windowed-neighborhood
+suite, GraphOne delivers edges $2.1$--$30\times$ slower because it
+scans 13 to $84\times$ more edges than it delivers (CADETS: 4.30B
+scanned for 51.1M delivered), its adjacency snapshots interleaving
+all time; \sys scans the window.
 
 \textbf{Against the versioned store.} TVA did not finish ingesting
 wiki-talk's 7.8M events within a 90-minute cutoff (killed at 5{,}415s,
@@ -882,7 +883,10 @@ would beat ours.
 \textbf{Against the KV store.} The time-encoded RocksDB key makes
 extraction a single seek plus scan, the best case for an LSM; \sys
 still ingests $8$--$25\times$ faster (memtable and flush costs are
-timed) and extracts $15$--$25\times$ faster per delivered edge. The
+timed) and extracts $18$--$21\times$ faster per delivered edge on
+10\% trailing windows, a gap that widens by two orders of magnitude
+on narrow windows, where the LSM pays its seek and block decode
+before delivering anything. The
 instructive result is entity expansion: a store keyed \emph{only} on
 time must scan the window and filter on source, which costs
 $784\times$ to $59{,}400\times$ against \sys's vertex index, tracking
@@ -925,13 +929,16 @@ per bucket).
 
 \textbf{The extract-to-analytics pipeline.} When an analysis is
 structure-dominated, the measured escape hatch is extraction into a
-static view. Extracting a window and building a CSR costs
-$0.3$--$0.5\times$ of one analysis pass at 0.1\% selectivity and
-crosses $1.0\times$ near full-graph extraction, so the pipeline
-amortizes within one to two analyses; against DuckDB running the same
-extract-compute-writeback loop \sys is $1.2$--$1.9\times$ faster
-end-to-end, and against LiveGraph $3$--$10\times$, with extraction
-dominating their loop (68--94\% of time) and not ours.
+static view. Extracting a window and building a CSR costs about half
+of one analysis pass at 0.1\% windows and stays within $1.3\times$ of
+one pass even at full-graph extraction, so the pipeline amortizes
+within one to two analyses. Running the same
+extract-compute-writeback loop end-to-end, \sys is
+$1.0$--$1.5\times$ faster than DuckDB (level only at the smallest
+windows, where compute dominates everything) and
+$1.1$--$18.3\times$ faster than LiveGraph, whose loop extraction
+dominates (up to 96\% of pipeline time, against at most 60\% of
+ours).
 
 \begin{figure}[t]
   \centering
