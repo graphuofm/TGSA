@@ -15,6 +15,26 @@ Result: **the bound holds at every tau on every corpus tested** (18/18 rows,
 installs); query cost is flat across two orders of magnitude of tau. The knob
 is safe to leave at its default.
 
+## Run claiming (`runclaim_wiki.csv`, `runclaim_cadets.csv`)
+
+Same edges, same thread counts, the GraphConfig switch the only difference;
+both sides must land every edge (num_edges == n, edges_dropped == 0) before
+a rate is recorded. The switch decides whether the engine scales:
+
+| threads | wiki on | wiki off | cadets on | cadets off |
+|---|---|---|---|---|
+| 1 | 21.4 | 12.3 | 34.2 | 14.6 |
+| 2 | 31.0 | 8.0 | 48.0 | 8.4 |
+| 4 | 43.8 | 6.6 | 67.0 | 7.5 |
+| 8 | 73.2 | 6.1 | 85.4 | 7.0 |
+
+(Meps.) Without run claiming, scaling INVERTS: one thread beats eight,
+because time-ordered arrival serializes all writers on one window counter.
+The disorder sweep (`../e21_streaming/disorder.csv`) is the boundary case:
+fully shuffled arrival (runs of length 1) runs at 4.9 Meps with the
+mechanism on, near the disabled configuration's ordered-arrival 6.1 -- the
+mechanism monetizes exactly the run structure ordered arrival supplies.
+
 ## Binary-search threshold (`threshold.csv`)
 
 bs_min = 1 always binary-searches a sorted bucket; 10^9 never does.

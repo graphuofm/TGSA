@@ -1,0 +1,9 @@
+system,dataset,run_claim,threads,edges,ingest_sec,ingest_Meps
+tgsr,wiki-talk-temporal,1,1,7833140,0.366137028,21.3940121
+tgsr,wiki-talk-temporal,0,1,7833140,0.635174751,12.3322597
+tgsr,wiki-talk-temporal,1,2,7833140,0.25289917,30.9733717
+tgsr,wiki-talk-temporal,0,2,7833140,0.974413872,8.03882234
+tgsr,wiki-talk-temporal,1,4,7833140,0.178996801,43.7613406
+tgsr,wiki-talk-temporal,0,4,7833140,1.18833017,6.59172019
+tgsr,wiki-talk-temporal,1,8,7833140,0.107060194,73.1657557
+tgsr,wiki-talk-temporal,0,8,7833140,1.28001404,6.11957351

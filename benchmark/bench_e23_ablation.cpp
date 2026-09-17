@@ -131,6 +131,39 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    // ------------------------------------------------------------- runclaim
+    // The run-claiming A/B: same edges, same thread counts, the switch the
+    // only difference. Both sides must land every edge (edges_dropped == 0
+    // and total counts equal) before the rates mean anything.
+    if (mode == "runclaim") {
+        CsvWriter w(out_csv,
+            {"system","dataset","run_claim","threads","edges",
+             "ingest_sec","ingest_Meps"});
+        for (int th : {1, 2, 4, 8}) {
+            for (int rc : {1, 0}) {
+                GraphConfig cfg = base_cfg(meta, n);
+                cfg.run_claim = (rc != 0);
+                Barry b(cfg);
+                double t0 = now_sec();
+                b.insert_batch(ef.edges, n, th);
+                const double ing = now_sec() - t0;
+                const Barry::Stats st = b.stats();
+                if (st.edges_dropped != 0 || st.num_edges != n) {
+                    std::fprintf(stderr, "[e23-runclaim] COUNT MISMATCH rc=%d "
+                                 "th=%d inserted=%zu dropped=%zu\n", rc, th,
+                                 st.num_edges, st.edges_dropped);
+                    return 1;
+                }
+                w.row(std::string("tgsr"), ds, rc, th,
+                      (unsigned long long)n, ing, n / ing / 1e6);
+                std::fprintf(stderr,
+                    "[e23-runclaim] run_claim=%d threads=%d  %6.2f Meps\n",
+                    rc, th, n / ing / 1e6);
+            }
+        }
+        return 0;
+    }
+
     // ------------------------------------------------------------ threshold
     if (mode == "threshold") {
         CsvWriter w(out_csv,

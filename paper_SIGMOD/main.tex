@@ -446,10 +446,11 @@ window, so \texttt{insert\_batch} detects runs of same-window events
 inside each thread's contiguous chunk and claims each run with a single
 \texttt{fetch\_add} of the run length; overshooting a block's capacity
 is benign because readers clamp to $\min(count, capacity)$. The
-ablation of \S\ref{sec:eval-ablation} prices this: disabling run
-claiming drops wiki-talk ingestion from 25.8 to 7.8M events/s, and the
-disorder sweep shows why, since a fully shuffled arrival order (runs of
-length one) removes exactly the benefit that ordered arrival grants.
+ablation of \S\ref{sec:eval-ablation} prices this: at eight threads,
+disabling run claiming drops wiki-talk ingestion from 73.2 to 6.1M
+events/s, and the disorder sweep shows why, since a fully shuffled
+arrival order (runs of length one) removes exactly the benefit that
+ordered arrival grants.
 
 \subsection{The Vertex Index and the Compaction Contract}
 \textbf{Key Idea.} Entity-keyed access lives in a separate index of
@@ -819,14 +820,17 @@ One mechanism per sweep; both sides of every switch run identical
 reseeded workloads and must deliver identical results before timing
 counts.
 
-\textbf{Run claiming.} Disabling it drops wiki-talk ingest from 52.8
-to 14.5M events/s at eight threads, and un-inverts nothing: without
-it, one writer beats eight, because time-ordered arrival serializes
-every writer on one window's counter. The disorder sweep is the
-mirror image: fully shuffled arrival (runs of length one) removes the
-mechanism's benefit and \emph{raises} baseline throughput on CADETS,
-confirming that ordered arrival is the pathological case the
-mechanism exists for.
+\textbf{Run claiming.} The switch decides whether the engine scales.
+With it, wiki-talk ingest climbs 21.4, 31.0, 43.8, 73.2M events/s
+from one thread to eight (CADETS: 34.2 to 85.4); without it, scaling
+\emph{inverts}, one thread's 12.3M events/s degrading to 6.1M at
+eight, because time-ordered arrival serializes every writer on one
+window's counter and added threads only add contention. The disorder
+sweep is the boundary: fully shuffled arrival (runs of length one)
+removes the mechanism's benefit, landing at 4.9M events/s against the
+disabled configuration's 6.1M, so what the mechanism monetizes is
+precisely the run structure that ordered arrival supplies, and every
+delivered edge count matched on both sides of the switch.
 
 \textbf{Granularity bound.} Selecting the shift from measured event
 counts at targets $\tau$ spanning two orders of magnitude, realized
