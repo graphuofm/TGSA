@@ -85,10 +85,33 @@ TODO
 
 % =====================================================================
 \section{Temporal Query Engine}\label{sec:query}
-% per-operation I/O Analysis paragraphs; complexity table (from docs/THEORY.md);
-% sorted-bucket binary search contract; boundary-scan SIMD (report the gather
-% result honestly, whichever way the sweep lands); temporal Dijkstra fwd/bwd.
+% per-operation I/O Analysis paragraphs; sorted-bucket binary search contract;
+% boundary-scan SIMD (report the gather result honestly, whichever way the
+% sweep lands); temporal Dijkstra fwd/bwd.
 TODO
+
+\begin{table}[t]
+\caption{Time complexity of core operations. $E$ events, $V$ vertices,
+$d(v)$ out-degree, $\mu$ window occupancy (bounded by
+Thm.~\ref{thm:shift}), $W$ windows in a range, $|R|$ result size, $k$
+results per expansion. \sys's append bound is unconditional; the
+time-sorted CSR's rebuild is its only update path.}
+\label{tab:complexity}
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Operation & \sys (compacted) & \sys (uncompacted) & time-sorted CSR & arrival CSR \\
+\midrule
+append one edge        & $O(1)$ am.            & $O(1)$ am.        & $O(E)$ rebuild & $O(1)$ am. \\
+point query at $t$     & $O(\mu+|R|)$          & same              & $O(V\log d)$   & $O(E)$ \\
+range $[t_1,t_2]$      & $O(W+\mu+|R|)$        & same              & $O(V\log d+|R|)$ & $O(E)$ \\
+expand $v$ in window   & $O(\log d(v)+k)$      & $O(d(v))$         & $O(\log d(v)+k)$ & $O(d(v))$ \\
+fwd/bwd taint          & $O(\sum\log d+|R|\log|R|)$ & $O(\sum d+\cdots)$ & same as compacted & $O(\sum d+\cdots)$ \\
+\texttt{evict\_before} & $O(W_{ev}+\text{blocks})$ & same          & $O(E)$ rebuild & $O(E)$ \\
+\texttt{compact}       & $O(E\log B_{\max})$ optional & --         & $O(E\log E)$ mandatory & -- \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 % =====================================================================
 \section{Implementation}\label{sec:impl}

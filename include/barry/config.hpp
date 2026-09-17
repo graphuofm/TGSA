@@ -40,8 +40,16 @@ struct GraphConfig {
     // for time-ordered arrival being the worst case for parallel writers).
     // Off: every edge takes the single-edge insert path.
     bool     run_claim = true;
-    // AVX2 boundary-window scan in query_range. Off: scalar loop.
-    bool     simd_scan = true;
+    // AVX2 boundary-window scan in query_range. Off by default because it was
+    // measured and it loses: across four corpora and window widths from an
+    // eighth of a slot to 64 slots, the gather-based vector path never beat
+    // the scalar loop once, and cost up to 1.52x on narrow windows
+    // (tc-cadets, results/e23_ablation/simd.csv). _mm256_i64gather_epi64 at a
+    // 20-byte stride is slower than scalar loads on this microarchitecture,
+    // and the vector path only ever touches a range's ~2 boundary slots, so
+    // where it operates it loses and where it matters it idles. The knob
+    // stays so the measurement can be repeated.
+    bool     simd_scan = false;
     // Below this many refs, a sorted bucket is scanned rather than
     // binary-searched (cit-Patents, mean degree 2.7, exposed the seek
     // costing more than the read).
