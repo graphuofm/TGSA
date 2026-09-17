@@ -3,6 +3,7 @@
 /home/jding/Barry/build_notscache/CMakeFiles/test_smoke.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e22_pipeline.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e19_livegraph.dir
+/home/jding/Barry/build_notscache/CMakeFiles/bench_e10_retention.dir
 /home/jding/Barry/build_notscache/CMakeFiles/barry_soak.dir
 /home/jding/Barry/build_notscache/CMakeFiles/barry_bin_to_gbbs.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e2_query.dir
@@ -26,6 +27,7 @@
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e3_compute.dir
 /home/jding/Barry/build_notscache/CMakeFiles/barry.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e5_memory.dir
+/home/jding/Barry/build_notscache/CMakeFiles/bench_e23_ablation.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e18_recovery.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e14_tc.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e6_cache.dir
@@ -38,4 +40,3 @@
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e4_scale.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e15_barry.dir
 /home/jding/Barry/build_notscache/CMakeFiles/bench_e16_breadth.dir
-/home/jding/Barry/build_notscache/CMakeFiles/bench_e10_retention.dir

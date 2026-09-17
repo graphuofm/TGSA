@@ -56,6 +56,7 @@ CMAKE_BINARY_DIR = /home/jding/Barry/build_notscache
 all: CMakeFiles/test_smoke.dir/all
 all: CMakeFiles/bench_e22_pipeline.dir/all
 all: CMakeFiles/bench_e19_livegraph.dir/all
+all: CMakeFiles/bench_e10_retention.dir/all
 all: CMakeFiles/barry_soak.dir/all
 all: CMakeFiles/barry_bin_to_gbbs.dir/all
 all: CMakeFiles/bench_e2_query.dir/all
@@ -78,6 +79,7 @@ all: CMakeFiles/barry_tc_cdm_to_bin.dir/all
 all: CMakeFiles/bench_e3_compute.dir/all
 all: CMakeFiles/barry.dir/all
 all: CMakeFiles/bench_e5_memory.dir/all
+all: CMakeFiles/bench_e23_ablation.dir/all
 all: CMakeFiles/bench_e18_recovery.dir/all
 all: CMakeFiles/bench_e14_tc.dir/all
 all: CMakeFiles/bench_e6_cache.dir/all
@@ -90,7 +92,6 @@ all: CMakeFiles/bench_e13_storage_read.dir/all
 all: CMakeFiles/bench_e4_scale.dir/all
 all: CMakeFiles/bench_e15_barry.dir/all
 all: CMakeFiles/bench_e16_breadth.dir/all
-all: CMakeFiles/bench_e10_retention.dir/all
 
 .PHONY : all
 
@@ -103,6 +104,7 @@ preinstall:
 clean: CMakeFiles/test_smoke.dir/clean
 clean: CMakeFiles/bench_e22_pipeline.dir/clean
 clean: CMakeFiles/bench_e19_livegraph.dir/clean
+clean: CMakeFiles/bench_e10_retention.dir/clean
 clean: CMakeFiles/barry_soak.dir/clean
 clean: CMakeFiles/barry_bin_to_gbbs.dir/clean
 clean: CMakeFiles/bench_e2_query.dir/clean
@@ -125,6 +127,7 @@ clean: CMakeFiles/barry_tc_cdm_to_bin.dir/clean
 clean: CMakeFiles/bench_e3_compute.dir/clean
 clean: CMakeFiles/barry.dir/clean
 clean: CMakeFiles/bench_e5_memory.dir/clean
+clean: CMakeFiles/bench_e23_ablation.dir/clean
 clean: CMakeFiles/bench_e18_recovery.dir/clean
 clean: CMakeFiles/bench_e14_tc.dir/clean
 clean: CMakeFiles/bench_e6_cache.dir/clean
@@ -137,7 +140,6 @@ clean: CMakeFiles/bench_e13_storage_read.dir/clean
 clean: CMakeFiles/bench_e4_scale.dir/clean
 clean: CMakeFiles/bench_e15_barry.dir/clean
 clean: CMakeFiles/bench_e16_breadth.dir/clean
-clean: CMakeFiles/bench_e10_retention.dir/clean
 
 .PHONY : clean
 
@@ -148,7 +150,7 @@ clean: CMakeFiles/bench_e10_retention.dir/clean
 CMakeFiles/test_smoke.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_smoke.dir/build.make CMakeFiles/test_smoke.dir/depend
 	$(MAKE) -f CMakeFiles/test_smoke.dir/build.make CMakeFiles/test_smoke.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=87,88 "Built target test_smoke"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=89,90 "Built target test_smoke"
 .PHONY : CMakeFiles/test_smoke.dir/all
 
 # Build rule for subdir invocation for target.
@@ -223,6 +225,33 @@ CMakeFiles/bench_e19_livegraph.dir/clean:
 .PHONY : CMakeFiles/bench_e19_livegraph.dir/clean
 
 #=============================================================================
+# Target rules for target CMakeFiles/bench_e10_retention.dir
+
+# All Build rule for target.
+CMakeFiles/bench_e10_retention.dir/all: CMakeFiles/barry.dir/all
+	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/depend
+	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=39,40 "Built target bench_e10_retention"
+.PHONY : CMakeFiles/bench_e10_retention.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/bench_e10_retention.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 20
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/bench_e10_retention.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 0
+.PHONY : CMakeFiles/bench_e10_retention.dir/rule
+
+# Convenience name for target.
+bench_e10_retention: CMakeFiles/bench_e10_retention.dir/rule
+
+.PHONY : bench_e10_retention
+
+# clean rule for target.
+CMakeFiles/bench_e10_retention.dir/clean:
+	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/clean
+.PHONY : CMakeFiles/bench_e10_retention.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/barry_soak.dir
 
 # All Build rule for target.
@@ -283,7 +312,7 @@ CMakeFiles/barry_bin_to_gbbs.dir/clean:
 CMakeFiles/bench_e2_query.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e2_query.dir/build.make CMakeFiles/bench_e2_query.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e2_query.dir/build.make CMakeFiles/bench_e2_query.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=63,64 "Built target bench_e2_query"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=65,66 "Built target bench_e2_query"
 .PHONY : CMakeFiles/bench_e2_query.dir/all
 
 # Build rule for subdir invocation for target.
@@ -310,7 +339,7 @@ CMakeFiles/bench_e2_query.dir/clean:
 CMakeFiles/test_engine.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_engine.dir/build.make CMakeFiles/test_engine.dir/depend
 	$(MAKE) -f CMakeFiles/test_engine.dir/build.make CMakeFiles/test_engine.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=83,84 "Built target test_engine"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=85,86 "Built target test_engine"
 .PHONY : CMakeFiles/test_engine.dir/all
 
 # Build rule for subdir invocation for target.
@@ -337,7 +366,7 @@ CMakeFiles/test_engine.dir/clean:
 CMakeFiles/bench_e8_attack.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e8_attack.dir/build.make CMakeFiles/bench_e8_attack.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e8_attack.dir/build.make CMakeFiles/bench_e8_attack.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=75,76 "Built target bench_e8_attack"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=77,78 "Built target bench_e8_attack"
 .PHONY : CMakeFiles/bench_e8_attack.dir/all
 
 # Build rule for subdir invocation for target.
@@ -364,7 +393,7 @@ CMakeFiles/bench_e8_attack.dir/clean:
 CMakeFiles/test_arena.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_arena.dir/build.make CMakeFiles/test_arena.dir/depend
 	$(MAKE) -f CMakeFiles/test_arena.dir/build.make CMakeFiles/test_arena.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=79,80 "Built target test_arena"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=81,82 "Built target test_arena"
 .PHONY : CMakeFiles/test_arena.dir/all
 
 # Build rule for subdir invocation for target.
@@ -418,7 +447,7 @@ CMakeFiles/barry_bin_to_graphone.dir/clean:
 CMakeFiles/test_persistence.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_persistence.dir/build.make CMakeFiles/test_persistence.dir/depend
 	$(MAKE) -f CMakeFiles/test_persistence.dir/build.make CMakeFiles/test_persistence.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=85,86 "Built target test_persistence"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=87,88 "Built target test_persistence"
 .PHONY : CMakeFiles/test_persistence.dir/all
 
 # Build rule for subdir invocation for target.
@@ -445,7 +474,7 @@ CMakeFiles/test_persistence.dir/clean:
 CMakeFiles/test_taint.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_taint.dir/build.make CMakeFiles/test_taint.dir/depend
 	$(MAKE) -f CMakeFiles/test_taint.dir/build.make CMakeFiles/test_taint.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=89,90 "Built target test_taint"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=91,92 "Built target test_taint"
 .PHONY : CMakeFiles/test_taint.dir/all
 
 # Build rule for subdir invocation for target.
@@ -526,7 +555,7 @@ CMakeFiles/barry_record_env.dir/clean:
 CMakeFiles/test_time_mapper.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_time_mapper.dir/build.make CMakeFiles/test_time_mapper.dir/depend
 	$(MAKE) -f CMakeFiles/test_time_mapper.dir/build.make CMakeFiles/test_time_mapper.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=91,92 "Built target test_time_mapper"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=93,94 "Built target test_time_mapper"
 .PHONY : CMakeFiles/test_time_mapper.dir/all
 
 # Build rule for subdir invocation for target.
@@ -634,7 +663,7 @@ CMakeFiles/bench_e1_ingest.dir/clean:
 CMakeFiles/bench_e9_columnar.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e9_columnar.dir/build.make CMakeFiles/bench_e9_columnar.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e9_columnar.dir/build.make CMakeFiles/bench_e9_columnar.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=77,78 "Built target bench_e9_columnar"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=79,80 "Built target bench_e9_columnar"
 .PHONY : CMakeFiles/bench_e9_columnar.dir/all
 
 # Build rule for subdir invocation for target.
@@ -742,7 +771,7 @@ CMakeFiles/barry_tc_cdm_to_bin.dir/clean:
 CMakeFiles/bench_e3_compute.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e3_compute.dir/build.make CMakeFiles/bench_e3_compute.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e3_compute.dir/build.make CMakeFiles/bench_e3_compute.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=65,66 "Built target bench_e3_compute"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=67,68 "Built target bench_e3_compute"
 .PHONY : CMakeFiles/bench_e3_compute.dir/all
 
 # Build rule for subdir invocation for target.
@@ -796,7 +825,7 @@ CMakeFiles/barry.dir/clean:
 CMakeFiles/bench_e5_memory.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e5_memory.dir/build.make CMakeFiles/bench_e5_memory.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e5_memory.dir/build.make CMakeFiles/bench_e5_memory.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=69,70 "Built target bench_e5_memory"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=71,72 "Built target bench_e5_memory"
 .PHONY : CMakeFiles/bench_e5_memory.dir/all
 
 # Build rule for subdir invocation for target.
@@ -815,6 +844,33 @@ bench_e5_memory: CMakeFiles/bench_e5_memory.dir/rule
 CMakeFiles/bench_e5_memory.dir/clean:
 	$(MAKE) -f CMakeFiles/bench_e5_memory.dir/build.make CMakeFiles/bench_e5_memory.dir/clean
 .PHONY : CMakeFiles/bench_e5_memory.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/bench_e23_ablation.dir
+
+# All Build rule for target.
+CMakeFiles/bench_e23_ablation.dir/all: CMakeFiles/barry.dir/all
+	$(MAKE) -f CMakeFiles/bench_e23_ablation.dir/build.make CMakeFiles/bench_e23_ablation.dir/depend
+	$(MAKE) -f CMakeFiles/bench_e23_ablation.dir/build.make CMakeFiles/bench_e23_ablation.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=63,64 "Built target bench_e23_ablation"
+.PHONY : CMakeFiles/bench_e23_ablation.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/bench_e23_ablation.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 20
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/bench_e23_ablation.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 0
+.PHONY : CMakeFiles/bench_e23_ablation.dir/rule
+
+# Convenience name for target.
+bench_e23_ablation: CMakeFiles/bench_e23_ablation.dir/rule
+
+.PHONY : bench_e23_ablation
+
+# clean rule for target.
+CMakeFiles/bench_e23_ablation.dir/clean:
+	$(MAKE) -f CMakeFiles/bench_e23_ablation.dir/build.make CMakeFiles/bench_e23_ablation.dir/clean
+.PHONY : CMakeFiles/bench_e23_ablation.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/bench_e18_recovery.dir
@@ -877,7 +933,7 @@ CMakeFiles/bench_e14_tc.dir/clean:
 CMakeFiles/bench_e6_cache.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e6_cache.dir/build.make CMakeFiles/bench_e6_cache.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e6_cache.dir/build.make CMakeFiles/bench_e6_cache.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=71,72 "Built target bench_e6_cache"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=73,74 "Built target bench_e6_cache"
 .PHONY : CMakeFiles/bench_e6_cache.dir/all
 
 # Build rule for subdir invocation for target.
@@ -904,7 +960,7 @@ CMakeFiles/bench_e6_cache.dir/clean:
 CMakeFiles/bench_e7_provenance.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e7_provenance.dir/build.make CMakeFiles/bench_e7_provenance.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e7_provenance.dir/build.make CMakeFiles/bench_e7_provenance.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=73,74 "Built target bench_e7_provenance"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=75,76 "Built target bench_e7_provenance"
 .PHONY : CMakeFiles/bench_e7_provenance.dir/all
 
 # Build rule for subdir invocation for target.
@@ -931,7 +987,7 @@ CMakeFiles/bench_e7_provenance.dir/clean:
 CMakeFiles/test_concurrent.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/test_concurrent.dir/build.make CMakeFiles/test_concurrent.dir/depend
 	$(MAKE) -f CMakeFiles/test_concurrent.dir/build.make CMakeFiles/test_concurrent.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=81,82 "Built target test_concurrent"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=83,84 "Built target test_concurrent"
 .PHONY : CMakeFiles/test_concurrent.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1066,7 +1122,7 @@ CMakeFiles/bench_e13_storage_read.dir/clean:
 CMakeFiles/bench_e4_scale.dir/all: CMakeFiles/barry.dir/all
 	$(MAKE) -f CMakeFiles/bench_e4_scale.dir/build.make CMakeFiles/bench_e4_scale.dir/depend
 	$(MAKE) -f CMakeFiles/bench_e4_scale.dir/build.make CMakeFiles/bench_e4_scale.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=67,68 "Built target bench_e4_scale"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=69,70 "Built target bench_e4_scale"
 .PHONY : CMakeFiles/bench_e4_scale.dir/all
 
 # Build rule for subdir invocation for target.
@@ -1139,33 +1195,6 @@ bench_e16_breadth: CMakeFiles/bench_e16_breadth.dir/rule
 CMakeFiles/bench_e16_breadth.dir/clean:
 	$(MAKE) -f CMakeFiles/bench_e16_breadth.dir/build.make CMakeFiles/bench_e16_breadth.dir/clean
 .PHONY : CMakeFiles/bench_e16_breadth.dir/clean
-
-#=============================================================================
-# Target rules for target CMakeFiles/bench_e10_retention.dir
-
-# All Build rule for target.
-CMakeFiles/bench_e10_retention.dir/all: CMakeFiles/barry.dir/all
-	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/depend
-	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/jding/Barry/build_notscache/CMakeFiles --progress-num=39,40 "Built target bench_e10_retention"
-.PHONY : CMakeFiles/bench_e10_retention.dir/all
-
-# Build rule for subdir invocation for target.
-CMakeFiles/bench_e10_retention.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 20
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/bench_e10_retention.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/jding/Barry/build_notscache/CMakeFiles 0
-.PHONY : CMakeFiles/bench_e10_retention.dir/rule
-
-# Convenience name for target.
-bench_e10_retention: CMakeFiles/bench_e10_retention.dir/rule
-
-.PHONY : bench_e10_retention
-
-# clean rule for target.
-CMakeFiles/bench_e10_retention.dir/clean:
-	$(MAKE) -f CMakeFiles/bench_e10_retention.dir/build.make CMakeFiles/bench_e10_retention.dir/clean
-.PHONY : CMakeFiles/bench_e10_retention.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

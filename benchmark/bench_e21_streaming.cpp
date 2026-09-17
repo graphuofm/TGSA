@@ -107,7 +107,7 @@ static int run_concurrent(const Edge* E, size_t n, const GraphMeta& meta,
         {"system","dataset","phase","writers","readers","edges_preloaded",
          "edges_streamed","ingest_sec","ingest_Meps","queries","queries_per_sec",
          "q_median_us","q_p95_us","q_p99_us","delivered","settled_mismatches",
-         "rss_MB"});
+         "rss_MB","write_ops","read_ops","achieved_write_frac"});
 
     // Settled queries: windows that close strictly before the earliest edge the
     // streaming phase will deliver, so no arrival can legitimately land inside
@@ -225,6 +225,7 @@ static int run_concurrent(const Edge* E, size_t n, const GraphMeta& meta,
         for (auto& v : reader_lat) all_lat.insert(all_lat.end(), v.begin(), v.end());
         const size_t nq = all_lat.size();
 
+        const unsigned long long wops = ph.do_write ? (unsigned long long)stream : 0ull;
         w.row(std::string("gnomon"), ds, std::string(ph.name),
               ph.do_write ? writers : 0, ph.do_read ? readers : 0,
               (unsigned long long)preload, (unsigned long long)(ph.do_write ? stream : 0),
@@ -235,7 +236,9 @@ static int run_concurrent(const Edge* E, size_t n, const GraphMeta& meta,
               nq ? percentile(all_lat, 0.99) : 0.0,
               (unsigned long long)delivered.load(),
               (unsigned long long)mismatches.load(),
-              (rss1 - rss0) / 1e6);
+              (rss1 - rss0) / 1e6,
+              wops, (unsigned long long)nq,
+              (wops + nq) ? (double)wops / (double)(wops + nq) : 0.0);
 
         std::fprintf(stderr,
             "[e21-conc] %-13s ingest=%7.2f Meps  queries=%8llu (%9.0f q/s)  "

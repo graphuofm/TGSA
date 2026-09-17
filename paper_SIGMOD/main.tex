@@ -1,0 +1,130 @@
+% TGSR: SIGMOD full research paper. Structure mirrors TVA (PVLDB 19(10),
+% pp. 2536-2548) section for section; docs/SIGMOD_PLAN.md holds the contract.
+% Draft class: acmart sigconf. Submission variant will add \settopmatter etc.
+\documentclass[sigconf,nonacm]{acmart}
+\usepackage{booktabs}
+\usepackage[ruled,linesnumbered,vlined]{algorithm2e}
+\usepackage{xspace}
+
+\newcommand{\sys}{TGSR\xspace}
+\newcommand{\tmap}{\texttt{tmap}\xspace}
+
+\begin{document}
+
+\title{TGSR: A Time-Keyed Storage Engine for High-Throughput Temporal Graphs}
+
+\author{Anonymous submission}
+\affiliation{\institution{}\city{}\country{}}
+
+\begin{abstract}
+% TVA pattern: problem -> named mechanisms -> headline numbers.
+% Mechanisms to name here: (1) the temporal address space (\tmap): time IS the
+% address, demand paging absorbs sparsity; (2) run-claimed lock-free ingestion
+% with the per-slot publication protocol; (3) the compaction contract +
+% retention/recovery as consequences.
+% Headline numbers (current engine): 7.0--94.6M events/s across 13 corpora;
+% 1.05B-edge corpus at 77.5M events/s, recovered from log in 29.6s; windowed
+% delivery up to 194x LiveGraph / 30x GraphOne; extraction 70x at 0.01% windows.
+TODO
+\end{abstract}
+
+\maketitle
+
+% =====================================================================
+\section{Introduction}\label{sec:intro}
+% Fig 1: REAL story, CADETS attack chain (implant, privilege escalation, C2,
+% injection) + retention horizon closing on the evidence; Example 1 narrates it.
+% Then the gap paragraph (entity-keyed / columnar / versioned / static CSR),
+% then the three numbered challenges:
+%   C1  locate by time without an index that must be maintained/merged/recovered
+%   C2  stay correct for readers DURING lock-free multi-writer ingestion,
+%       without ever sorting on the write path
+%   C3  an unbounded stream on bounded resources: retention, durability and
+%       recovery as consequences of the layout, not subsystems
+% Then the mechanisms, each tagged (C1)/(C2)/(C3), then contributions.
+TODO
+
+% =====================================================================
+\section{Background}\label{sec:background}
+\subsection{Temporal Event Graph Model}
+% G=(V,E), immutable timestamped edges; operations append/evict_before/replay;
+% query = predicate over the edge multiset (Eq. 1); time-respecting paths.
+TODO
+\subsection{Demand Paging as a Storage Primitive}
+% anonymous mmap primer; why the mmap-in-DBMS critique (file-backed buffer
+% management) does not transfer to an anonymous reservation.
+TODO
+
+% =====================================================================
+\section{The Temporal Address Space}\label{sec:tmap}
+% THE abstraction section (our GraphView / Temporal Table).
+% \tmap(T0,S,P): A(T) = A_base + ((T-T0)>>S) x P. Five-clause contract:
+%   1 placement is arithmetic (Thm addressing)
+%   2 residency ~ occupied time, not spanned time (Thm space)
+%   3 a time prefix IS an address prefix (retention)
+%   4 region content is a pure function of the appended multiset (recovery)
+%   5 per-slot publication: readers never see a torn write (Thm concurrent)
+% Architecture figure (TVA Fig-3 grade) + Example 2 walking two color-coded
+% queries: a window scan and a backward causal trace.
+% Clients: the graph store (Sec 4) is the first; a per-window sketch/counter
+% store is sketched to show the contract is engine-independent.
+TODO
+
+% =====================================================================
+\section{Storage Design}\label{sec:storage}
+\subsection{Timeline and Arena}   % Key Idea. + format figure + Thm 1/2/3
+TODO
+\subsection{Lock-Free Ingestion}  % run-claim Algo + publication protocol Algo + Thm 4/5
+TODO
+\subsection{The Vertex Index and the Compaction Contract}
+% EdgeRef layout incl. the 16->24B decision WITH its two-sided measurement
+% (queries 2-5x faster, structural axis 2.1x->2.4x) as a TVA-style Discussion.
+TODO
+\subsection{Retention and Durability} % evict_before; WAL frame; recovery=replay; Thm 6
+TODO
+
+% =====================================================================
+\section{Temporal Query Engine}\label{sec:query}
+% per-operation I/O Analysis paragraphs; complexity table (from docs/THEORY.md);
+% sorted-bucket binary search contract; boundary-scan SIMD (report the gather
+% result honestly, whichever way the sweep lands); temporal Dijkstra fwd/bwd.
+TODO
+
+% =====================================================================
+\section{Implementation}\label{sec:impl}
+% ~6.5K LOC C++17; consistency model stated plainly: per-edge atomic
+% visibility via publication, NO multi-edge transactions (vs TVA's SI);
+% AsyncWal group commit; ablation switches shipped in GraphConfig.
+TODO
+
+% =====================================================================
+\section{Evaluation}\label{sec:eval}
+% Setup: two-category baselines (temporal: TVA, DuckDB+ts-index, [RocksDB];
+% streaming: GraphOne, LiveGraph; + tcsr/ucsr/topo CSR), fairness engineering
+% (in-process, element-wise checksums, indexes granted), 14 corpora to 1.05B.
+\subsection{Experiment Setup}\label{sec:eval-setup}          % TVA 7.1
+TODO
+\subsection{Temporal Workloads}\label{sec:eval-temporal}     % TVA 7.2: windows, traversal, E22 pipeline, DNF case
+TODO
+\subsection{Structural Workloads}\label{sec:eval-structural} % TVA 7.3: our conceded axis, played in full
+TODO
+\subsection{Durability and Recovery}\label{sec:eval-recovery}% TVA 7.4 + crash/torn injection they do not have
+TODO
+\subsection{Ablation Study}\label{sec:eval-ablation}         % TVA 7.5, one mechanism per subsection:
+% run-claim | ts-cache (both builds) | binary-search threshold | tau bound |
+% SIMD | THP (negative) | thread scaling | R/W mix | disorder
+TODO
+
+% =====================================================================
+\section{Related Work}\label{sec:related}
+% four groups: versioned temporal (TVA/AeonG/Aion); structural dynamic
+% (+RapidStore, RadixGraph); LSM/LFS/time-series lineage; provenance systems.
+TODO
+
+% =====================================================================
+\section{Conclusion}\label{sec:conclusion}
+TODO
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+\end{document}
