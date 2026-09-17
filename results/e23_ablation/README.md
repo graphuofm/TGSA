@@ -21,7 +21,8 @@ bs_min = 1 always binary-searches a sorted bucket; 10^9 never does.
 
 Shape: **a wide plateau, then a cliff**. Any threshold from 1 to 256 is within
 noise of any other; removing binary search entirely costs 2.8x on wiki-talk
-(678 -> 1910 ms) and ~2.4x on tc-cadets. The mechanism is what matters, the
+(678 -> 1910 ms) and 26x on tc-cadets (5,115 -> 133,445 ms, where hot
+vertices carry millions of refs). The mechanism is what matters, the
 knob's exact value does not — the same shape TVA reports for its migration
 threshold. Default stays 32.
 
