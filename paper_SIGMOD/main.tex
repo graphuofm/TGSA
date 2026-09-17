@@ -58,16 +58,15 @@ than by structure, and the questions that matter of them, what happened in
 this window, what could have reached this host by now, what may be
 discarded, are all predicates on the timestamp.
 
-% Figure 1 goes here: the CADETS attack chain, drawn on a timeline, with
-% the retention horizon advancing from the left.
 \begin{figure}[t]
   \centering
-  \fbox{\parbox{0.95\linewidth}{\centering TODO: Fig.~1, the CADETS
-  attack chain on a timeline with the retention horizon closing in.}}
-  \caption{A real investigation on a temporal event graph. An alert fires
-  at $t_{n+1}$; the causal explanation is a time-respecting path through
-  events at $t_0 < t_1 < \dots < t_{n+1}$; the retention horizon advances
-  from the left, and any evidence it passes is gone.}
+  \includegraphics[width=\linewidth]{figures/fig_motivation.pdf}
+  \caption{A real investigation on a temporal event graph (CADETS,
+  Example~\ref{ex:cadets}). The attack chain is a time-respecting path
+  through the stream; the analyst's two questions are directional
+  traversals along the time axis; the retention horizon advances from
+  the left, and any evidence it passes is gone. Storage that serves
+  this workload must ingest, answer, and forget along the same axis.}
   \label{fig:motivation}
 \end{figure}
 
@@ -709,6 +708,34 @@ compared element-wise (checksums over delivered edges); every number
 in this section passed. Latencies are heavy-tailed, so we report
 medians with tails, never means.
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_ingest.pdf}
+  \caption{The streaming axis. \textbf{(a)}~Ingestion on eight threads,
+  log scale; the four baseline bars are wiki-talk, so they are like for
+  like. The versioned store's bar is an upper bound (it did not finish
+  wiki-talk's 7.8M events in 90 minutes), and a statically sorted CSR
+  has no ingest path to place on this axis at all. \sys's durable modes
+  are bounded by fsync policy, not by the engine.
+  \textbf{(b)}~Queries answered from a static structure's pre-rebuild
+  snapshot are not stale but silently incomplete; \sys has no rebuild
+  window at any corpus size.}
+  \label{fig:ingest}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_baselines.pdf}
+  \caption{Windowed queries against the baselines, every comparison
+  checksum-verified. \textbf{(a)}~Cost per delivered edge on the shared
+  window suite. \textbf{(b)}~Why: GraphOne scans 13--84$\times$ more
+  edges than it delivers, because its adjacency interleaves all time;
+  \sys scans the window. \textbf{(c)}~Entity expansion on the strongest
+  time-encoded RocksDB key: a store keyed only on time must scan the
+  window and filter, and the gap tracks selectivity.}
+  \label{fig:baselines}
+\end{figure*}
+
 \subsection{Temporal Workloads}\label{sec:eval-temporal}
 \textbf{Ingestion breadth.} \sys sustains 7.0 to 94.6M events/s across
 the thirteen smaller corpora on eight threads and absorbs the
@@ -762,6 +789,16 @@ traversal medians across the breadth suite sit at
 0.24--0.95\,$\mu$s per expansion (\cref{tab:complexity} bounds apply
 per bucket).
 
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_pipeline.pdf}
+  \caption{The extract-to-analytics pipeline on wiki-talk.
+  \textbf{(a)}~End-to-end pipeline time. \textbf{(b)}~Extraction's
+  share of it: extraction dominates the baselines' loop across all
+  window widths and never dominates ours.}
+  \label{fig:pipeline}
+\end{figure}
+
 \textbf{The extract-to-analytics pipeline.} When an analysis is
 structure-dominated, the measured escape hatch is extraction into a
 static view. Extracting a window and building a CSR costs
@@ -794,6 +831,18 @@ corpus, it would very plausibly win this row. The workload settles the
 trade: \sys spends the structural axis to buy the temporal one, and
 takes that one as far as it goes.
 
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_recovery.pdf}
+  \caption{Durability and recovery. \textbf{(a)}~The cost spectrum from
+  no log to fsync-per-batch on three corpora; the curves converge
+  because the device, not the engine, is the bound from
+  \texttt{async~4MB} onward. \textbf{(b)}~Recovery is re-ingestion:
+  replay throughput is flat in log size, and the billion-edge LANL log
+  recovers in 29.6\,s with no checkpoint machinery.}
+  \label{fig:recovery}
+\end{figure*}
+
 \subsection{Durability and Recovery}\label{sec:eval-recovery}
 \textbf{Cost.} Asynchronous logging halves peak ingest on wiki-talk
 (57.4 to 28.8M events/s) at memory-speed log production; the remaining
@@ -814,6 +863,21 @@ lost'' but ``what is lost is detected.''
 1.024B logged LANL edges replay at a flat $\approx$35M events/s, the
 billion-edge log recovering in 29.6 seconds. There is no checkpoint
 machinery to tune because there is no state that is not the multiset.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_ablation.pdf}
+  \caption{Ablations, one mechanism per panel; both sides of every
+  switch deliver identical results before timing counts.
+  \textbf{(a)}~Run claiming decides whether scaling exists: with it
+  (solid) throughput climbs to eight threads, without it (dotted) one
+  thread beats eight. \textbf{(b)}~The binary-search threshold is a
+  plateau then a cliff: the mechanism matters, its constant does not.
+  \textbf{(c)}~The cached timestamp buys $2.2$--$5.4\times$ on the
+  temporal axis for $+22\%$ memory. \textbf{(d)}~Mixed load trades
+  smoothly, with settled-window verification passing at every mix.}
+  \label{fig:ablation}
+\end{figure*}
 
 \subsection{Ablation Study}\label{sec:eval-ablation}
 One mechanism per sweep; both sides of every switch run identical
