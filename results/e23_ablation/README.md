@@ -71,8 +71,11 @@ Query side (ns per delivered edge, 16B -> 24B):
 | tc-cadets | 404.6 -> 152.5 (2.7x) | 6.2 -> 3.0 (2.1x) | 963 -> 1168 MB |
 | cit-Patents | 724.4 -> 336.6 (2.2x) | 546.5 -> 327.6 (1.7x) | 934 -> 1172 MB |
 
-Structural side (adjacency delivery vs topology-only CSR, common
-corpus/algorithm set): median concession 2.06x at 16B refs against 2.25x at
-24B. The cached timestamp costs roughly nine percent on the axis that never
-reads it and buys 2-5x on the axis the engine exists for. Ingest rate is
-unchanged either way.
+Structural side (adjacency delivery vs topology-only CSR, 9 common
+corpus/algorithm pairs): medians 2.42x (24B) against 2.39x (16B), with
+per-pair differences going BOTH directions (bfs pairs favour the wide ref,
+cc/pr pairs the narrow one). The wider ref's cost on the axis that never
+reads the timestamp is not resolvable above run-to-run noise in this A/B;
+an earlier "+9%" reading came from a partial corpus set. The resolvable
+price of the cache is the +22% resident set, and what it buys is the 2-5x
+on temporal queries. Ingest rate is unchanged either way.
