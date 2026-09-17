@@ -93,3 +93,46 @@ TVA 留下的可引用物是"版本元数据与值分离 + 有界邻域"这条�
 ## 六、版面预算（对齐 TVA 的 13 页）
 
 Intro 1.25 / 背景+模型 1 / §3 抽象 1 / §4 存储 2.5 / §5 查询 1.5 / §6 实现 0.5 / §7 评测 4 / §8 相关 0.75 / 结论 0.25 ≈ 12.75 页正文。
+
+---
+
+## 七、TVA 实验逐图对照契约（TVA 做了 1，TGSR 也做 1）
+
+定案（2026-09-17）：系统名 **TGSR**（temporal graph storage and read，已核查图/存储/DB 领域无撞名）。
+不做 40 亿边（TVA 最大 5270 万边，我们 LANL 10.5 亿已是它的 20 倍）。
+身份：**面向 temporal/dynamic graph 的时间敏感大吞吐引擎**；结构主导负载天生会输，照实报，
+卖点是给下游应用省时间（E22 端到端就是这个论证）。
+
+| TVA 图/节 | 内容 | TGSR 对应 | 状态 |
+|---|---|---|---|
+| Fig 6(a)(c) | 存储消耗 vs 操作量；历史/当前分解 | B/edge 跨 13 语料 + vs LiveGraph/GraphOne RSS；历史=arena、索引分解 | 有数据，缺分解图 |
+| Fig 6(b)(d) | 操作延迟 vs 操作量 | E21 steady：速率 vs 累计边数（平坦性） | 已有 |
+| Fig 7(a)(b) | 时序查询 Q1–Q4、随操作量 | 窗口查询/遍历/范围过滤（E19/E7/E9） | 已有 |
+| Fig 7(c) | hot/warm/cold 频率 | E22 窗口新近度扫描 0.01%→100% | 已有 |
+| Fig 7(d)(e)(f) | 大图压测、竞品 OOM | wiki-talk 上 TVA 90min DNF @41.6GB；LANL 10.5亿 | 已有 |
+| Fig 7(g)(h) | vs 通用系统 PostgreSQL/RocksDB | vs DuckDB(+ts索引) 已有；**RocksDB 待加（KV 代表，TVA 对齐项）** | 缺 RocksDB |
+| Fig 7(i) | 非时序负载开销检查 | E13 纯拓扑轴（我们的弱轴打满） | 已有 |
+| Fig 7(j) | 属性密集负载 | 不适用（我们无属性，§6 诚实声明数据模型边界） | 声明代替 |
+| Fig 8(a)(b) | 当前图存储/插入 vs GraphOne/Stinger/Sortledton | E19/E20 vs GraphOne/LiveGraph（checksum 校验） | 已有 |
+| Fig 9 | BFS/PR/SSSP/WCC 归一化 | E22 compute 三系统逐位一致 + E13 分解 | 已有 |
+| Fig 10(a) | TemporalChain 长版本链有效性 | 压缩 vs 未压缩查询代价随度数（26→1500 vs 54→15ns 曲线） | 已有 |
+| Fig 10(b)(c) | 持久化两模式开销 + WAL 开销 | E18 cost 六档阶梯（none→fsync/batch）；**外加 TVA 没有的：崩溃/截断注入、重放曲线** | 已有+超出 |
+| Fig 11(a) | Zipf 偏斜下 hop 距离（结构参数在真实偏斜下守界） | τ 目标占用扫描：μ∈[τ/2,4τ) 界在 13 语料实测密度 32–32768 下验证 + 性能随 τ | 有 E11 底子，需在新引擎重跑 |
+| Fig 11(b) | vs 版本链基线加速 | sorted-flag 二分 vs 线性扫描（同一引擎两态） | 已有（E19 两态） |
+| Fig 11(c) | SIMD 有效性 | AVX2 边界扫描开/关 | **缺开关** |
+| Fig 11(d) | 迁移阈值选择 | 小桶二分阈值(32)扫描：8/16/32/64/128 | **缺扫描** |
+| Fig 11(e) | 线程扩展 | batchsize×threads 网格已测，出扩展曲线 | 有数据 |
+| Fig 11(f) | 读写混合比 | E21 concurrent 加 R/W 比例参数扫描 | **缺参数化** |
+| （无对应） | — | **TGSR 独有 ablation**：run-claim 开/关（14.5→52.8）、EdgeRef 时间戳缓存开/关（查询 2–5x vs 结构轴 2.1→2.4）、THP 开/关（负结果） | 缺开关化 |
+
+### 需要新做的引擎开关
+1. `run_claim`（运行时，GraphConfig）：关闭→逐边 insert 回退
+2. `simd`（运行时）：关闭→标量边界扫描
+3. `binary_search_min`（运行时，替换硬编码 32）
+4. `TGSR_NO_TS_CACHE`（编译期，EdgeRef 回 16 字节）→ CMake 选项出第二组 bench 二进制
+
+### 需要新做的实验模式
+5. E23 阈值扫描（复用 E19 窗口测量）
+6. E21 加 `--rw_ratio` 扫描
+7. E11 τ 扫描在当前引擎重跑
+8. RocksDB 基线（时间编码键 `ts:src:dst`，与 TVA Full Mode 键设计同族）——工作量中等，排最后
