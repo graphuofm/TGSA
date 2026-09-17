@@ -143,6 +143,17 @@ else()
     message(STATUS "LiveGraph not built -- skipping bench_e19_livegraph")
 endif()
 
+# E24 needs RocksDB; built only when the baseline library exists.
+set(ROCKSDB_ROOT "${CMAKE_SOURCE_DIR}/baselines/rocksdb_src" CACHE PATH "RocksDB source root")
+if(EXISTS "${ROCKSDB_ROOT}/librocksdb.a")
+    add_executable(bench_e24_rocksdb benchmark/bench_e24_rocksdb.cpp)
+    target_include_directories(bench_e24_rocksdb PRIVATE
+        ${CMAKE_SOURCE_DIR}/benchmark ${ROCKSDB_ROOT}/include)
+    target_link_libraries(bench_e24_rocksdb PRIVATE barry
+        "${ROCKSDB_ROOT}/librocksdb.a" dl)
+    message(STATUS "RocksDB found -- building bench_e24_rocksdb")
+endif()
+
 # tests
 enable_testing()
 add_executable(test_tmap tests/test_tmap.cpp)

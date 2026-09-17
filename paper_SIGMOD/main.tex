@@ -8,6 +8,8 @@
 
 \newcommand{\sys}{TGSR\xspace}
 \newcommand{\tmap}{\texttt{tmap}\xspace}
+\newcommand{\challenge}[1]{\textbf{(C#1)}}
+\newtheorem{example}{Example}
 
 \begin{document}
 
@@ -17,32 +19,145 @@
 \affiliation{\institution{}\city{}\country{}}
 
 \begin{abstract}
-% TVA pattern: problem -> named mechanisms -> headline numbers.
-% Mechanisms to name here: (1) the temporal address space (\tmap): time IS the
-% address, demand paging absorbs sparsity; (2) run-claimed lock-free ingestion
-% with the per-slot publication protocol; (3) the compaction contract +
-% retention/recovery as consequences.
-% Headline numbers (current engine): 7.0--94.6M events/s across 13 corpora;
-% 1.05B-edge corpus at 77.5M events/s, recovered from log in 29.6s; windowed
-% delivery up to 194x LiveGraph / 30x GraphOne; extraction 70x at 0.01% windows.
-TODO
+Temporal graphs built from immutable timestamped events, such as audit
+streams, agent execution traces, and interaction logs, arrive as
+never-ending streams, are queried by time and causality, and are retained
+under time-based policies. Existing storage keys such graphs on vertex
+identity and demotes the timestamp to a payload attribute, so every
+time-constrained operation pays to undo the layout. This paper presents
+\sys, a storage engine that keys temporal graphs on time itself. First,
+\sys introduces the \emph{temporal address space} (\tmap): each timestamp
+maps to a virtual address by a constant-time shift, demand paging absorbs
+temporal sparsity, and no index is built, maintained, or recovered.
+Second, ingestion claims arrival runs with single atomic operations under
+a per-slot publication protocol, so queries remain correct \emph{during}
+lock-free multi-writer ingestion and arrival order is irrelevant. Third,
+because a time prefix is an address prefix and engine state is a pure
+function of the appended multiset, retention is a page release and
+recovery is replay; compaction is explicit, optional, and off the ingest
+path. \sys ingests 7.0--94.6M events/s across thirteen corpora, absorbs a
+billion-edge enterprise corpus at 77.5M events/s and recovers it from its
+log in 29.6 seconds, and delivers windowed neighborhoods up to
+$194\times$ faster than LiveGraph and $30\times$ faster than GraphOne,
+with every comparison verified element-wise before timing. The costs are
+measured with the same care: a bounded concession on structure-dominated
+workloads, and boundaries reported wherever a competing design wins.
 \end{abstract}
 
 \maketitle
 
 % =====================================================================
 \section{Introduction}\label{sec:intro}
-% Fig 1: REAL story, CADETS attack chain (implant, privilege escalation, C2,
-% injection) + retention horizon closing on the evidence; Example 1 narrates it.
-% Then the gap paragraph (entity-keyed / columnar / versioned / static CSR),
-% then the three numbered challenges:
-%   C1  locate by time without an index that must be maintained/merged/recovered
-%   C2  stay correct for readers DURING lock-free multi-writer ingestion,
-%       without ever sorting on the write path
-%   C3  an unbounded stream on bounded resources: retention, durability and
-%       recovery as consequences of the layout, not subsystems
-% Then the mechanisms, each tagged (C1)/(C2)/(C3), then contributions.
-TODO
+A growing class of graphs is built from \emph{events}: a system call
+touches a file, an agent invokes a tool, a host authenticates to another,
+a user replies to a message. Each edge carries the moment it happened,
+never changes afterwards, and arrives as part of a stream that does not
+end. Such graphs are interrogated by time and causality far more often
+than by structure, and the questions that matter of them, what happened in
+this window, what could have reached this host by now, what may be
+discarded, are all predicates on the timestamp.
+
+% Figure 1 goes here: the CADETS attack chain, drawn on a timeline, with
+% the retention horizon advancing from the left.
+\begin{figure}[t]
+  \centering
+  \fbox{\parbox{0.95\linewidth}{\centering TODO: Fig.~1, the CADETS
+  attack chain on a timeline with the retention horizon closing in.}}
+  \caption{A real investigation on a temporal event graph. An alert fires
+  at $t_{n+1}$; the causal explanation is a time-respecting path through
+  events at $t_0 < t_1 < \dots < t_{n+1}$; the retention horizon advances
+  from the left, and any evidence it passes is gone.}
+  \label{fig:motivation}
+\end{figure}
+
+\begin{example}\label{ex:cadets}
+In the DARPA Transparent Computing CADETS corpus, 22.5M information-flow
+events recorded over eleven days, a documented intrusion proceeds as an
+implant drop, a privilege escalation, command-and-control traffic, and an
+injection into a target process. When the final alert fires, the analyst's
+question is temporal twice over: backward, which earlier events could have
+caused this one, and forward, what did the compromised process touch
+afterwards. On \sys the forward trace reconstructs the published attack
+chain in causal order in 133\,$\mu$s, inside an impact set that is
+0.0093\% of the graph. The same corpus arrives at tens of thousands of
+events per second per endpoint, and a retention policy of $N$ days is
+simultaneously deleting from the other end. Storage that serves this
+workload must ingest, answer, and forget along the same axis: time.
+\end{example}
+
+Existing storage engines approach this workload with layouts designed for
+something else. Dynamic graph stores key storage on source-vertex
+identity and treat the timestamp as payload, so a time-constrained query
+becomes a structural scan with a per-edge filter, and retention must find
+expired edges wherever vertex order scattered them. Columnar and LSM
+engines order by time but pay a join per traversal hop. Versioned
+temporal graph databases retrieve the valid \emph{version} of an updated
+entity, and their central machinery, delta encoding and version-chain
+locality, assumes few property-rich versions per entity, which an event
+stream violates by construction. A statically time-sorted CSR answers
+temporal queries nearly optimally but has no ingest path at all: its only
+update is a full rebuild, during which its answers are silently wrong.
+
+Serving event-graph workloads on their own terms requires addressing
+three challenges. \challenge{1} \emph{Locating events by time without an
+index.} Any structure that maps timestamps to locations must be
+maintained on every write, merged on every reorganization, and recovered
+after every crash; at tens of millions of events per second that
+structure is the bottleneck. \challenge{2} \emph{Staying correct for
+readers during lock-free multi-writer ingestion, without sorting on the
+write path.} A time-ordered arrival stream is the worst case for
+concurrent writers, because every writer lands in the same window at the
+same instant. \challenge{3} \emph{Bounding resources under an unbounded
+stream.} Retention, durability, and recovery are not optional features
+for a store whose input never ends; if they are bolted on, they dominate
+the write path.
+
+In this paper we present \sys, a storage engine that keys temporal
+graphs on time itself. The starting observation is that a 64-bit virtual
+address space is orders of magnitude larger than the time range of any
+recorded workload, so instead of maintaining an index from timestamp to
+location, \sys lets the timestamp \emph{be} the location. The
+\emph{temporal address space} (\tmap, \S\ref{sec:tmap}) maps a timestamp
+to an address with one subtraction and one shift, and the operating
+system's demand paging absorbs temporal sparsity at no data-structure
+cost (Challenge~1). A \emph{run-claiming publication protocol}
+(\S\ref{sec:storage}) lets a writer claim an entire run of same-window
+arrivals with one atomic operation and publishes each edge with a single
+release store, so readers never observe a torn or unpublished edge during
+ingestion and arrival order is irrelevant (Challenge~2). Finally, the
+layout makes the stream's lifecycle arithmetic: a time prefix is an
+address prefix, so retention is a page release; engine state is a pure
+function of the appended multiset, so recovery is replaying a framed,
+checksummed log through the ordinary insert path (Challenge~3).
+Compaction exists but is explicit, optional, and off the ingest path:
+queries are correct in both states, and compaction changes their cost,
+not their answers.
+
+The design also has costs, and we measure them rather than argue them
+away: a layout that refuses to organize by entity pays a bounded,
+measured constant on entity-keyed operations, and we report the
+operations where a competing design beats us outright. The trade is
+deliberate, and the workload settles it.
+
+We make the following contributions:
+\begin{itemize}
+\item We propose \sys, a storage engine that keys temporal graphs on
+time, with proofs of its addressing, space, granularity, concurrency,
+and recovery properties.
+\item We introduce the temporal address space, a storage abstraction
+whose contract (arithmetic placement, occupancy-proportional residency,
+prefix retention, replay recovery) is inherited by any client, and
+demonstrate a non-graph client alongside the graph engine.
+\item We design a run-claiming lock-free ingestion path under a per-slot
+publication protocol, and prove that readers never observe partial state
+during concurrent multi-writer ingestion.
+\item We evaluate \sys against two streaming graph stores, a columnar
+engine, a KV store, and a versioned temporal graph store across fourteen
+corpora up to 1.05B edges, verifying element-wise answer equality before
+reporting any latency, evaluating recovery by fault injection rather
+than asserting it, and ablating every design decision including three
+that measured as losses and ship disabled.
+\end{itemize}
 
 % =====================================================================
 \section{Background}\label{sec:background}
@@ -57,18 +172,72 @@ TODO
 
 % =====================================================================
 \section{The Temporal Address Space}\label{sec:tmap}
-% THE abstraction section (our GraphView / Temporal Table).
-% \tmap(T0,S,P): A(T) = A_base + ((T-T0)>>S) x P. Five-clause contract:
-%   1 placement is arithmetic (Thm addressing)
-%   2 residency ~ occupied time, not spanned time (Thm space)
-%   3 a time prefix IS an address prefix (retention)
-%   4 region content is a pure function of the appended multiset (recovery)
-%   5 per-slot publication: readers never see a torn write (Thm concurrent)
-% Architecture figure (TVA Fig-3 grade) + Example 2 walking two color-coded
-% queries: a window scan and a backward causal trace.
-% Clients: the graph store (Sec 4) is the first; a per-window sketch/counter
-% store is sketched to show the contract is engine-independent.
-TODO
+\texttt{mmap} turns a file range into an address range. \tmap turns a
+\emph{time} range into an address range:
+\begin{equation}
+A(T) \;=\; A_{\mathrm{base}} + \big((T - T_{0}) \gg S\big)\times P,
+\label{eq:mapping}
+\end{equation}
+one anonymous reservation in which the slot for time $T$ is a
+subtraction and a shift away, for slot stride $P$ and granularity shift
+$S$. Everything \sys is built on follows from this identity rather than
+being engineered beside it. We state the contract as five clauses; a
+client that appends into slots inherits all five without writing any
+machinery of its own.
+
+\begin{description}
+\item[T1 (Placement is arithmetic).] For any timestamp $t$, the slot
+holding every event stamped $t$ is computed in $O(1)$ worst case with no
+data-dependent memory access (Theorem~\ref{thm:addr}). There is no
+search structure to consult, so the bound is unconditional; a B-tree
+gives $O(\log E)$ with pointer chases, a hash table expected $O(1)$ with
+worst-case collisions.
+\item[T2 (Residency follows occupancy).] Resident memory is proportional
+to \emph{occupied} time, not spanned time: a slot's page is faulted in
+only when its window receives its first event, and untouched ranges cost
+zero bytes whatever the virtual reservation (Theorem~\ref{thm:space}).
+Sparsity is absorbed by the MMU, not by a structure the engine
+maintains.
+\item[T3 (A time prefix is an address prefix).] Retention under a
+time-based policy is \texttt{madvise(MADV\_DONTNEED)} over
+$[A_{\mathrm{base}}, A(t))$: whole pages return to the operating system,
+readers of later windows are untouched, and no scan, tombstone, or
+compaction is involved, because expiry order and address order coincide.
+\item[T4 (Content is a pure function of the appended multiset).] Slots
+hold only what clients append, and nothing is updated in place, so
+replaying an append log through the ordinary insert path reconstructs
+the region exactly. Recovery is re-ingestion, with no undo, redo, or
+idempotence bookkeeping (Theorem~\ref{thm:recover}).
+\item[T5 (Per-slot publication).] A writer publishes an entry by storing
+its payload first and its timestamp last with release semantics; fresh
+pages read as zeros, and a zero timestamp marks an unpublished entry.
+Readers acquire-load and skip, so no reader observes a torn or partial
+entry during concurrent multi-writer ingestion
+(Theorem~\ref{thm:conc}).
+\end{description}
+
+\paragraph{Why this is an abstraction and not a formula.} The clauses
+never mention edges. The graph engine of \S\ref{sec:storage} is one
+client: its slots hold pointers to edge blocks. Our artifact carries a
+second, deliberately trivial client, a per-window atomic counter, which
+inherits every clause in under two hundred lines: four million events
+from eight concurrent writers land exactly once, a replay under a
+different thread interleaving reconstructs the region slot for slot, and
+evicting a prefix leaves the tail intact while the released range reads
+as empty. Anything a window can hold, a sketch, a Bloom filter, a
+key-value segment, gets the same guarantees, which is the difference
+between \tmap and Equation~\ref{eq:mapping}.
+
+\paragraph{What \tmap does not promise.} The granularity $S$ trades slot
+count against slot occupancy and is bounded, not free
+(Theorem~\ref{thm:shift}); clause T5 gives per-entry atomicity, not
+multi-entry transactions; and nothing in the contract helps a query that
+is keyed on anything other than time, which is where the engine pays and
+\S\ref{sec:eval-structural} measures.
+
+% Architecture figure (TVA Fig-3 grade) + Example 2 walking two
+% color-coded queries (window scan; backward causal trace) TODO.
+
 
 % =====================================================================
 \section{Storage Design}\label{sec:storage}
