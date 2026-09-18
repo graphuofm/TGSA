@@ -151,3 +151,21 @@ temporal、structural、recovery、ablation、pipeline；corpora 表 table_bread
 尚未做：GraphOne stream-view / LiveGraph MVCC 并发对打（现仅自测并发）；LDBC-SNB
 （未定）；Timeline 换 Tmap 实例化重构（刻意推迟）；投稿格式（匿名化/PVLDB vs
 SIGMOD 模板确认）；参考文献补 lsm/oneil1996 等新引 key 的核对。
+
+## 底座架构与并发对打（2026-09-18）
+
+用户定案：底座式设计（索尼笔记本底座比喻）。轻核可分离全速跑，重功能挂底座；
+对比只打我们的强项=吞吐。
+
+- E25 dock ladder（results/e25_dock）：分离核 200–293 Meps（wiki/cit/cadets），
+  历来的头条数字其实都是 +vindex 档；属性模块（edge_property_bytes 侧车，
+  地址算术寻址，T5 扩展到属性，test_props 8 写者验证）几乎免费；reverse ≈
+  再加一个索引；wal=write_only 档。每档探针答案一致，3 trials 取中位。
+- E26 并发对打（results/e26_concurrent）：同一 settled-query 协议跑
+  TGSR/LiveGraph（进程内）/GraphOne（其 harness job 29，补丁存
+  baselines_patches/graphone）。全部行 mismatches=0。8:4 档 TGSR 摄入
+  26–74 Meps，为 GraphOne 的 1.5–4x、LG sharded 最优情形的 4–11x，读吞吐
+  三个语料同时更高。两个附带发现：LG 到达序并发写崩塌（1.75→0.01 Meps，
+  209K aborts，顶点锁 vs 时间序流）；GraphOne STALE 视图并发归档下返回错误
+  答案（cadets 8:4 有 150/3276），记录行改用其一致视图。
+- 论文暂不动：用户要先通读，实验做完后共同决定如何更新进文章。
