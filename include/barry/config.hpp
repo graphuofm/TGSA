@@ -54,6 +54,19 @@ struct GraphConfig {
     // binary-searched (cit-Patents, mean degree 2.7, exposed the seek
     // costing more than the read).
     uint32_t binary_search_min = 32;
+
+    // ------------------------------------------------------------------
+    // Dock modules. The core engine (timeline + arena + lock-free append +
+    // window scans + retention) runs detached at full speed; each module
+    // below docks a capability and pays a measured price on the write path
+    // (results/e25_dock). num_vertices, build_reverse_index, and the WAL
+    // (attached by the caller) are the other modules.
+    // ------------------------------------------------------------------
+    // Per-edge property payload, fixed size in bytes. 0 = detached. When
+    // set, a parallel demand-paged sidecar holds properties addressed by
+    // the same arithmetic that places the edge, and the props overloads of
+    // insert/insert_batch store them under the publication protocol.
+    uint32_t edge_property_bytes = 0;
 };
 
 }  // namespace barry

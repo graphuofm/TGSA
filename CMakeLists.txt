@@ -92,7 +92,7 @@ if(TGSR_NO_TS_CACHE)
 endif()
 
 # benchmarks
-foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming e23_ablation)
+foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming e23_ablation e25_dock)
     add_executable(bench_${B} benchmark/bench_${B}.cpp)
     target_link_libraries(bench_${B} PRIVATE barry)
     target_include_directories(bench_${B} PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
@@ -143,6 +143,20 @@ else()
     message(STATUS "LiveGraph not built -- skipping bench_e19_livegraph")
 endif()
 
+# E26 always builds (prep + tgsr modes); the livegraph mode is compiled in
+# when the baseline library exists.
+add_executable(bench_e26_concurrent benchmark/bench_e26_concurrent.cpp)
+target_include_directories(bench_e26_concurrent PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
+target_link_libraries(bench_e26_concurrent PRIVATE barry)
+if(EXISTS "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
+    target_compile_definitions(bench_e26_concurrent PRIVATE E26_HAVE_LIVEGRAPH)
+    target_include_directories(bench_e26_concurrent PRIVATE ${LIVEGRAPH_ROOT}/bind)
+    target_link_libraries(bench_e26_concurrent PRIVATE
+        "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
+    set_target_properties(bench_e26_concurrent PROPERTIES
+        BUILD_RPATH "${LIVEGRAPH_ROOT}/build;${CMAKE_SOURCE_DIR}/baselines/tbb_install/lib")
+endif()
+
 # E24 needs RocksDB; built only when the baseline library exists.
 set(ROCKSDB_ROOT "${CMAKE_SOURCE_DIR}/baselines/rocksdb_src" CACHE PATH "RocksDB source root")
 if(EXISTS "${ROCKSDB_ROOT}/librocksdb.a")
@@ -159,6 +173,9 @@ enable_testing()
 add_executable(test_tmap tests/test_tmap.cpp)
 target_include_directories(test_tmap PRIVATE ${CMAKE_SOURCE_DIR}/include)
 target_link_libraries(test_tmap PRIVATE Threads::Threads)
+
+add_executable(test_props tests/test_props.cpp)
+target_link_libraries(test_props PRIVATE barry Threads::Threads)
 
 add_executable(test_smoke tests/test_smoke.cpp)
 target_link_libraries(test_smoke PRIVATE barry)

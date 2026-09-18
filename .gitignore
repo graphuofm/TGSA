@@ -18,3 +18,4 @@ docs/*.txt
 NEXT_SESSION.md
 usenix_cfp.txt
 .claude/
+results/e26_concurrent/go_convert/

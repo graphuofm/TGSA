@@ -24,6 +24,19 @@ public:
     // Ingestion ---------------------------------------------------------
     void insert(const Edge& e);
     void insert_batch(const Edge* edges, size_t n, int num_threads = 0);
+
+    // Dock property module (cfg.edge_property_bytes > 0): the props array is
+    // parallel to edges, edge_property_bytes each. Properties are stored
+    // under the publication protocol (before the timestamp's release), so a
+    // reader that sees the edge sees its properties. props_of resolves a
+    // stored edge's payload by arena-address arithmetic.
+    void insert(const Edge& e, const void* prop);
+    void insert_batch(const Edge* edges, const uint8_t* props, size_t n,
+                      int num_threads = 0);
+    const uint8_t* props_of(const Edge* stored) const {
+        return reinterpret_cast<const uint8_t*>(arena_->prop_of(stored));
+    }
+    uint32_t property_bytes() const { return cfg_.edge_property_bytes; }
     void remove(uint32_t src, uint32_t dst, uint64_t ts);   // soft tombstone via weight=NaN
 
     // Temporal queries --------------------------------------------------
@@ -150,6 +163,10 @@ public:
 private:
     BlockHeader* get_or_create_block(uint64_t idx);
     void         insert_span(const Edge* edges, size_t lo, size_t hi);
+    void         insert_span(const Edge* edges, size_t lo, size_t hi,
+                             const uint8_t* props);
+    char*        prop_base_ = nullptr;   // dock property sidecar
+    size_t       prop_bytes_ = 0;        // its virtual reservation
 
     GraphConfig                  cfg_;
     std::unique_ptr<TimeMapper>  mapper_;

@@ -1,4 +1,5 @@
 #include "barry/engine.hpp"
+#include <sys/mman.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -51,9 +52,26 @@ Barry::Barry(const GraphConfig& cfg) : cfg_(cfg) {
             cfg_.build_reverse_index, cfg_.transparent_huge_pages,
             cfg_.binary_search_min);
     }
+    if (cfg_.edge_property_bytes > 0) {
+        // One property slot per possible edge position: arena bytes / 20.
+        // The mapping is arithmetic on the edge's arena address, so the
+        // sidecar is demand-paged exactly as the arena is, and slots that
+        // fall on block headers are simply never touched.
+        prop_bytes_ = (cfg_.arena_reserve_bytes / sizeof(Edge) + 64)
+                      * cfg_.edge_property_bytes;
+        void* p = ::mmap(nullptr, prop_bytes_, PROT_READ | PROT_WRITE,
+                         MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+        if (p == MAP_FAILED) { std::perror("[Barry] prop mmap"); std::abort(); }
+        prop_base_ = static_cast<char*>(p);
+        arena_->attach_sidecar(prop_base_, cfg_.edge_property_bytes);
+        std::fprintf(stderr, "[Barry] property sidecar: %u B/edge, %.2f GB virtual\n",
+                     cfg_.edge_property_bytes, prop_bytes_ / 1e9);
+    }
 }
 
-Barry::~Barry() = default;
+Barry::~Barry() {
+    if (prop_base_) ::munmap(prop_base_, prop_bytes_);
+}
 
 BlockHeader* Barry::get_or_create_block(uint64_t idx) {
     BlockHeader* block = timeline_->load(idx);
@@ -67,7 +85,9 @@ BlockHeader* Barry::get_or_create_block(uint64_t idx) {
     return timeline_->load(idx);
 }
 
-void Barry::insert(const Edge& e) {
+void Barry::insert(const Edge& e) { insert(e, nullptr); }
+
+void Barry::insert(const Edge& e, const void* prop) {
     Edge ec = e;
     // ts == 0 is reserved as the unpublished-slot sentinel for concurrent
     // readers. A provenance engine must not silently drop a real event, so an
@@ -81,7 +101,7 @@ void Barry::insert(const Edge& e) {
 
     int32_t off;
     while (true) {
-        off = arena_->try_append(block, ec);
+        off = arena_->try_append(block, ec, prop);
         if (off >= 0) break;
         // Block is full; extend the chain. Re-read the link first: under N
         // writers on a hot window the usual case is that someone has already
@@ -121,6 +141,14 @@ void Barry::insert(const Edge& e) {
 // writer thread is appending into the same window at the same instant, making
 // one block counter the engine's serialisation point.
 void Barry::insert_span(const Edge* edges, size_t lo, size_t hi) {
+    insert_span(edges, lo, hi, nullptr);
+}
+
+// props, when given, is the property array parallel to `edges` (absolute
+// indexing: edges[i]'s payload lives at props + i * edge_property_bytes).
+void Barry::insert_span(const Edge* edges, size_t lo, size_t hi,
+                        const uint8_t* props) {
+    const uint32_t pb = cfg_.edge_property_bytes;
     size_t i = lo;
     while (i < hi) {
         const uint64_t ts0 = edges[i].timestamp ? edges[i].timestamp : uint64_t{1};
@@ -147,8 +175,9 @@ void Barry::insert_span(const Edge* edges, size_t lo, size_t hi) {
             const uint32_t want = static_cast<uint32_t>(
                 std::min<size_t>(run - placed, 0xFFFFu));
             int32_t first = 0;
-            const uint32_t took = arena_->try_append_run(block, edges + i + placed,
-                                                         want, &first);
+            const uint32_t took = arena_->try_append_run(
+                block, edges + i + placed, want, &first,
+                props ? props + (i + placed) * pb : nullptr);
             if (took > 0) {
                 if (vertex_index_) {
                     for (uint32_t k = 0; k < took; ++k) {
@@ -191,6 +220,11 @@ void Barry::insert_span(const Edge* edges, size_t lo, size_t hi) {
 }
 
 void Barry::insert_batch(const Edge* edges, size_t n, int num_threads) {
+    insert_batch(edges, nullptr, n, num_threads);
+}
+
+void Barry::insert_batch(const Edge* edges, const uint8_t* props, size_t n,
+                         int num_threads) {
     // Chunk explicitly rather than letting the parallel-for hand out single
     // iterations: a run can only be detected inside one thread's contiguous
     // span, and a static chunk of 1024 keeps that span long enough to matter.
@@ -202,16 +236,18 @@ void Barry::insert_batch(const Edge* edges, size_t n, int num_threads) {
     for (size_t c = 0; c < chunks; ++c) {
         const size_t lo = c * kChunk;
         const size_t hi = std::min(n, lo + kChunk);
-        if (cfg_.run_claim) insert_span(edges, lo, hi);
-        else for (size_t i = lo; i < hi; ++i) insert(edges[i]);
+        if (cfg_.run_claim) insert_span(edges, lo, hi, props);
+        else for (size_t i = lo; i < hi; ++i)
+            insert(edges[i], props ? props + i * cfg_.edge_property_bytes : nullptr);
     }
 #else
     (void)num_threads;
     for (size_t c = 0; c < chunks; ++c) {
         const size_t lo = c * kChunk;
         const size_t hi = std::min(n, lo + kChunk);
-        if (cfg_.run_claim) insert_span(edges, lo, hi);
-        else for (size_t i = lo; i < hi; ++i) insert(edges[i]);
+        if (cfg_.run_claim) insert_span(edges, lo, hi, props);
+        else for (size_t i = lo; i < hi; ++i)
+            insert(edges[i], props ? props + i * cfg_.edge_property_bytes : nullptr);
     }
 #endif
 }

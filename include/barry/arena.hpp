@@ -57,8 +57,31 @@ public:
     size_t blocks_returned() const { return num_returned_.load(std::memory_order_relaxed); }
     size_t alloc_failures()  const { return num_failures_.load(std::memory_order_relaxed); }
 
-    // Returns the slot offset on success, -1 if the block is full.
-    int32_t try_append(BlockHeader* block, const Edge& e);
+    // Property sidecar (the "dock" property module). A parallel anonymous
+    // region holds fixed-size per-edge payloads, addressed by the same
+    // arithmetic that places the edge: slot = (edge_addr - base) / 20. The
+    // map is injective (edges are 20 bytes apart or more) and pure, so the
+    // sidecar inherits demand paging, prefix retention, and replay recovery
+    // from the same identity the arena has, at the cost of the header bytes'
+    // unused slots. Detached (nullptr) the write path never touches it.
+    void attach_sidecar(char* prop_base, uint32_t prop_bytes) {
+        prop_base_ = prop_base;
+        prop_bytes_ = prop_bytes;
+    }
+    size_t prop_slot(const Edge* e) const {
+        return static_cast<size_t>(reinterpret_cast<const char*>(e) - base_) / sizeof(Edge);
+    }
+    const char* prop_of(const Edge* e) const {
+        return prop_base_ + prop_slot(e) * prop_bytes_;
+    }
+    uint32_t prop_bytes() const { return prop_bytes_; }
+
+    // Returns the slot offset on success, -1 if the block is full. When a
+    // sidecar is attached and `prop` given, the property bytes are stored
+    // BEFORE the timestamp's release store, so a published edge always has
+    // its properties visible (clause T5 extends to the sidecar).
+    int32_t try_append(BlockHeader* block, const Edge& e,
+                       const void* prop = nullptr);
 
     // Claim up to `n` consecutive slots with a single counter bump and fill
     // them. Returns how many were placed (0 if the block was already full) and
@@ -72,7 +95,7 @@ public:
     // Consecutive arrivals usually share a window, so one bump per run replaces
     // one per edge.
     uint32_t try_append_run(BlockHeader* block, const Edge* edges, uint32_t n,
-                            int32_t* first_off);
+                            int32_t* first_off, const uint8_t* props = nullptr);
 
     size_t bytes_used()       const { return bump_.load(std::memory_order_relaxed); }
     size_t bytes_reserved()   const { return reserved_; }
@@ -81,6 +104,8 @@ public:
 
 private:
     char*               base_;
+    char*               prop_base_ = nullptr;
+    uint32_t            prop_bytes_ = 0;
     size_t              reserved_;
     std::atomic<size_t> bump_{0};
     std::atomic<size_t> num_blocks_{0};

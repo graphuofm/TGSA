@@ -1,0 +1,80 @@
+[e26] sx-askubuntu: preload=482218 stream=482219
+[e26] tgsr       W=8 R=1  stream   0.01s =  33.93 Meps  queries=    5449 (   383443 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=1  stream   0.06s =   7.51 Meps  queries=    7043 (   109644 q/s)  mismatches=0 aborts=0
+[e26] livegraph aborts=249712
+[e26] graphone   W=8 R=1  stream 0.0242269s = 19.9043 Meps  queries=257 (10608 q/s)  mismatches=0  archive_catchup=0.00154305s
+[e26] tgsr       W=8 R=4  stream   0.01s =  34.35 Meps  queries=   21813 (  1553712 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=4  stream   0.08s =   6.18 Meps  queries=   38518 (   493859 q/s)  mismatches=0 aborts=0
+[e26] livegraph aborts=259401
+[e26] graphone   W=8 R=4  stream 0.029233s = 16.4957 Meps  queries=7799 (266788 q/s)  mismatches=0  archive_catchup=0.00323915s
+[e26] tgsr       W=4 R=4  stream   0.02s =  21.17 Meps  queries=   39252 (  1723095 q/s)  mismatches=0
+[e26] lg_sharded W=4 R=4  stream   0.09s =   5.61 Meps  queries=   52663 (   613071 q/s)  mismatches=0 aborts=0
+[e26] livegraph aborts=33864
+[e26] graphone   W=4 R=4  stream 0.0313652s = 15.3744 Meps  queries=16610 (529569 q/s)  mismatches=0  archive_catchup=0.00987101s
+[e26] tgsr       W=2 R=8  stream   0.03s =  13.86 Meps  queries=   93055 (  2674998 q/s)  mismatches=0
+[e26] lg_sharded W=2 R=8  stream   0.22s =   2.16 Meps  queries=  291967 (  1305119 q/s)  mismatches=0 aborts=0
+[e26] livegraph aborts=10425
+[e26] graphone   W=2 R=8  stream 0.02724s = 17.7026 Meps  queries=21954 (805946 q/s)  mismatches=0  archive_catchup=0.0118799s
+[e26] wiki-talk-temporal: preload=3916570 stream=3916570
+[e26] tgsr       W=8 R=1  stream   0.06s =  60.81 Meps  queries=    2567 (    39859 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=1  stream   0.33s =  11.88 Meps  queries=    4402 (    13357 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=1  stream 0.212772s = 18.4074 Meps  queries=3234 (15199.4 q/s)  mismatches=0  archive_catchup=0.04303s
+[e26] tgsr       W=8 R=4  stream   0.06s =  61.93 Meps  queries=   11562 (   182815 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=4  stream   0.41s =   9.50 Meps  queries=   19129 (    46413 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=4  stream 0.221155s = 17.7096 Meps  queries=13954 (63096 q/s)  mismatches=0  archive_catchup=0.0415471s
+[e26] tgsr       W=4 R=4  stream   0.10s =  39.07 Meps  queries=   19400 (   193521 q/s)  mismatches=0
+[e26] lg_sharded W=4 R=4  stream   0.62s =   6.29 Meps  queries=   33342 (    53524 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=4 R=4  stream 0.200889s = 19.4962 Meps  queries=10249 (51018.2 q/s)  mismatches=0  archive_catchup=0.0478702s
+[e26] tgsr       W=2 R=8  stream   0.18s =  21.18 Meps  queries=   74359 (   402030 q/s)  mismatches=0
+[e26] lg_sharded W=2 R=8  stream   1.43s =   2.74 Meps  queries=  129134 (    90388 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=2 R=8  stream 0.232297s = 16.8602 Meps  queries=28031 (120669 q/s)  mismatches=0  archive_catchup=0.104797s
+[e26] cit-Patents: preload=8259474 stream=8259474
+[e26] tgsr       W=8 R=1  stream   0.30s =  27.61 Meps  queries= 1533089 (  5125152 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=1  stream   1.82s =   4.53 Meps  queries= 3554619 (  1950368 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=1  stream 0.50055s = 16.5008 Meps  queries=1793 (3582.06 q/s)  mismatches=0  archive_catchup=0.205288s
+[e26] tgsr       W=8 R=4  stream   0.31s =  26.39 Meps  queries= 5017335 ( 16029521 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=4  stream   2.04s =   4.04 Meps  queries=12566199 (  6150192 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=4  stream 0.483808s = 17.0718 Meps  queries=5636 (11649.2 q/s)  mismatches=0  archive_catchup=0.299714s
+[e26] tgsr       W=4 R=4  stream   0.56s =  14.69 Meps  queries=10519834 ( 18703933 q/s)  mismatches=0
+[e26] lg_sharded W=4 R=4  stream   3.28s =   2.52 Meps  queries=25275047 (  7697047 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=4 R=4  stream 0.523853s = 15.7668 Meps  queries=5124 (9781.37 q/s)  mismatches=0  archive_catchup=0.350003s
+[e26] tgsr       W=2 R=8  stream   1.12s =   7.39 Meps  queries=38186187 ( 34175632 q/s)  mismatches=0
+[e26] lg_sharded W=2 R=8  stream   7.94s =   1.04 Meps  queries=114710554 ( 14443839 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=2 R=8  stream 0.457381s = 18.0582 Meps  queries=7432 (16249 q/s)  mismatches=0  archive_catchup=0.601158s
+[e26] tc-cadets-e3: preload=11268031 stream=11268031
+[e26] tgsr       W=8 R=1  stream   0.15s =  74.48 Meps  queries=      91 (      602 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=1  stream   1.09s =  10.31 Meps  queries=     187 (      171 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=1  stream 0.626722s = 17.9793 Meps  queries=586 (935.024 q/s)  mismatches=0  archive_catchup=0.00109887s
+[e26] tgsr       W=8 R=4  stream   0.15s =  73.96 Meps  queries=     198 (     1300 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=4  stream   1.64s =   6.86 Meps  queries=    1039 (      633 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=4  stream 0.634545s = 17.7577 Meps  queries=2079 (3276.36 q/s)  mismatches=150  archive_catchup=0.00730801s
+[e26] tgsr       W=4 R=4  stream   0.20s =  56.90 Meps  queries=     283 (     1429 q/s)  mismatches=0
+[e26] lg_sharded W=4 R=4  stream   1.16s =   9.73 Meps  queries=     871 (      752 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=4 R=4  stream 0.563997s = 19.9789 Meps  queries=1553 (2753.56 q/s)  mismatches=21  archive_catchup=0.053448s
+[e26] tgsr       W=2 R=8  stream   0.35s =  32.55 Meps  queries=     745 (     2152 q/s)  mismatches=0
+[e26] lg_sharded W=2 R=8  stream   2.60s =   4.33 Meps  queries=    2709 (     1041 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=2 R=8  stream 0.467363s = 24.1098 Meps  queries=2218 (4745.77 q/s)  mismatches=0  archive_catchup=0.203232s
+
+[e26] all runs complete, CSV at /home/jding/Barry/results/e26_concurrent/e26.csv
+[e26] sx-askubuntu: preload=482218 stream=482219
+[e26] graphone   W=8 R=1  stream 0.0332348s = 14.5094 Meps  queries=1281 (38543.9 q/s)  mismatches=0  archive_catchup=0.00526714s
+[e26] graphone   W=8 R=4  stream 0.0268769s = 17.9417 Meps  queries=10583 (393758 q/s)  mismatches=0  archive_catchup=0.00396585s
+[e26] graphone   W=4 R=4  stream 0.0362451s = 13.3044 Meps  queries=27043 (746114 q/s)  mismatches=0  archive_catchup=0.0115218s
+[e26] graphone   W=2 R=8  stream 0.032831s = 14.6879 Meps  queries=32093 (977523 q/s)  mismatches=0  archive_catchup=0.012861s
+[e26] wiki-talk-temporal: preload=3916570 stream=3916570
+[e26] graphone   W=8 R=1  stream 0.213034s = 18.3847 Meps  queries=2596 (12185.8 q/s)  mismatches=0  archive_catchup=0.0394862s
+[e26] graphone   W=8 R=4  stream 0.253103s = 15.4742 Meps  queries=15563 (61488.8 q/s)  mismatches=0  archive_catchup=0.0404298s
+[e26] graphone   W=4 R=4  stream 0.250279s = 15.6488 Meps  queries=12804 (51158.9 q/s)  mismatches=0  archive_catchup=0.0450292s
+[e26] graphone   W=2 R=8  stream 0.220606s = 17.7537 Meps  queries=24584 (111438 q/s)  mismatches=0  archive_catchup=0.0704679s
+[e26] cit-Patents: preload=8259474 stream=8259474
+[e26] graphone   W=8 R=1  stream 0.457069s = 18.0705 Meps  queries=1793 (3922.82 q/s)  mismatches=0  archive_catchup=0.174259s
+[e26] graphone   W=8 R=4  stream 0.456228s = 18.1038 Meps  queries=4612 (10109 q/s)  mismatches=0  archive_catchup=0.264331s
+[e26] graphone   W=4 R=4  stream 0.485148s = 17.0246 Meps  queries=4868 (10034.1 q/s)  mismatches=0  archive_catchup=0.316894s
+[e26] graphone   W=2 R=8  stream 0.499083s = 16.5493 Meps  queries=8712 (17456 q/s)  mismatches=0  archive_catchup=0.550483s
+[e26] tc-cadets-e3: preload=11268031 stream=11268031
+[e26] graphone   W=8 R=1  stream 0.604009s = 18.6554 Meps  queries=555 (918.861 q/s)  mismatches=0  archive_catchup=0.000916958s
+[e26] graphone   W=8 R=4  stream 0.586919s = 19.1986 Meps  queries=1929 (3286.65 q/s)  mismatches=0  archive_catchup=0.00107598s
+[e26] graphone   W=4 R=4  stream 0.631439s = 17.845 Meps  queries=1934 (3062.85 q/s)  mismatches=0  archive_catchup=0.00100994s
+[e26] graphone   W=2 R=8  stream 0.624373s = 18.047 Meps  queries=2736 (4382 q/s)  mismatches=0  archive_catchup=0.00756884s
+
+[e26] all runs complete, CSV at /home/jding/Barry/results/e26_concurrent/e26.csv

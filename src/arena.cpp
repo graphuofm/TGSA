@@ -89,7 +89,8 @@ bool Arena::try_return_block(BlockHeader* block, uint32_t capacity) {
     return false;   // someone allocated after us; the space stays spent
 }
 
-int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
+int32_t Arena::try_append(BlockHeader* block, const Edge& e,
+                          const void* prop) {
     // Clear the published flag BEFORE bumping the count (same happens-before
     // argument as the bucket sorted flag: a reader that acquires the bumped
     // count sees this clear, so an observed flag proves a verified prefix).
@@ -111,12 +112,17 @@ int32_t Arena::try_append(BlockHeader* block, const Edge& e) {
     // converters guarantee it; insert() drops ts == 0).
     Edge* slot = &edges_of(block)[pos];
     slot->src = e.src; slot->dst = e.dst; slot->weight = e.weight;
+    // Sidecar bytes land before the timestamp's release store, so any reader
+    // that observes the published edge also observes its properties.
+    if (prop_base_ && prop)
+        std::memcpy(prop_base_ + prop_slot(slot) * prop_bytes_, prop, prop_bytes_);
     __atomic_store_n(&slot->timestamp, e.timestamp, __ATOMIC_RELEASE);
     return static_cast<int32_t>(pos);
 }
 
 uint32_t Arena::try_append_run(BlockHeader* block, const Edge* edges,
-                               uint32_t n, int32_t* first_off) {
+                               uint32_t n, int32_t* first_off,
+                               const uint8_t* props) {
     if (block->flags.load(std::memory_order_relaxed) != 0)
         block->flags.store(0, std::memory_order_release);
 
@@ -132,6 +138,10 @@ uint32_t Arena::try_append_run(BlockHeader* block, const Edge* edges,
         Edge* slot = &arr[pos + i];
         const Edge& e = edges[i];
         slot->src = e.src; slot->dst = e.dst; slot->weight = e.weight;
+        if (prop_base_ && props)
+            std::memcpy(prop_base_ + prop_slot(slot) * prop_bytes_,
+                        props + static_cast<size_t>(i) * prop_bytes_,
+                        prop_bytes_);
         // Same publication protocol as try_append: payload first, timestamp
         // last with release, and ts == 0 reserved for an unclaimed slot.
         __atomic_store_n(&slot->timestamp,
