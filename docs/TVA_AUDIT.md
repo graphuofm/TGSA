@@ -20,7 +20,7 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 | Fig 7(g)(h) | vs PostgreSQL（RDBMS 代表，126.4×）与 RocksDB（KV 代表） | vs DuckDB（列存代表，E9/E22）与 RocksDB 时间编码键（E24，邻居 784–59,400×） | e24.csv, e22.csv | 已覆盖（RDBMS 槽位用列存填，需一句话说明） |
 | Fig 7(i) | 非时序负载开销检查（静态图上仍快 21.7×） | E13 纯拓扑轴照实打满：中位 2.1× 于 topology-CSR（我们此轴认输） | e13*.csv, fig_structural | 已覆盖（方向相反，诚实报） |
 | Fig 7(j) | 属性密集负载（T-gMark，5.1–132.9×） | E25 属性侧车：写路径近零成本 + 正确性验证；**无属性查询负载** | e25.csv, test_props | **部分（缺口 3）** |
-| Fig 8(a) | 当前图存储 vs GraphOne/Stinger/Sortledton（1.4–5.1×） | RSS 对照数据在 e19/e20 CSV | 同上 | **部分（并入缺口 1 的存储对照表）** |
+| Fig 8(a) | 当前图存储 vs GraphOne/Stinger/Sortledton（1.4–5.1×） | E28 存储对照表（四系统同表） | results/e28_storage | 已覆盖 |
 | Fig 8(b) | 插入吞吐 vs 三者（6.1×/2×/4.5×；YouTube 上 GraphOne 小胜，照实报） | E19/E20 摄入（LiveGraph 2.7–15.7×、GraphOne 0.92–2.76× 照实报）+ E26 并发版 | e19/e20/e26 | 已覆盖（更强：并发下对打） |
 | Fig 9 | 4 算法归一化运行时 vs 三者（BFS/PR/SSSP/WCC，6.5×/18.4×/5.6×） | E13：bfs/pr/cc(≈WCC)+bfsw(加权扫掠=SSSP 槽位) 对四种布局；E22 三系统 compute 逐位一致 | e13*.csv + bfsw 已入 fig_structural（vs 内联权重 CSR，中位 3.8×） | 已覆盖 |
 | Fig 10(a) | TemporalChain 长版本链 6.2× | 对应机制=sorted-bucket 二分：E23 threshold（关掉 2.8×/26× 悬崖） | threshold.csv | 已覆盖 |
