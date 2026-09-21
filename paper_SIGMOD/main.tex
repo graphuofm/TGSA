@@ -7,6 +7,7 @@
 \usepackage{xspace}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning}
+\usepackage{pifont}
 \usepackage[capitalise,noabbrev]{cleveref}
 \definecolor{qwin}{HTML}{0072B2}   % window-scan query (blue)
 \definecolor{qnbr}{HTML}{009E73}   % entity-expansion query (green)
@@ -281,97 +282,7 @@ multi-entry transactions; and nothing in the contract helps a query that
 is keyed on anything other than time, which is where the engine pays and
 \S\ref{sec:eval-structural} measures.
 
-\begin{figure*}[t]
-\centering
-\begin{tikzpicture}[
-  font=\footnotesize,
-  slot/.style={draw=black!70, minimum width=5.2mm, minimum height=4.6mm,
-               inner sep=0pt, outer sep=0pt},
-  blk/.style={draw=black!70, fill=black!4, minimum width=16mm,
-              minimum height=7.5mm, inner sep=1pt},
-  ref/.style={draw=black!70, fill=white, minimum width=7.2mm,
-              minimum height=4.2mm, inner sep=0pt, font=\tiny},
-  lab/.style={font=\scriptsize},
-  flow/.style={-{Stealth[length=1.6mm]}, thick},
-]
-% ---------------- timeline: one anonymous reservation --------------
-\node[lab, anchor=west] at (-0.1, 1.78)
-  {\textbf{Timeline} = \tmap$\langle$block ptr$\rangle$};
-\node[lab, anchor=west, text=black!70] at (6.7, 1.78)
-  {one anonymous reservation};
-\foreach \i/\f in {0/black!25, 1/black!25, 2/black!25,
-                   3/black!12, 4/black!4, 5/wins!40, 6/black!12,
-                   7/black!4, 8/black!12, 9/black!4, 10/black!12,
-                   11/black!4, 12/black!12, 13/black!4}{
-  \node[slot, fill=\f] (s\i) at (0.28 + \i*0.56, 0.95) {};
-}
-\draw[black!50] (s0.south west) -- (s2.south east)
-  node[midway, below=0.5mm, font=\tiny, black!60]{evicted: madvise prefix (T3)};
-\foreach \i in {4, 7, 9, 11, 13}{
-  \node[font=\tiny, anchor=center, text=black!60] at (s\i.center) {0};
-}
-\node[font=\tiny, anchor=west, text=black!60] (unt) at (5.6, 0.20)
-  {untouched slot: never faulted (T2)};
-\draw[black!40] (unt.west) to[bend left=15] (s9.south);
-% arithmetic placement
-\node[lab, wins, anchor=west] (eq) at (-0.1, 2.75)
-  {insert (T1): $A(T)=A_{\mathrm{base}}+((T-T_0)\!\gg\!S)\times P$};
-\draw[flow, wins] (3.05, 2.58) -- (s5.north);
-% ---------------- arena ---------------------------------------------
-\node[lab, anchor=west] at (-0.1, -0.62)
-  {\textbf{Arena}: bump-allocated blocks, 20\,B packed edges, never sorted};
-\node[blk] (b1) at (1.1, -1.55) {};
-\node[blk] (b2) at (3.6, -1.55) {};
-\node[blk] (b3) at (6.1, -1.55) {};
-\foreach \x in {1.1, 3.6, 6.1}{
-  \foreach \j in {0,1,2}{
-    \draw[black!40] (\x-0.8+\j*0.53, -1.9) rectangle ++(0.5, 0.62);
-  }
-}
-\node[font=\tiny, anchor=north] at (b1.south)
-  {payload first, $t$ last (release, T5)};
-\node[font=\tiny, anchor=north] at (b3.south) {overflow by CAS};
-\draw[flow, black!60] (s3.south) to[bend right=10] (b1.north);
-\draw[flow, black!60] (s5.south) to[bend left=6] (b2.north);
-\draw[flow, black!60] (s8.south) to[bend left=14] (b3.north);
-\draw[flow, black!60, dashed] (b2.east) -- (b3.west)
-  node[midway, above, font=\tiny]{chain};
-% ---------------- vertex index --------------------------------------
-\node[lab, anchor=west, align=left] at (9.7, 1.78)
-  {\textbf{Vertex index}: per-entity ref chains,\\
-   sorted only by explicit \texttt{compact()}};
-\node[draw, black!70, minimum height=4.2mm, font=\tiny] (vv) at (10.0, 0.95) {$v$};
-\node[ref, right=2.5mm of vv] (r1) {dst,blk,\textbf{ts}};
-\node[ref, right=1.2mm of r1] (r2) {dst,blk,\textbf{ts}};
-\node[ref, right=1.2mm of r2] (r3) {dst,blk,\textbf{ts}};
-\draw[flow, black!60] (vv.east) -- (r1.west);
-\node[font=\tiny, anchor=north west, text=black!60] at (10.4, 0.62)
-  {24\,B \texttt{EdgeRef}, timestamp cached inline};
-% ---------------- the two queries, color-locked to Example 2 --------
-\node[anchor=south west, font=\scriptsize, qwin] at (4.5, 2.55)
-  {\textbf{Q1} window scan $[t_1,t_2]$: walk slots,};
-\node[anchor=south west, font=\scriptsize, qwin] at (4.5, 2.22)
-  {interior blocks copied comparison-free};
-\draw[qwin, very thick, {Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}]
-  ([yshift=1.4mm]s6.north west) -- ([yshift=1.4mm]s12.north east);
-\draw[flow, qwin, very thick] (5.9, 2.18) -- ([yshift=3.2mm]s9.north);
-\node[anchor=north west, font=\scriptsize, qnbr, align=left] (q2) at (9.7, -0.62)
-  {\textbf{Q2} neighbors$(v,[t_1,t_2])$: binary-search the\\
-   sorted prefix, arena touched only per hit};
-\draw[flow, qnbr, very thick] (r3.east) to[bend left=25] (q2.north east);
-\draw[flow, qnbr, very thick] (q2.west) to[bend left=10] (b3.east);
-\end{tikzpicture}
-\caption{\sys architecture. The timeline instantiates \tmap with
-block-pointer slots: placement is arithmetic
-(\textcolor{wins}{insert path}), untouched ranges cost nothing, and
-retention releases the address prefix. Blocks live in a bump-allocated
-arena and publish per slot. Entity access goes through the vertex
-index. The two queries of Example~\ref{ex:queries} are drawn in their
-colors: \textcolor{qwin}{\textbf{Q1}} never touches the vertex index,
-\textcolor{qnbr}{\textbf{Q2}} touches the arena only for edges that
-pass the temporal predicate.}
-\label{fig:arch}
-\end{figure*}
+\input{fig_arch}
 
 \begin{example}\label{ex:queries}
 Consider CADETS mid-ingest. \textcolor{qwin}{\textbf{Q1}}: ``all
@@ -395,7 +306,10 @@ exists.
 per-window head pointers (\tmap slots are pointers), and an
 \texttt{Arena} of bump-allocated, cache-aligned edge blocks the
 pointers lead to. The timeline inherits clauses T1--T3 directly; the
-arena holds 20-byte packed edges and is never sorted on insert.
+arena holds 20-byte packed edges and is never sorted on insert
+(\cref{fig:format}).
+
+\input{fig_format}
 
 \begin{theorem}[Addressing]
 \label{thm:addr}

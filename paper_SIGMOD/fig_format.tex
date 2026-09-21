@@ -1,0 +1,62 @@
+% TVA-Fig-4/5-grade storage format figure: byte-level layouts of every
+% structure the design section names, plus the sidecar address identity.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\tiny,
+  b/.style={draw=black!60, inner sep=0pt, minimum height=4.0mm},
+  lab/.style={font=\scriptsize\bfseries, anchor=west},
+  note/.style={font=\tiny, text=black!60},
+]
+% ---- Edge, 20 B
+\node[lab] at (0, 3.62) {\texttt{Edge}, 20\,B packed, arena-resident};
+\node[b, fill=green!12, minimum width=8mm]  (e1) at (0.40, 3.15) {src 4};
+\node[b, fill=green!12, minimum width=8mm,  right=0mm of e1] (e2) {dst 4};
+\node[b, fill=wins!22,  minimum width=16mm, right=0mm of e2] (e3) {timestamp 8 (release-published)};
+\node[b, fill=green!12, minimum width=8mm,  right=0mm of e3] (e4) {w 4};
+\node[note, anchor=west] at (4.55, 3.15) {ts $=0$ marks an};
+\node[note, anchor=west] at (4.55, 2.88) {unpublished slot (T5)};
+
+% ---- EdgeRef, 24 B
+\node[lab] at (0, 2.42) {\texttt{EdgeRef}, 24\,B, vertex-index bucket entry};
+\node[b, fill=yellow!25, minimum width=8mm]  (r1) at (0.40, 1.95) {dst 4};
+\node[b, fill=yellow!25, minimum width=8mm,  right=0mm of r1] (r2) {off 4};
+\node[b, fill=yellow!25, minimum width=13mm, right=0mm of r2] (r3) {block ptr 8};
+\node[b, fill=wins!22,   minimum width=13mm, right=0mm of r3] (r4) {\textbf{ts cache 8}};
+\node[note, anchor=west] at (4.75, 1.95) {temporal predicates never};
+\node[note, anchor=west] at (4.75, 1.68) {deref the arena (\S4.3);};
+\node[note, anchor=west] at (4.75, 1.41) {16\,B ablation build drops it};
+
+% ---- Block
+\node[lab] at (0, 1.18) {\texttt{Block}: one 64\,B header line, then edges};
+\node[b, fill=blue!12, minimum width=7mm]  (h1) at (0.40, 0.68) {cnt 4};
+\node[b, fill=blue!12, minimum width=7mm,  right=0mm of h1] (h2) {cap 4};
+\node[b, fill=blue!12, minimum width=9mm,  right=0mm of h2] (h3) {next 8};
+\node[b, fill=blue!12, minimum width=8mm,  right=0mm of h3] (h4) {flags 4};
+\node[b, fill=black!6, minimum width=9mm,  right=0mm of h4] (h5) {pad$\to$64};
+\node[b, fill=green!12, minimum width=9mm, right=0mm of h5] (h6) {Edge$_0$};
+\node[b, fill=green!12, minimum width=9mm, right=0mm of h6] (h7) {$\cdots$};
+\node[b, fill=green!12, minimum width=9mm, right=0mm of h7] (h8) {Edge$_{cap-1}$};
+\node[note, anchor=west] at (0.05, 0.18)
+  {\emph{flags}: \textsc{published} cleared before every \emph{cnt} bump,
+   same protocol as the bucket \emph{sorted} flag (Alg.~\ref{alg:publish})};
+
+% ---- sidecar identity
+\node[lab] at (0, -0.32) {Property sidecar (dock module, \S4.1)};
+\node[font=\tiny, anchor=west] at (0.05, -0.78)
+  {$\mathrm{prop}(e) \;=\; P_{\mathrm{base}} +
+    \lfloor (\&e - A_{\mathrm{base}})/20 \rfloor \times
+    \texttt{prop\_bytes}$};
+\node[note, anchor=west] at (0.05, -1.12)
+  {pure address arithmetic: demand-paged, prefix-evicted, and
+   replay-recovered};
+\node[note, anchor=west] at (0.05, -1.39)
+  {with the arena itself; written before the timestamp store, so T5
+   covers it};
+\end{tikzpicture}
+\caption{Storage formats. Every field a query touches on the hot path is
+either in the 24\,B reference stream (entity axis) or in a
+comparison-free block copy (time axis); the release-published timestamp
+is the only synchronization either path needs.}
+\label{fig:format}
+\end{figure}
