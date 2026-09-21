@@ -10,7 +10,7 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 | TVA 图/节 | TVA 测什么 | 我们的对应 | 证据 | 状态 |
 |---|---|---|---|---|
 | 7.1 Setup | Xeon 5220/128GB，默认 5 线程；两类基线；6 数据集 + 3 基准 | 20 核 Xeon/188GB，8 线程；两类基线；14 语料（最大 1.05B，为其 52.7M 的 20 倍） | §7.1, tab:breadth | 已覆盖 |
-| Fig 6(a) | 存储消耗 vs 操作量（vs AeonG/Clock-G/T-GQL，省 2.2–4.7×） | bytes/edge 跨 14 语料（65–175B）；vs LiveGraph/GraphOne RSS 列已在 CSV | e16.csv, e19.csv, e20 graphone.csv | **部分：数据在，缺一张跨系统存储对照图/表** |
+| Fig 6(a) | 存储消耗 vs 操作量（vs AeonG/Clock-G/T-GQL，省 2.2–4.7×） | bytes/edge 跨 14 语料（65–175B）；vs LiveGraph/GraphOne RSS 列已在 CSV | results/e28_storage | 已覆盖（E28 已补，诚实读法：两胜两平，非 TVA 式压缩冠军） |
 | Fig 6(b)(d) | 操作延迟 vs 操作量增长 | E21 steady：速率对累计边数平坦（LANL 到 1.05B） | e21 steady_lanl_*.csv | 已覆盖 |
 | Fig 6(c) | T-LDBC 历史/当前数据分解 | arena/索引/侧车分解在 E25 RSS 阶梯 | e25.csv | 等价替换 |
 | Fig 7(a)(b) | 时序查询 Q1–Q4 延迟、随操作量（206.9×） | 窗口/范围/遍历延迟随窗口宽度与语料（E9/E19/E7） | fig_temporal, e19.csv | 已覆盖 |
@@ -22,7 +22,7 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 | Fig 7(j) | 属性密集负载（T-gMark，5.1–132.9×） | E25 属性侧车：写路径近零成本 + 正确性验证；**无属性查询负载** | e25.csv, test_props | **部分（缺口 3）** |
 | Fig 8(a) | 当前图存储 vs GraphOne/Stinger/Sortledton（1.4–5.1×） | RSS 对照数据在 e19/e20 CSV | 同上 | **部分（并入缺口 1 的存储对照表）** |
 | Fig 8(b) | 插入吞吐 vs 三者（6.1×/2×/4.5×；YouTube 上 GraphOne 小胜，照实报） | E19/E20 摄入（LiveGraph 2.7–15.7×、GraphOne 0.92–2.76× 照实报）+ E26 并发版 | e19/e20/e26 | 已覆盖（更强：并发下对打） |
-| Fig 9 | 4 算法归一化运行时 vs 三者（BFS/PR/SSSP/WCC，6.5×/18.4×/5.6×） | E13 存储层份额：bfs/pr/cc(≈WCC) 对四种布局；E22 三系统 compute 逐位一致 | e13*.csv, e22.csv | **部分：缺 SSSP 一行（缺口 2）** |
+| Fig 9 | 4 算法归一化运行时 vs 三者（BFS/PR/SSSP/WCC，6.5×/18.4×/5.6×） | E13：bfs/pr/cc(≈WCC)+bfsw(加权扫掠=SSSP 槽位) 对四种布局；E22 三系统 compute 逐位一致 | e13*.csv + bfsw 已入 fig_structural（vs 内联权重 CSR，中位 3.8×） | 已覆盖 |
 | Fig 10(a) | TemporalChain 长版本链 6.2× | 对应机制=sorted-bucket 二分：E23 threshold（关掉 2.8×/26× 悬崖） | threshold.csv | 已覆盖 |
 | Fig 10(b)(c) | 持久化双模式（Pointer/Full=RocksDB 后端）开销 + WAL 开销 | E18 六档耐久阶梯 + E25 +wal 档；**外加它没有的**：50 崩溃注入、60 撕裂日志、重放曲线 29.6s/1.02B | e18/*, e25.csv | 已覆盖（超出） |
 | Fig 11(a) | Zipf 偏斜下 hop 距离守界 | 结构参数守界的对应物：τ 界 [τ/2,4τ) 在 18/18 真实语料实测通过 | tau.csv | 等价替换 |
@@ -40,7 +40,7 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 | BFS | 有 | E13 跨四布局 + E22 三系统逐位一致 | 已覆盖 |
 | PageRank | 有 | 同上 | 已覆盖 |
 | WCC | 有 | cc=标签传播至定点（逐位校验） | 已覆盖 |
-| SSSP | 有 | 引擎有 `sssp()`（加权 Dijkstra），旧 E3 测过；**当前代 E13 未测** | **缺口 2** |
+| SSSP | 有 | bfsw 加权扫掠（SSSP 序、每步取 (dst,w)）已入 fig_structural；真 Dijkstra 因权重全 1 语义空洞，文中一句话说明 | 已覆盖 |
 | 时间关联算法 | 无（快照面无法表达时间尊重路径） | forward_taint / backward_trace / earliest_arrival / temporal_triangle / 窗口 BFS，133µs CADETS 攻击链 | 我们独有 |
 | 其他结构算法 | 无 | triangle / betweenness / k-core（引擎内，论文未主打） | 超出，不必进论文 |
 
@@ -74,10 +74,10 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 
 ## 五、缺口清单（按优先级，做完勾销）
 
-1. **跨系统存储消耗对照**（对 TVA Fig 6a/8a）：数据全在 e16/e19/e20 的
-   RSS/bytes-per-edge 列里，只差汇一张表或一小图。工作量：半小时脚本。
-2. **SSSP 补进 E13**：引擎已有 sssp()，给 bench_e13 加一个 algo 档重跑
-   四布局，使 Fig 9 对照四算法齐平。工作量：小。
+1. ~~跨系统存储消耗对照~~ 已补：results/e28_storage（2026-09-21）。
+2. ~~SSSP~~ 已补：E13 早有 bfsw（加权扫掠，SSSP 的诚实替身，真 SSSP 在
+   这些语料上因权重全 1 而语义空洞），171 行入册数据画进 fig_structural
+   第四条线，图注和 7.3 各加一句（2026-09-21）。
 3. **属性查询负载**（对 T-gMark Fig 7j）：E25 只测了属性写入与取回验证；
    补一个"按属性谓词过滤的窗口查询"微基准（侧车扫描 vs 无属性引擎），
    把"属性近零成本"从写路径扩到读路径。工作量：中。

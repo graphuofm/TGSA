@@ -858,8 +858,13 @@ ours).
   \centering
   \includegraphics[width=\linewidth]{figures/fig_structural.pdf}
   \caption{The conceded axis, priced in full: adjacency delivery for
-  three whole-graph algorithms against a topology-only CSR that
-  cannot ingest, across eleven corpora to 1.05B edges.}
+  four whole-graph algorithms across eleven corpora to 1.05B edges.
+  BFS, PageRank, and label propagation run against a topology-only CSR
+  that cannot ingest (29 pairs, $0.9$--$5.8\times$, median
+  $2.1\times$); the weighted sweep, which demands $(dst, w)$ at every
+  expansion in SSSP order, runs against an inline-weight CSR (8 pairs,
+  median $3.8\times$), pricing the arena resolution its reference gets
+  for free.}
   \label{fig:structural}
 \end{figure}
 
@@ -872,7 +877,12 @@ BFS, PageRank, and label propagation at a median $2.1\times$ the cost
 of a topology-only CSR across 29 corpus/algorithm measurements on
 eleven corpora (range $0.9$--$5.8\times$; on the smallest corpora,
 where everything is cache-resident, \sys reaches parity and below).
-The constant is bounded
+The fourth algorithm of the standard quartet, single-source shortest
+paths, is semantically empty on these corpora (public weights are
+uniform), so we run its storage question instead: a weighted sweep
+demanding $(dst, w)$ at every expansion in SSSP order, where \sys
+resolves the weight through the arena and pays a median $3.8\times$
+against a CSR storing it inline. The constant is bounded
 because delivery is a linear walk of reference chains, not a pointer
 chase per edge. End-to-end gaps reported against entity-keyed stores
 in earlier drafts ($5$--$15\times$) were algorithm-implementation

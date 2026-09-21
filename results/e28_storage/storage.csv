@@ -1,0 +1,5 @@
+corpus,edges,tgsr_rss_MB,tgsr_bytes_per_edge,livegraph_rss_MB,graphone_rss_MB_minus_input,rocksdb_rss_MB
+sx-askubuntu,964437,98,107,110,92,114
+wiki-talk-temporal,7833140,588,79,761,635,630
+cit-Patents,16518948,1436,91,1938,1867,2260
+tc-cadets-e3,22536062,1606,75,2074,1499,2259
