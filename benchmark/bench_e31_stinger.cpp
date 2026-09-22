@@ -80,7 +80,10 @@ int main(int argc, char** argv) {
     struct stinger_config_t cfg;
     std::memset(&cfg, 0, sizeof cfg);
     cfg.nv = V + 16;
-    cfg.nebs = 0;              // let stinger size edge blocks from nv
+    // Auto-sizing from nv under-provisions edge blocks on dense corpora
+    // (LDBC SF10: 65M pairs over 2.15M vertices exhausted the pool), so
+    // size the pool from the unique-pair count instead.
+    cfg.nebs = (int64_t)(pairs / 4 + V + 1024);
     cfg.netypes = 1;
     cfg.nvtypes = 1;
     cfg.no_map_none_etype = 1;

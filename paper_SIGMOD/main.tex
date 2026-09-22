@@ -45,7 +45,7 @@ lock-free multi-writer ingestion and arrival order is irrelevant. Third,
 because a time prefix is an address prefix and engine state is a pure
 function of the appended multiset, retention is a page release and
 recovery is replay; compaction is explicit, optional, and off the ingest
-path. \sys ingests 7.0--94.6M events/s across thirteen corpora, absorbs a
+path. \sys ingests 7.0--94.6M events/s across fourteen corpora, absorbs a
 billion-edge enterprise corpus at 77.5M events/s and recovers it from its
 log in 29.6 seconds, and delivers windowed neighborhoods up to
 $194\times$ faster than LiveGraph and $30\times$ faster than GraphOne,
@@ -729,10 +729,12 @@ bitcoin transaction stream. \emph{System provenance}: DARPA
 Transparent Computing whole-system information flow (CADETS 22.5M,
 THEIA 97.3M edges). \emph{Interaction streams}: eight public temporal
 graphs from messaging, Q\&A, and collaboration
-platforms~\cite{leskovec2014snap}. \emph{Structural-era references}:
+platforms~\cite{leskovec2014snap}, and the LDBC-SNB SF10 social
+activity stream (65.7M relationship events over three simulated
+years). \emph{Structural-era references}:
 cit-Patents and soc-LiveJournal1, whose questions are structural, kept
 deliberately as the audit set for the axis \sys concedes
-(\S\ref{sec:eval-structural}). Fourteen corpora spanning five orders
+(\S\ref{sec:eval-structural}). Fifteen corpora spanning five orders
 of magnitude in total.
 
 \input{table_breadth}
@@ -785,8 +787,9 @@ medians with tails, never means.
 
 \subsection{Temporal Workloads}\label{sec:eval-temporal}
 \textbf{Ingestion breadth.} \sys sustains 7.0 to 94.6M events/s across
-the thirteen smaller corpora on eight threads and absorbs the
-billion-edge LANL corpus at 77.5M events/s, 64.8 bytes/edge resident.
+the fourteen smaller corpora on eight threads (LDBC-SNB SF10: 58.1M)
+and absorbs the billion-edge LANL corpus at 77.5M events/s, 64.8
+bytes/edge resident.
 Rates track window occupancy, not graph size: dense provenance streams
 (THEIA, 94.6M) sit at the top and a corpus whose timestamps
 concentrate mass in few windows (bitcoin, 16.4M) at the bottom, five

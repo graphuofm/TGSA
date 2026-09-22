@@ -1,0 +1,2 @@
+dataset,edges,vertices,span_days,ingest_sec,ingest_Meps,compact_sec,ready_sec,ready_Meps,traverse_med_us,traverse_p95_us,avg_result,rss_MB,bytes_per_edge,threads
+ldbc-snb-sf10,65672000,2150329,0.0010937017,1.1296649,58.1340538,1.57190943,2.70157433,24.3087889,0.476837158,6.94990158,4.49,4619,73.7509524,8
