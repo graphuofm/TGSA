@@ -324,6 +324,40 @@ void VertexIndex::in_neighbors_temporal_into(uint32_t dst, uint64_t t_lo, uint64
     for (VertexBucket* b = head_in_of(dst); b; b = b->next) collect_range(b, t_lo, t_hi, out, bs_min_);
 }
 
+void VertexIndex::latest_neighbors_into(uint32_t src, uint64_t t,
+                                        std::vector<TemporalRef>& out) const {
+    if (heads_ == nullptr || src >= num_vertices_) return;
+    const size_t base = out.size();
+    for (VertexBucket* b = head_of(src); b; b = b->next) {
+        const uint32_t cnt = std::min(b->count.load(std::memory_order_acquire),
+                                      b->capacity);
+        const EdgeRef* refs = refs_of(b);
+        const bool sorted =
+            (b->flags.load(std::memory_order_acquire) & kBucketSorted) != 0;
+        for (uint32_t i = 0; i < cnt; ++i) {
+            if (__atomic_load_n(&refs[i].block, __ATOMIC_ACQUIRE) == nullptr)
+                continue;
+            const uint64_t ts = ref_ts(refs[i]);
+            if (ts > t) {
+                if (sorted) break;   // ascending: nothing later qualifies
+                continue;
+            }
+            out.push_back(TemporalRef{refs[i].dst, ts});
+        }
+    }
+    // Keep, per peer, only the latest timestamp: sort survivors by
+    // (peer asc, ts desc) and take the first of each run. Flat and
+    // in-place; no hashing, no allocation beyond `out` itself.
+    auto lo = out.begin() + base;
+    std::sort(lo, out.end(), [](const TemporalRef& a, const TemporalRef& b2) {
+        return a.peer != b2.peer ? a.peer < b2.peer : a.ts > b2.ts;
+    });
+    auto w = lo;
+    for (auto r = lo; r != out.end(); ++r)
+        if (r == lo || r->peer != (w - 1)->peer) *w++ = *r;
+    out.erase(w, out.end());
+}
+
 void VertexIndex::neighbors_dst_into(uint32_t src,
                                      std::vector<uint32_t>& out) const {
     if (heads_ == nullptr || src >= num_vertices_) return;

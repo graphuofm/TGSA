@@ -92,7 +92,7 @@ if(TGSR_NO_TS_CACHE)
 endif()
 
 # benchmarks
-foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming e23_ablation e25_dock e27_shard)
+foreach(B e1_ingest e2_query e3_compute e4_scale e5_memory e6_cache e7_provenance e8_attack e11_sweep e12_staleness e13_storage_read e14_tc e15_barry e16_breadth e18_recovery e21_streaming e23_ablation e25_dock e27_shard e29_props e30_asof)
     add_executable(bench_${B} benchmark/bench_${B}.cpp)
     target_link_libraries(bench_${B} PRIVATE barry)
     target_include_directories(bench_${B} PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)

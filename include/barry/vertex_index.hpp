@@ -120,6 +120,15 @@ public:
     // Sorted, deduplicated destination IDs (used by triangle counting).
     std::vector<uint32_t> sorted_neighbors_unique(uint32_t src) const;
 
+    // As-of snapshot expansion: for each DISTINCT out-neighbor, the latest
+    // edge with ts <= t. Appends (peer, latest_ts) pairs to `out`. Cost is
+    // O(d_le_t) refs inspected plus an in-place sort of the survivors; a
+    // version-grouped store answers this in O(distinct) and that gap is
+    // the honest remainder (measured in E30). Sorted buckets stop at the
+    // first ref past t; unsorted buckets are filtered whole.
+    void latest_neighbors_into(uint32_t src, uint64_t t,
+                               std::vector<TemporalRef>& out) const;
+
     // ----- Reverse (in-edge) traversal: backward causality tracing -----
     // Only valid when the index was constructed with build_reverse = true.
     bool has_reverse() const noexcept { return heads_in_ != nullptr; }

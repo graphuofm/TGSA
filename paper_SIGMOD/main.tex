@@ -26,12 +26,15 @@
 \affiliation{\institution{}\city{}\country{}}
 
 \begin{abstract}
-Temporal graphs built from immutable timestamped events, such as audit
-streams, agent execution traces, and interaction logs, arrive as
-never-ending streams, are queried by time and causality, and are retained
-under time-based policies. Existing storage keys such graphs on vertex
-identity and demotes the timestamp to a payload attribute, so every
-time-constrained operation pays to undo the layout. This paper presents
+Graph storage spent two decades optimizing for structure: layouts,
+indexes, and update paths are organized around vertex identity, and the
+timestamp rides along as a payload attribute. The workloads have moved.
+Network flow analysis, system provenance, execution traces, and
+interaction logs build graphs from immutable timestamped events that
+arrive as never-ending streams, are queried by time and causality
+before structure, and are retained under time-based policies. On a
+structure-keyed layout every operation this shifted workload issues
+pays to undo the layout first. This paper presents
 \sys, a storage engine that keys temporal graphs on time itself. First,
 \sys introduces the \emph{temporal address space} (\tmap): each timestamp
 maps to a virtual address by a constant-time shift, demand paging absorbs
@@ -55,14 +58,26 @@ workloads, and boundaries reported wherever a competing design wins.
 
 % =====================================================================
 \section{Introduction}\label{sec:intro}
-A growing class of graphs is built from \emph{events}: a system call
-touches a file, an agent invokes a tool, a host authenticates to another,
-a user replies to a message. Each edge carries the moment it happened,
-never changes afterwards, and arrives as part of a stream that does not
-end. Such graphs are interrogated by time and causality far more often
-than by structure, and the questions that matter of them, what happened in
-this window, what could have reached this host by now, what may be
-discarded, are all predicates on the timestamp.
+For two decades, graph data management has meant structural data
+management. The systems literature optimized neighborhood layout,
+adjacency compression, and structural update paths, and it measured
+itself on structural queries and whole-graph
+analytics~\cite{kumar2019graphone, zhu2020livegraph,
+dhulipala2019aspen, fuchs2023sortledton}. The workloads underneath have
+shifted. Network flow analysis asks what a host contacted in the last
+hour, not who its neighbors are in aggregate. System provenance asks
+what a process could have influenced after it was
+compromised~\cite{king2003backtracker, pasquier2017camflow}. Execution
+traces, telemetry, and interaction logs are interrogated the same way:
+by window, by recency, by causal order. In all of these, the graph is
+built from \emph{events}: a flow record, a system call touching a
+file, a host authenticating to another~\cite{lanl2015data}, a user
+replying to a message. Each edge carries the moment it happened, never
+changes afterwards, and arrives as part of a stream that does not end.
+The questions that matter, what happened in this window, what could
+have reached this host by now, what may be discarded, are all
+predicates on the timestamp, and both the queries and the analyses
+over such graphs put time, not structure, on the critical path.
 
 \begin{figure}[t]
   \centering
@@ -91,8 +106,8 @@ simultaneously deleting from the other end. Storage that serves this
 workload must ingest, answer, and forget along the same axis: time.
 \end{example}
 
-Existing storage engines approach this workload with layouts designed for
-something else. Dynamic graph stores key storage on source-vertex
+Existing storage engines approach this shifted workload with layouts
+built for the structural era. Dynamic graph stores key storage on source-vertex
 identity and treat the timestamp as payload, so a time-constrained query
 becomes a structural scan with a per-edge filter, and retention must find
 expired edges wherever vertex order scattered them. Columnar and LSM
@@ -706,11 +721,19 @@ artifact reproduces both sides of each switch.
 % (in-process, element-wise checksums, indexes granted), 14 corpora to 1.05B.
 \subsection{Experiment Setup}\label{sec:eval-setup}
 \textbf{Hardware and corpora.} 20-core Xeon, 188\,GB RAM, Ubuntu
-20.04. Fourteen corpora spanning five orders of magnitude
-(\cref{tab:breadth}): LANL enterprise authentication (1.05B events,
-17{,}666 hosts, 58 days), DARPA Transparent Computing whole-system
-provenance (CADETS 22.5M and THEIA 97.3M information-flow edges), and
-eleven public temporal graphs from 60K to 113M edges.
+20.04. The corpus set (\cref{tab:breadth}) is chosen to mirror the
+workload shift this paper is about, in three families plus a control.
+\emph{Network and authentication telemetry}: LANL enterprise
+authentication, 1.05B events over 58 days~\cite{lanl2015data}, and the
+bitcoin transaction stream. \emph{System provenance}: DARPA
+Transparent Computing whole-system information flow (CADETS 22.5M,
+THEIA 97.3M edges). \emph{Interaction streams}: eight public temporal
+graphs from messaging, Q\&A, and collaboration
+platforms~\cite{leskovec2014snap}. \emph{Structural-era references}:
+cit-Patents and soc-LiveJournal1, whose questions are structural, kept
+deliberately as the audit set for the axis \sys concedes
+(\S\ref{sec:eval-structural}). Fourteen corpora spanning five orders
+of magnitude in total.
 
 \input{table_breadth}
 
@@ -889,13 +912,19 @@ in earlier drafts ($5$--$15\times$) were algorithm-implementation
 artifacts, not layout costs; at the layer a storage paper competes on,
 the concession is roughly a factor of two.
 
-The other honest loss is the full-graph as-of snapshot: enumerate-
-then-reduce for \sys, 217.9s on CADETS where hot vertices carry
-millions of events. This is precisely the operation TVA's
-version-skipping accelerates, and had its ingestion admitted the
-corpus, it would very plausibly win this row. The workload settles the
-trade: \sys spends the structural axis to buy the temporal one, and
-takes that one as far as it goes.
+The full-graph as-of snapshot, each neighbor's latest edge at time
+$t$, is the operation versioned stores are built around, and an early
+\sys answered it by enumerate-then-reduce in 217.9s on CADETS. A
+dedicated operator (filter to $ts \le t$ with sorted-prefix early
+exit, then a flat sort-dedup per vertex) answers the identical
+question, checksum-verified against ground truth, in 0.44s single-
+threaded and 0.27s on eight threads: the concession was our harness,
+not the layout. What remains conceded is the asymptotics: the operator
+inspects every qualifying event where a version-grouped store inspects
+one entry per distinct neighbor, and a corpus with even deeper
+per-pair multiplicity would widen that gap again. The workload settles
+the trade: \sys spends the structural axis to buy the temporal one,
+and takes that one as far as it goes.
 
 \begin{figure*}[t]
   \centering
@@ -996,6 +1025,11 @@ are of a correct engine.
 
 % =====================================================================
 \section{Related Work}\label{sec:related}
+Graph storage research to date divides by which axis it puts on the
+critical path; most of it chose structure, and the temporal systems
+that exist chose versions. \sys occupies the third position: events,
+keyed on time.
+
 \textbf{Versioned temporal graph stores.} TVA~\cite{li2026tva},
 AeonG~\cite{hou2024aeong}, and Aion~\cite{theodorakis2024aion}
 organize versions of \emph{updated entities} for snapshot retrieval.
@@ -1053,7 +1087,8 @@ linearizability argument~\cite{herlihy1990linearizability}.
 
 % =====================================================================
 \section{Conclusion}\label{sec:conclusion}
-\sys keys temporal graph storage on time, and the paper's claim is
+Graph workloads moved their center of gravity from structure to time;
+\sys moves the storage layout with them. The paper's claim is
 that this single decision collapses machinery that is otherwise built,
 tuned, and recovered separately: the index becomes a shift, ingestion
 an order-indifferent lock-free append, retention a page release,
