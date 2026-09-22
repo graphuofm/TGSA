@@ -77,6 +77,9 @@ target_link_libraries(barry_bin_to_graphone PRIVATE barry)
 add_executable(barry_lanl_to_bin tools/lanl_to_bin.cpp)
 target_link_libraries(barry_lanl_to_bin PRIVATE barry)
 
+add_executable(barry_ldbc_to_bin tools/ldbc_to_bin.cpp)
+target_link_libraries(barry_ldbc_to_bin PRIVATE barry)
+
 add_executable(barry_soak tools/soak_concurrent.cpp)
 target_link_libraries(barry_soak PRIVATE barry)
 target_include_directories(barry_soak PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
@@ -155,6 +158,36 @@ if(EXISTS "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
         "${LIVEGRAPH_ROOT}/build/liblivegraph.so")
     set_target_properties(bench_e26_concurrent PROPERTIES
         BUILD_RPATH "${LIVEGRAPH_ROOT}/build;${CMAKE_SOURCE_DIR}/baselines/tbb_install/lib")
+endif()
+
+# E31 needs Stinger; built only when the baseline library exists.
+set(STINGER_ROOT "${CMAKE_SOURCE_DIR}/baselines/stinger" CACHE PATH "Stinger root")
+if(EXISTS "${STINGER_ROOT}/build/lib/libstinger_core.so")
+    add_executable(bench_e31_stinger benchmark/bench_e31_stinger.cpp)
+    target_include_directories(bench_e31_stinger PRIVATE
+        ${CMAKE_SOURCE_DIR}/benchmark
+        ${STINGER_ROOT}/lib/stinger_core/inc
+        ${STINGER_ROOT}/build/include)
+    target_link_libraries(bench_e31_stinger PRIVATE barry
+        "${STINGER_ROOT}/build/lib/libstinger_core.so")
+    set_target_properties(bench_e31_stinger PROPERTIES
+        BUILD_RPATH "${STINGER_ROOT}/build/lib")
+    message(STATUS "Stinger found -- building bench_e31_stinger")
+endif()
+
+# E32 needs Sortledton (lib + local TBB).
+set(SORTLEDTON_ROOT "${CMAKE_SOURCE_DIR}/baselines/sortledton" CACHE PATH "Sortledton root")
+set(TBB_LOCAL "${CMAKE_SOURCE_DIR}/baselines/tbb_install" CACHE PATH "local TBB")
+if(EXISTS "${SORTLEDTON_ROOT}/build/libsortledton.a")
+    add_executable(bench_e32_sortledton benchmark/bench_e32_sortledton.cpp)
+    target_include_directories(bench_e32_sortledton PRIVATE
+        ${CMAKE_SOURCE_DIR}/benchmark ${SORTLEDTON_ROOT} ${TBB_LOCAL}/include)
+    target_link_libraries(bench_e32_sortledton PRIVATE barry
+        "${SORTLEDTON_ROOT}/build/libsortledton.a"
+        "${TBB_LOCAL}/lib/libtbb.so" "${TBB_LOCAL}/lib/libtbbmalloc.so")
+    set_target_properties(bench_e32_sortledton PROPERTIES
+        BUILD_RPATH "${TBB_LOCAL}/lib")
+    message(STATUS "Sortledton found -- building bench_e32_sortledton")
 endif()
 
 # E24 needs RocksDB; built only when the baseline library exists.
