@@ -14,7 +14,7 @@ directed pair count verified against ground truth (every row: ok).
 | wiki-talk | 7.8M | 3.3M | **0.29** | 2.02 | 66.9 |
 | cit-Patents | 16.5M | 16.5M | 5.02 | 3.57 | 24.5 |
 | tc-cadets | 22.5M | 4.0M | **0.02** (913 s) | 1.17 | 80.1 |
-| LDBC-SNB SF10 | 65.7M | 65.7M | (rerun w/ sized pool) | 3.23 | 58.1 |
+| LDBC-SNB SF10 | 65.7M | 65.7M | 0.19 (345 s, 5.7 GB) | 3.23 | 58.1 |
 
 Findings, honestly attributed:
 
@@ -32,7 +32,10 @@ Findings, honestly attributed:
    and the dedup cost is charged to the collector, not to Sortledton.
 3. Stinger's edge-block pool must be sized from the pair count, not its
    nv-based default (LDBC SF10 exhausted the default pool); recorded in
-   the harness.
+   the harness. Even with the pool sized and multiplicity exactly 1,
+   Stinger runs LDBC SF10 at 0.19 Meps (345 s, 5.7 GB): hub
+   neighborhoods (large forums) make even first-insert edge-existence
+   searches long. TGSR ingests the same stream at 58.1 Meps.
 
 Harnesses: benchmark/bench_e31_stinger.cpp, bench_e32_sortledton.cpp.
 Semantics caveats live in the harness headers and in 7.2's prose.
