@@ -158,25 +158,22 @@ measured constant on entity-keyed operations, and we report the
 operations where a competing design beats us outright. The trade is
 deliberate, and the workload settles it.
 
-We make the following contributions:
-\begin{itemize}
-\item We propose \sys, a storage engine that keys temporal graphs on
-time, with proofs of its addressing, space, granularity, concurrency,
-and recovery properties.
-\item We introduce the temporal address space, a storage abstraction
-whose contract (arithmetic placement, residency proportional to occupancy,
-prefix retention, replay recovery) is inherited by any client, and
-demonstrate a non-graph client alongside the graph engine.
-\item We design a run-claiming lock-free ingestion path under a per-slot
-publication protocol, and prove that readers never observe partial state
-during concurrent multi-writer ingestion.
-\item We evaluate \sys against two streaming graph stores, a columnar
-engine, a KV store, and a versioned temporal graph store across fourteen
-corpora up to 1.05B edges, verifying element-wise answer equality before
-reporting any latency, evaluating recovery by fault injection rather
-than asserting it, and ablating every design decision including two
-that measured as losses and ship disabled.
-\end{itemize}
+This paper makes four contributions. We propose \sys, a storage engine
+that keys temporal graphs on time, and we prove its addressing, space,
+granularity, concurrency, and recovery properties. We introduce the
+temporal address space, whose contract of arithmetic placement,
+residency proportional to occupancy, prefix retention, and replay
+recovery is inherited by any client that appends into its slots; a
+non-graph client in our artifact demonstrates exactly that. We design
+a run-claiming lock-free ingestion path under a per-slot publication
+protocol, and we prove that no reader observes partial state during
+concurrent multi-writer ingestion. Finally, we evaluate \sys against
+two streaming graph stores, a columnar engine, a KV store, and a
+versioned temporal graph store across fifteen corpora up to 1.05B
+edges, verifying element-wise answer equality before reporting any
+latency, evaluating recovery by fault injection rather than asserting
+it, and ablating every design decision, including two that measured as
+losses and ship disabled.
 
 % =====================================================================
 \section{Background}\label{sec:background}
