@@ -98,7 +98,7 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 | TVA float | 我们的对应 | 状态 |
 |---|---|---|
 | Fig 1 金融时序图动机例（配 Example 1） | fig:motivation + ex:cadets | 有 |
-| Fig 2 hopscotch 机制前后对照小图 | 无（fig:arch 用 ❶❷❸ 覆盖了插入路径动态） | **仍缺，待定** |
+| Fig 2 hopscotch 机制前后对照小图 | **fig:runclaim（本轮新增，run-claiming 前后对照）** | 已补 |
 | Fig 3 总体架构（Example 2 色锁） | fig:arch + ex:queries | 有 |
 | Fig 4 顶点属性存储格式 | fig:format（与 Fig5 合并成一张） | 有 |
 | Fig 5 动态拓扑存储格式 | 同上 | 有 |

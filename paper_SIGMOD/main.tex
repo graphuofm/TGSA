@@ -475,8 +475,10 @@ and published, and binary search over it is sound.
 \end{proof}
 
 
+\input{fig_runclaim}
+
 \textbf{Run claiming.} Consecutive arrivals nearly always share a
-window, so \texttt{insert\_batch} detects runs of same-window events
+window (\cref{fig:runclaim}), so \texttt{insert\_batch} detects runs of same-window events
 inside each thread's contiguous chunk and claims each run with a single
 \texttt{fetch\_add} of the run length; overshooting a block's capacity
 is benign because readers clamp to $\min(count, capacity)$. The
@@ -1025,6 +1027,73 @@ and takes that one as far as it goes.
   recovers in 29.6\,s with no checkpoint machinery.}
   \label{fig:recovery}
 \end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\textwidth]{figures/fig_deploy.pdf}
+  \caption{Three deployment axes. \textbf{(a)}~What each docked module
+  costs on the write path, medians of three trials; every rung answers
+  an identical window-count probe. \textbf{(b)}~Sustained ingestion
+  while four readers query the same store continuously, one protocol
+  on three systems; every answer was checked against a quiescent
+  reference, and all 48 recorded runs report zero mismatches.
+  \textbf{(c)}~Ingestion against shard count on cit-Patents with the
+  thread budget held at 16, so the curve shows the design decomposing
+  rather than extra cores arriving.}
+  \label{fig:deploy}
+\end{figure*}
+
+\subsection{Modules, Concurrency, and Scale-out}\label{sec:eval-deploy}
+\textbf{What each module costs.} The engine this paper describes is a
+time-keyed core with capabilities docked onto it, and
+\cref{fig:deploy}(a) prices them one at a time. Detached, the core
+ingests at 199 to 293M events/s; every headline rate reported above is
+the rung with the vertex index attached, because entity-keyed access,
+not time-keyed storage, dominates the write path. A deployment that
+asks only time-axis questions, windows, aggregation, retention and
+replay, gets the core rate. The property sidecar rides with the index
+for free, landing within noise of the vertex-index rung on all three
+corpora, while the reverse index costs about as much again as the
+forward one, which is what it is. Every rung answered the same window
+count, so modules change cost and never answers.
+
+\textbf{Readers and writers at once.} A streaming store's real task is
+both at once, so one protocol drives \sys, GraphOne and LiveGraph
+identically: preload half the corpus, stream the rest through eight
+writers at full speed, and have four readers answer settled windows
+continuously, every answer checked against a quiescent reference.
+\cref{fig:deploy}(b) reports what the writers sustain under that
+pressure. \sys holds 26.4 to 74.0M events/s, which is $1.5$ to
+$3.9\times$ GraphOne and $4.2$ to $11\times$ sharded LiveGraph, and it
+answers more queries per second on three of the four corpora (16.0M/s
+against 10K/s on cit-Patents, where the sorted prefix is
+binary-searched rather than scanned). CADETS is the exception and the
+reason is instructive: streaming appends keep clearing the sorted flag
+on hot vertices, so those queries run in the uncompacted regime of
+\S\ref{sec:query-expand}. Across all 48 runs the mismatch count is
+zero, which is what makes the rates comparable at all. LiveGraph
+earns its row only after the collector repartitions the stream by
+source vertex; driven in arrival order, its vertex-locked
+transactions collapse from 1.75M events/s at one writer to 0.01M at
+eight, with 209K aborts.
+
+\textbf{Does the design decompose?} Distribution is future work, and
+what can be settled on one machine is whether the design shards at
+all. We run $S$ independent shards in one process, route events by a
+pure function, answer queries by routing or scatter-gather, and verify
+every configuration against an unsharded reference; all 64
+configurations match. \cref{fig:deploy}(c) shows the two partitionings
+failing differently, which is the useful result. Sharding on the
+entity axis scales a live stream even with the thread budget fixed,
+because it relieves contention on the hot window. Sharding on the time
+axis degrades it to $0.28\times$ at eight shards, because a
+time-ordered stream keeps exactly one shard hot while the others idle.
+In replay, where each shard loads its own slice, both axes scale and
+the time axis reaches $2.77\times$. A distributed \sys therefore
+partitions entities across nodes while each node keeps time-keyed
+storage locally, and recovers by having every node replay its own log,
+which the recovery theorem already licenses because sharding does not
+disturb a per-shard multiset.
 
 \subsection{Durability and Recovery}\label{sec:eval-recovery}
 \textbf{Cost.} Asynchronous logging halves peak ingest on wiki-talk
