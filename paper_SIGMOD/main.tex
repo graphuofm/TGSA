@@ -640,11 +640,47 @@ attack chain reconstructs in 133\,$\mu$s inside an impact set that is
 0.0093\% of the graph precisely because the time bound prunes
 expansion at the bucket level, before any arena access happens.
 
+\subsection{As-of Snapshot Expansion}\label{sec:query-asof}
+Versioned stores are built around one operation: for a vertex, the
+latest edge to each distinct neighbor at time $t$.
+\cref{alg:asof} answers it from an append-structured index. Line~5 is
+where the publication protocol pays off a second time: a bucket whose
+sorted flag survives an acquire load is ascending, so the scan stops
+at the first reference past $t$ instead of filtering the whole chain.
+A flat sort on $(peer \uparrow, ts \downarrow)$ then keeps the head of
+each run, which needs no hash table and no allocation beyond the
+output itself.
+
+\begin{algorithm}[t]
+\small
+\DontPrintSemicolon
+\SetKwProg{Fn}{}{}{}
+\Fn{\textsc{LatestNeighbors}$(v, t)$}{
+  $R \leftarrow \emptyset$\;
+  \ForEach{bucket $b$ of $v$}{
+    $n \leftarrow b.\mathit{count}$, $s \leftarrow b.\mathit{sorted}$ \hfill \textsf{(acquire)}\;
+    \For{$i \leftarrow 0$ \KwTo $n-1$}{
+      \lIf{$b[i].\mathit{block} = \bot$ \textsf{(acquire)}}{\textbf{continue}}
+      \lIf{$b[i].ts > t$}{\textbf{break} if $s$, else \textbf{continue}}
+      append $(b[i].\mathit{dst},\, b[i].ts)$ to $R$\;
+    }
+  }
+  sort $R$ by $(\mathit{peer}\uparrow,\, ts\downarrow)$\;
+  \Return{head of each $\mathit{peer}$ run of $R$}\;
+}
+\caption{As-of expansion: the latest edge to every distinct neighbor
+at time $t$. Cost is $O(d_{\le t}\log d_{\le t})$ over references
+inspected, against $O(d_{\mathit{distinct}})$ for a version-grouped
+store; \S\ref{sec:eval-structural} prices that difference on real
+corpora.}
+\label{alg:asof}
+\end{algorithm}
+
 \subsection{Structural Fallback}\label{sec:query-structural}
 Whole-graph structural algorithms (BFS, PageRank, connected
 components, triangle counting) run over the vertex index ignoring
 timestamps. \sys executes them at a bounded constant behind a
-topology-only CSR (median $2.4\times$ across nine corpus/algorithm
+topology-only CSR (median $2.1\times$ across 29 corpus/algorithm
 pairs, \S\ref{sec:eval-structural}), which is the measured price of
 refusing to organize storage by entity. Static views are the escape
 hatch: \S\ref{sec:eval-temporal} shows the extract-to-CSR pipeline
@@ -742,8 +778,10 @@ its released artifact (build repairs scripted in ours), DuckDB v1.5.5
 through its C API with a timestamp index granted, and RocksDB v9.7.4
 with the strongest time-encoded key we could design
 (big-endian \texttt{ts:src:}\allowbreak\texttt{dst:seq}, so a time
-range is one contiguous key range). Streaming graph stores: GraphOne and LiveGraph,
-built from source and driven in-process. Structural references: a
+range is one contiguous key range). Streaming graph stores: GraphOne
+and LiveGraph, built from source and driven in-process, joined by
+Stinger and Sortledton on the operations their edge model can answer
+identically. Structural references: a
 time-sorted CSR (\texttt{tcsr}, the strongest static competitor), an
 arrival-order entity CSR, and a topology-only CSR.
 
@@ -806,6 +844,25 @@ snapshots interleave all time: it scans 13 to $84\times$ more edges
 than it delivers (CADETS: 4.30B scanned for 51.1M delivered).
 \sys scans the window.
 
+Stinger and Sortledton complete the category, and their edge model is
+itself evidence for the shift this paper describes. Both key edges on
+$(src,dst)$ and turn a repeated contact into an in-place update, so an
+event multiset cannot round-trip through either; the comparison
+therefore stays on what all three systems answer identically, events
+processed per second with the surviving unique-pair count verified.
+Where pair multiplicity is low, both are credible: Stinger runs
+cit-Patents at 5.0M events/s, Sortledton at 3.6M. The moment the
+stream repeats pairs, the $(src,dst)$-keyed update path degenerates,
+because every repeated event must first locate, inside the
+neighborhood it lands in, the edge it updates. Stinger falls to 0.29M
+events/s on wiki-talk and to 0.02M on CADETS, three orders of
+magnitude below its own cit-Patents rate; \sys ingests the same
+streams at 66.9 and 80.1M events/s. Even on LDBC-SNB SF10, where
+multiplicity is exactly one and its edge pool is sized from the pair
+count, Stinger sustains 0.19M events/s against \sys's 58.1M, because
+hub neighborhoods lengthen the existence search that precedes every
+insert.
+
 \textbf{Against the versioned store.} TVA did not finish ingesting
 wiki-talk's 7.8M events within a 90-minute cutoff (killed at 5{,}415s,
 41.6\,GB RSS, CPU-bound throughout), bounding its rate below 1{,}447
@@ -855,6 +912,15 @@ traversal medians across the breadth suite sit at
 0.24--0.95\,$\mu$s per expansion (\cref{tab:complexity} bounds apply
 per bucket).
 
+\textbf{Storage.} Keying on time costs nothing in space
+(\cref{tab:storage}). \sys holds 75--107 resident bytes per 20-byte
+event: lowest of the four systems on the two corpora whose windows are
+dense, within $8\%$ of GraphOne's tightly packed 24-byte format on the
+others, and $23$--$29\%$ below LiveGraph throughout. The comparison
+also marks a boundary. Versioned stores save $2$--$5\times$ by
+deduplicating versions of one entity, and an immutable event multiset
+offers nothing to deduplicate.
+
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.86\textwidth]{figures/fig_pipeline.pdf}
@@ -892,6 +958,27 @@ ours.
   \label{fig:structural}
 \end{figure}
 
+\begin{table}[t]
+\centering\footnotesize
+\setlength{\tabcolsep}{4pt}
+\caption{Resident memory (MB) after ingesting the full corpus, four
+systems, one machine. \sys's figure includes its vertex index and its
+cached timestamps; GraphOne's is the peak RSS of its own harness less
+that harness's in-memory input buffer, an approximation marked
+$^{*}$.}
+\label{tab:storage}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Corpus & \sys & B/edge & LiveGraph & GraphOne$^{*}$ & RocksDB \\
+\midrule
+askubuntu   &   98 & 107 &  110 &   92 &  114 \\
+wiki-talk   &  588 &  79 &  761 &  635 &  630 \\
+cit-Patents & 1436 &  91 & 1938 & 1867 & 2260 \\
+CADETS      & 1606 &  75 & 2074 & 1499 & 2259 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Structural Workloads}\label{sec:eval-structural}
 This is the axis \sys concedes by design, and we play it in full
 rather than sampling it kindly. To isolate the storage layer's share,
@@ -916,11 +1003,10 @@ the concession is roughly a factor of two.
 
 The full-graph as-of snapshot, each neighbor's latest edge at time
 $t$, is the operation versioned stores are built around, and an early
-\sys answered it by enumerate-then-reduce in 217.9s on CADETS. A
-dedicated operator (filter to $ts \le t$ with sorted-prefix early
-exit, then a flat sort-dedup per vertex) answers the identical
-question, checksum-verified against ground truth, in 0.44s single-
-threaded and 0.27s on eight threads: the concession was our harness,
+\sys answered it by enumerate-then-reduce in 217.9s on CADETS. The
+operator of \cref{alg:asof} answers the identical question,
+checksum-verified against ground truth, in 0.44s single-threaded and
+0.27s on eight threads: the concession was our harness,
 not the layout. What remains conceded is the asymptotics: the operator
 inspects every qualifying event where a version-grouped store inspects
 one entry per distinct neighbor, and a corpus with even deeper
@@ -1011,6 +1097,15 @@ where every candidate is tested); on the structural axis the
 difference is not resolvable above run-to-run noise (medians
 $2.42$ vs $2.39$, signs both ways per pair). The resolvable price is
 $+22\%$ resident memory.
+
+\textbf{Property sidecar.} Attaching 16 bytes of properties per edge
+leaves untouched scans within $3\%$ of the detached build, and a
+window query filtering on a sidecar byte runs no slower than the same
+query filtering on a field inside the edge record, at selectivities
+from $1\%$ to $100\%$. Properties are a docked module rather than a
+redesign: the sidecar is addressed by the arithmetic that already
+places the edge (\cref{fig:format}), so it inherits demand paging,
+prefix retention, and replay recovery from the arena it parallels.
 
 \textbf{Two negatives, shipped disabled.} Transparent huge pages:
 $-28\%$ ingest on the corpus that motivated them, $+69\%$ RSS. AVX2

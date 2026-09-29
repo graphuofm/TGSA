@@ -90,3 +90,43 @@ _2026-09-21。逐项对照 TVA（PVLDB 19(10), p2536）§5–§7 与我们的全
 6. ~~逐邻居最新版本算子~~ 已补：E30（2026-09-22）。CADETS 全图 as-of
    219.0s -> 0.27s（803x），校验和与地面真值一致；论文 as-of 段已改写，
    剩余让步只在渐近复杂度。results/e30_asof。
+
+## 六、图表完整性复核（2026-09-29，Opus 5）
+
+按 TVA 的 float 清单逐一对照（它：11 图 / 1 表 / 3 算法 / 2 定理 / 2 例）：
+
+| TVA float | 我们的对应 | 状态 |
+|---|---|---|
+| Fig 1 金融时序图动机例（配 Example 1） | fig:motivation + ex:cadets | 有 |
+| Fig 2 hopscotch 机制前后对照小图 | 无（fig:arch 用 ❶❷❸ 覆盖了插入路径动态） | **仍缺，待定** |
+| Fig 3 总体架构（Example 2 色锁） | fig:arch + ex:queries | 有 |
+| Fig 4 顶点属性存储格式 | fig:format（与 Fig5 合并成一张） | 有 |
+| Fig 5 动态拓扑存储格式 | 同上 | 有 |
+| Fig 6(a) 存储消耗 | **tab:storage（本轮新增，E28）** | 已补 |
+| Fig 6(b)(d) 操作延迟随操作量 | E21 steady（正文述，无图） | 文字覆盖 |
+| Fig 7(a–j) 时序查询延迟 10 面板 | fig:temporal(3)+fig:baselines(3)+fig:pipeline(2) | 有 |
+| Fig 8(a) 当前图存储 | tab:storage | 已补 |
+| Fig 8(b) 插入吞吐 | fig:ingest(2) + 7.2 Stinger/Sortledton 段 | 有 |
+| Fig 9 四算法归一化 | fig:structural（四算法一图） | 有 |
+| Fig 10 持久化 3 面板 | fig:recovery(2) | 有 |
+| Fig 11 性能/消融 6 面板 | fig:ablation(4) | 有 |
+| Table 1 复杂度 | tab:complexity | 有 |
+| Alg 1 写路径 CRUD | alg:publish | 有 |
+| Alg 2 结构维护（hop update） | alg:shift | 有 |
+| Alg 3 读路径取边（含 SIMD） | **alg:asof（本轮新增）** | 已补 |
+| Thm 1–2 | 五条定理 | 超出 |
+| Ex 1–2 | ex:cadets, ex:queries | 有 |
+| （TVA 无） | tab:breadth 语料表 | 超出 |
+
+本轮修复的三件事：
+1. **E31/E32 段落实际从未落盘**（上一轮 str.replace 目标串已被更早的改动
+   替换，静默跳过，被误报为完成）。已补写并逐条核验入 PDF。
+2. 新增 Algorithm 3（as-of 算子读路径伪码），填上 TVA Alg 3 的槽位；
+   7.3 的 as-of 段改为引用它。
+3. 新增 Table 3（四系统常驻内存，E28），填上 TVA Fig 6a/8a 槽位；
+   7.2 增"Storage"小段。附带补 E29 属性侧车读路径结果进 7.5，
+   并修掉 §5.5 里陈旧的"2.4×/九组配对"（正解 2.1×/29 组）。
+
+仍未进正文（有数据、有 README，等用户通读后共同决定）：
+E25 底座阶梯、E26 三系统并发对打、E27 分片扩展。这三项是用户明确
+"先存脚本和结果，文章等我看完再定怎么编进去"的部分，不擅自加。
