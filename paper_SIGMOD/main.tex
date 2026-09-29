@@ -33,15 +33,15 @@ Network flow analysis, system provenance, execution traces, and
 interaction logs build graphs from immutable timestamped events that
 arrive as never-ending streams, are queried by time and causality
 before structure, and are retained under time-based policies. On a
-structure-keyed layout every operation this shifted workload issues
-pays to undo the layout first. This paper presents
+structure-keyed layout, every operation the shifted workload issues
+must first pay to undo the layout. This paper presents
 \sys, a storage engine that keys temporal graphs on time itself. First,
 \sys introduces the \emph{temporal address space} (\tmap): each timestamp
 maps to a virtual address by a constant-time shift, demand paging absorbs
 temporal sparsity, and no index is built, maintained, or recovered.
 Second, ingestion claims arrival runs with single atomic operations under
 a per-slot publication protocol, so queries remain correct \emph{during}
-lock-free multi-writer ingestion and arrival order is irrelevant. Third,
+lock-free multi-writer ingestion; arrival order is irrelevant. Third,
 because a time prefix is an address prefix and engine state is a pure
 function of the appended multiset, retention is a page release and
 recovery is replay; compaction is explicit, optional, and off the ingest
@@ -59,25 +59,23 @@ workloads, and boundaries reported wherever a competing design wins.
 % =====================================================================
 \section{Introduction}\label{sec:intro}
 For two decades, graph data management has meant structural data
-management. The systems literature optimized neighborhood layout,
-adjacency compression, and structural update paths, and it measured
-itself on structural queries and whole-graph
-analytics~\cite{kumar2019graphone, zhu2020livegraph,
-dhulipala2019aspen, fuchs2023sortledton}. The workloads underneath have
+management. The systems literature~\cite{kumar2019graphone, zhu2020livegraph,
+dhulipala2019aspen, fuchs2023sortledton} optimized neighborhood
+layout, adjacency compression, and structural update paths, and it
+measured itself on structural queries and whole-graph analytics. The workloads underneath have
 shifted. Network flow analysis asks what a host contacted in the last
-hour, not who its neighbors are in aggregate. System provenance asks
-what a process could have influenced after it was
-compromised~\cite{king2003backtracker, pasquier2017camflow}. Execution
+hour, not who its neighbors are in aggregate. System provenance~\cite{king2003backtracker, pasquier2017camflow}
+asks what a process could have influenced after it was compromised. Execution
 traces, telemetry, and interaction logs are interrogated the same way:
 by window, by recency, by causal order. In all of these, the graph is
 built from \emph{events}: a flow record, a system call touching a
 file, a host authenticating to another~\cite{lanl2015data}, a user
 replying to a message. Each edge carries the moment it happened, never
 changes afterwards, and arrives as part of a stream that does not end.
-The questions that matter, what happened in this window, what could
-have reached this host by now, what may be discarded, are all
-predicates on the timestamp, and both the queries and the analyses
-over such graphs put time, not structure, on the critical path.
+Every question that matters is a predicate on the timestamp: what
+happened in this window, what could have reached this host by now,
+what may be discarded. For queries and analyses alike, the critical
+path now runs through time.
 
 \begin{figure}[t]
   \centering
@@ -802,11 +800,11 @@ window over a vertex-keyed layout visits every neighborhood the window
 might touch. GraphOne is closer on raw ingest ($0.92$--$2.76\times$,
 like-for-like with its durable path timed on both sides), and it is a
 well-engineered store; the axis that separates the designs is read
-amplification. Answering the same checksummed windowed-neighborhood
-suite, GraphOne delivers edges $2.1$--$30\times$ slower because it
-scans 13 to $84\times$ more edges than it delivers (CADETS: 4.30B
-scanned for 51.1M delivered), its adjacency snapshots interleaving
-all time; \sys scans the window.
+amplification. Answering the same checksummed windowed-neighborhood suite, GraphOne
+delivers edges $2.1$--$30\times$ slower, because its adjacency
+snapshots interleave all time: it scans 13 to $84\times$ more edges
+than it delivers (CADETS: 4.30B scanned for 51.1M delivered).
+\sys scans the window.
 
 \textbf{Against the versioned store.} TVA did not finish ingesting
 wiki-talk's 7.8M events within a 90-minute cutoff (killed at 5{,}415s,
@@ -877,8 +875,8 @@ extract-compute-writeback loop end-to-end, \sys is
 $1.0$--$1.5\times$ faster than DuckDB (level only at the smallest
 windows, where compute dominates everything) and
 $1.1$--$18.3\times$ faster than LiveGraph, whose loop extraction
-dominates (up to 96\% of pipeline time, against at most 60\% of
-ours).
+dominates: up to 96\% of pipeline time, against at most 60\% of
+ours.
 
 \begin{figure}[t]
   \centering
@@ -896,13 +894,14 @@ ours).
 
 \subsection{Structural Workloads}\label{sec:eval-structural}
 This is the axis \sys concedes by design, and we play it in full
-rather than sampling it kindly. Isolating the storage layer's share
-(identical algorithm code consuming adjacency from each layout,
-results checksum-verified identical), \sys delivers adjacency for
-BFS, PageRank, and label propagation at a median $2.1\times$ the cost
-of a topology-only CSR across 29 corpus/algorithm measurements on
-eleven corpora (range $0.9$--$5.8\times$; on the smallest corpora,
-where everything is cache-resident, \sys reaches parity and below).
+rather than sampling it kindly. To isolate the storage layer's share,
+identical algorithm code consumes adjacency from each layout, and
+every layout must produce checksum-identical results. On that
+footing, \sys delivers adjacency for BFS, PageRank, and label
+propagation at a median $2.1\times$ the cost of a topology-only CSR
+(29 corpus/algorithm pairs on eleven corpora, range
+$0.9$--$5.8\times$). On the smallest corpora, where everything is
+cache-resident, \sys reaches parity and below.
 The fourth algorithm of the standard quartet, single-source shortest
 paths, is semantically empty on these corpora (public weights are
 uniform), so we run its storage question instead: a weighted sweep
