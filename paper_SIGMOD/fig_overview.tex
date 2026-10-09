@@ -1,0 +1,73 @@
+% Engine component diagram: the subsystems and the paths between them,
+% each box carrying the section that specifies it. The data structures
+% themselves are Figure 2.
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  comp/.style={draw=black!65, fill=white, rounded corners=1pt,
+               minimum width=15mm, minimum height=6.2mm, inner sep=1.5pt,
+               align=center, font=\scriptsize},
+  grp/.style={draw=black!55, fill=orange!6, rounded corners=1.5pt,
+              inner sep=3pt},
+  io/.style={draw=black!65, fill=black!4, minimum height=6mm,
+             inner sep=2.5pt, align=center, font=\scriptsize},
+  fl/.style={-{Stealth[length=1.5mm]}, semithick},
+]
+% ---------------- inputs ----------------
+\node[io] (stream) at (0.95, 3.45) {event stream};
+\node[io, draw=qwin, text=qwin] (query) at (5.25, 3.45) {temporal queries};
+
+% ---------------- ingest path ----------------
+\node[comp, draw=wins, text width=27mm] (ingest) at (0.95, 2.45)
+  {\textbf{Ingest path} (\S\ref{sec:storage-ingest})\\[-1pt]
+   \tiny shift, run claim, publish};
+\draw[fl, wins] (stream) -- (ingest);
+
+% ---------------- query engine ----------------
+\node[grp, minimum width=31mm, minimum height=16mm] (qe) at (5.25, 1.85) {};
+\node[font=\scriptsize\bfseries, anchor=north] at (5.25, 2.72)
+  {Query engine (\S\ref{sec:query})};
+\node[comp, minimum width=13mm] (qw) at (4.45, 2.1) {window};
+\node[comp, minimum width=13mm] (qx) at (6.05, 2.1) {expansion};
+\node[comp, minimum width=13mm] (qt) at (4.45, 1.42) {traversal};
+\node[comp, minimum width=13mm] (qa) at (6.05, 1.42) {as-of};
+\draw[fl, qwin] (query) -- (qe.north);
+
+% ---------------- storage engine ----------------
+\node[grp, minimum width=70mm, minimum height=14mm] (se) at (3.1, 0.25) {};
+\node[font=\scriptsize\bfseries, anchor=north] at (3.1, 0.92)
+  {Storage engine (\S\ref{sec:storage})};
+\node[comp, minimum width=14mm] (tl) at (0.78, 0.0)
+  {Timeline\\[-2pt]\tiny \S\ref{sec:storage-tl}};
+\node[comp, minimum width=14mm] (ar) at (2.32, 0.0)
+  {Arena\\[-2pt]\tiny \S\ref{sec:storage-tl}};
+\node[comp, minimum width=14mm] (vi) at (3.88, 0.0)
+  {Vertex index\\[-2pt]\tiny \S\ref{sec:storage-vi}};
+\node[comp, minimum width=14mm] (wal) at (5.42, 0.0)
+  {Log\\[-2pt]\tiny \S\ref{sec:storage-ret}};
+\draw[fl, wins] (ingest.south) -- (ingest.south |- se.north);
+\draw[fl, qnbr] (qe.south) -- (qe.south |- se.north);
+
+% ---------------- lifecycle operators ----------------
+\node[comp, draw=black!55, text width=24mm] (ret) at (1.0, -1.1)
+  {\textbf{Retention} (\S\ref{sec:storage-ret})\\[-1pt]
+   \tiny address-prefix release};
+\node[comp, draw=black!55, text width=24mm] (rec) at (5.1, -1.1)
+  {\textbf{Recovery} (\S\ref{sec:storage-ret})\\[-1pt]
+   \tiny replay through ingest};
+\draw[fl] (ret.north) -- (ret.north |- se.south);
+\draw[fl] (rec.north) -- (rec.north |- se.south);
+
+% the abstraction underneath
+\node[font=\tiny, text=black!60, anchor=north] at (3.1, -1.72)
+  {every box above is addressed by \cref{eq:mapping}: the timestamp is
+   the location (\S\ref{sec:tmap-principle})};
+\end{tikzpicture}
+\caption{Engine components and the paths between them. Ingestion
+(\textcolor{wins}{orange}) writes the timeline, arena and vertex
+index; queries (\textcolor{qnbr}{green}) read them; retention and
+recovery act on the same structures without a separate index to
+maintain. Figure~\ref{fig:arch} opens these boxes.}
+\label{fig:overview}
+\end{figure}
