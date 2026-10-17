@@ -1,0 +1,7 @@
+[16:56:08] start e18cost_tc-cadets-e3
+[16:56:30] end   e18cost_tc-cadets-e3 rc=0  1 zero-size log rows
+[16:56:30] start e18cost_tc-theia-e3
+[16:58:00] end   e18cost_tc-theia-e3 rc=0  1 zero-size log rows
+[16:58:00] start e18cost_lanl-auth
+[17:14:09] end   e18cost_lanl-auth rc=0  1 zero-size log rows
+[17:14:09] post-queue-2 finished

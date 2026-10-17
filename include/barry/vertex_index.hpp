@@ -158,6 +158,9 @@ public:
     uint32_t out_degree(uint32_t src) const;
     uint32_t num_vertices() const noexcept { return num_vertices_; }
     size_t   bytes_used()  const noexcept { return bucket_bump_.load(std::memory_order_relaxed); }
+    // Refs the index could not place because its reservation ran out. A
+    // harness must treat any nonzero value as a failed run, never as a result.
+    size_t   refused_refs() const noexcept { return bucket_failures_.load(std::memory_order_relaxed); }
 
 private:
     VertexBucket* allocate_bucket(uint32_t capacity);

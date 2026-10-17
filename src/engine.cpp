@@ -47,8 +47,18 @@ Barry::Barry(const GraphConfig& cfg) : cfg_(cfg) {
     arena_    = std::make_unique<Arena>(cfg_.arena_reserve_bytes, cfg_.use_huge_pages,
                                         cfg_.transparent_huge_pages);
     if (cfg_.num_vertices > 0) {
+        // The bucket arena holds one 24-byte reference per edge, doubled by
+        // chain growth, plus a first bucket per vertex and the buckets that
+        // CAS losers abandon on hot vertices under many writers. A reserve
+        // proportional to the edge count alone ran out on a 6.9M-vertex
+        // corpus and references were refused, so the engine floors the
+        // reserve from both the edge arena and the vertex count. The
+        // mapping is MAP_NORESERVE virtual space: untouched pages cost
+        // nothing (clause T2), so the floor is free.
+        const size_t vfloor = cfg_.arena_reserve_bytes * 8
+                            + static_cast<size_t>(cfg_.num_vertices) * 1024;
         vertex_index_ = std::make_unique<VertexIndex>(
-            cfg_.num_vertices, cfg_.vertex_arena_reserve_bytes,
+            cfg_.num_vertices, std::max(cfg_.vertex_arena_reserve_bytes, vfloor),
             cfg_.build_reverse_index, cfg_.transparent_huge_pages,
             cfg_.binary_search_min);
     }

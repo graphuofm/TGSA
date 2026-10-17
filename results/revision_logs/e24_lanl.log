@@ -1,0 +1,9 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f4f241bd000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e24] tgsr    ingest  72.74 Meps
+[e24] rocksdb ingest   1.91 Meps (wal=0)
+[e24] extract w=0.01     rocksdb    1682.4 ms  tgsr      78.0 ms  checksum MATCHES
+[e24] neighbors 100 q: rocksdb  121046.5 ms  tgsr      47.1 ms  checksum MATCHES
+[e24] rocksdb ingest   1.78 Meps (wal=1)

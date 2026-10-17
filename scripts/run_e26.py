@@ -24,7 +24,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BENCH = os.path.join(REPO, "build", "bench_e26_concurrent")
 CONV = os.path.join(REPO, "build", "barry_bin_to_graphone")
 G64 = os.path.join(REPO, "baselines", "graphone", "build", "graphone64")
-BINDIR = os.path.join(REPO, "data", "bin")
+BINDIR = "/home/jding/dataset/bin"
 OUTDIR = os.path.join(REPO, "results", "e26_concurrent")
 
 GO_PATTERNS = {

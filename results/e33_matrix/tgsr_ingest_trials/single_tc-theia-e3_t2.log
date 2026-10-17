@@ -1,0 +1,8 @@
+[e33] wrote 1000 queries to results/e33_matrix/tgsr_ingest_trials/single_t2/tc-theia-e3.queries
+[e33] tc-theia-e3: n=97289833 V=6874886 t=[1522764134348763338,1523653470865469444] w=8893365167061 bfs_root=147 (deg 12563982)
+[TimeMapper] span=889336516706106 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 13965 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7efa67bb6000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=69.3 GB virtual
+[e33] tgsr      tc-theia-e3        ingest     97289833 events      1.23 s  78.956 Meps  rss    5015 MB  
+[e33] tgsr      tc-theia-e3        compact       2.23 s  rss    5022 MB

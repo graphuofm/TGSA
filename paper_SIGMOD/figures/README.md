@@ -1,40 +1,27 @@
-# Figure sources
+# Figures of the SIGMOD paper
 
-Every figure ships with an editable same-named source:
+Every `fig_*.pdf` has a same-named generator next to it. `figstyle.py` holds
+the one color legend of the paper (systems vs paths; identical hex values to
+the `\definecolor` block in `main.tex`), the loaders for the aligned matrix
+(`results/e33_matrix`, spec in `docs/E33_SPEC.md`), and the grouped-bar helper
+that gives every evaluation figure the same layout: one group per corpus,
+large to small (LANL, THEIA, CADETS, wiki-talk), one bar per system.
 
-| figure | source | regenerate with |
+| file | figure | source |
 |---|---|---|
-| fig_motivation.pdf | fig_motivation.py | `python3 fig_motivation.py` |
-| fig_ingest.pdf | fig_ingest.py | `python3 fig_ingest.py` |
-| fig_baselines.pdf | fig_baselines.py | `python3 fig_baselines.py` |
-| fig_temporal.pdf | fig_temporal.py | `python3 fig_temporal.py` |
-| fig_structural.pdf | fig_structural.py | `python3 fig_structural.py` |
-| fig_recovery.pdf | fig_recovery.py | `python3 fig_recovery.py` |
-| fig_ablation.pdf | fig_ablation.py | `python3 fig_ablation.py` |
-| fig_pipeline.pdf | fig_pipeline.py | `python3 fig_pipeline.py` |
-| Fig 2 (architecture) | ../fig_arch.tex (TikZ) | compiles with main.tex |
-| Fig 3 (storage formats) | ../fig_format.tex (TikZ) | compiles with main.tex |
+| fig_motivation.py | 1, the CADETS intrusion | drawn from the published narrative |
+| ../fig_overview.tex | 2, engine components | TikZ |
+| ../fig_arch.tex | 3, architecture with Q1/Q2 drawn on the structures, plus the byte formats | TikZ |
+| fig_ingest.py | 4, ingestion, ingestion under readers, memory | e33_matrix, e31/e32, e26 |
+| fig_queries.py | 5, Q1..Q4 grid | e33_matrix |
+| fig_analytics.py | 6, analytics pipeline and whole-graph BFS | e22_pipeline, e33_matrix, e13 |
+| fig_recovery.py | 7, durability cost | e18_recovery, e24_rocksdb |
+| fig_analysis.py | 8, performance analysis (four panels) | e23, e25, e26, notscache_e33 |
 
-Shared palette/rcParams/loaders: figstyle.py. All data comes from
-results/ CSVs; nothing is hand-entered except the drawn Fig 1 narrative.
-scripts/make_sigmod_figures.py runs all of them.
+`../fig_runclaim.tex` (run claiming) is kept in the repository but no longer in the paper (cut for length; its effect is Figure 8(a)).
 
-## Editable drawings (.drawio)
-
-The four hand-drawn figures also ship as same-named diagrams.net files,
-so they can be rearranged by hand instead of in code:
-
-    fig_motivation.drawio   fig_arch.drawio
-    fig_format.drawio       fig_runclaim.drawio
-
-Open them at app.diagrams.net or in the VS Code Draw.io extension; they
-are plain uncompressed XML, so they also diff cleanly. `make_drawio.py`
-regenerates all four from scratch, which OVERWRITES hand edits, so run
-it only when you want to start over.
-
-What the paper actually compiles is still the TikZ source
-(../fig_arch.tex, ../fig_format.tex, ../fig_runclaim.tex) and
-fig_motivation.py. After editing a drawio, either export it to PDF here
-and switch that figure's \input to \includegraphics, or carry the
-change back into the TikZ. The data charts have no drawio: they are
-generated from CSVs and belong in code.
+Regenerate everything with `python3 ../../scripts/make_sigmod_figures.py`, or
+one figure with `python3 fig_X.py`. `make_drawio.py` writes the editable
+draw.io sources for the four drawings. Rules: no text below 7pt at final
+size, no `\tiny` in TikZ, a missing cell is marked "n/a" or "did not finish",
+never dropped.

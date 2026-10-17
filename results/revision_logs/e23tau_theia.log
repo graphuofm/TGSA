@@ -1,0 +1,30 @@
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=16 shift=28 (window=268435456)
+[Timeline] 3314060 slots = 0.03 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa8499a1000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=16   shift=28 mu=    29.4 in[  8.0,  64.0) holds=1  ingest= 61.29 Meps  query= 92879.8 ms
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=32 shift=29 (window=536870912)
+[Timeline] 1657542 slots = 0.01 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa84a644000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=32   shift=29 mu=    58.7 in[ 16.0, 128.0) holds=1  ingest= 63.55 Meps  query= 92595.5 ms
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=64 shift=30 (window=1073741824)
+[Timeline] 829283 slots = 0.01 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa84ac96000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=64   shift=30 mu=   117.5 in[ 32.0, 256.0) holds=1  ingest= 67.34 Meps  query= 95329.0 ms
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=128 shift=31 (window=2147483648)
+[Timeline] 415153 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa84afbf000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=128  shift=31 mu=   234.9 in[ 64.0, 512.0) holds=1  ingest= 71.85 Meps  query= 94920.0 ms
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=256 shift=32 (window=4294967296)
+[Timeline] 208088 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa84b153000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=256  shift=32 mu=   469.9 in[128.0,1024.0) holds=1  ingest= 73.15 Meps  query= 92511.8 ms
+[TimeMapper] span=889336516706106 edges=97289833 target_avg=512 shift=33 (window=8589934592)
+[Timeline] 104556 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fa84b21d000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=18.7 GB virtual
+[e23-tau] tau=512  shift=33 mu=   939.7 in[256.0,2048.0) holds=1  ingest= 73.70 Meps  query= 94857.5 ms

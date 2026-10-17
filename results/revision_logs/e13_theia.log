@@ -1,0 +1,61 @@
+[TimeMapper] span=889336516706106 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 13965 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 7.78 GB at 0x7fcbb71d1000 (huge=0 thp=0)
+[VertexIndex] 6874886 vertices, heads=55.0 MB, bucket arena=9.3 GB virtual
+[e13] tc-theia-e3            bfs    csr    total=  0.4972s storage=  0.2542s (51.1%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    tcsr   total=  0.5233s storage=  0.3070s (58.7%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    ucsr   total=  0.5089s storage=  0.3073s (60.4%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    barry  total=  0.7316s storage=  0.5038s (68.9%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    csr    total=  0.4822s storage=  0.2508s (52.0%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    tcsr   total=  0.5244s storage=  0.3072s (58.6%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    ucsr   total=  0.5079s storage=  0.3066s (60.4%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    barry  total=  0.7330s storage=  0.5043s (68.8%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    csr    total=  0.4876s storage=  0.2534s (52.0%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    tcsr   total=  0.5219s storage=  0.3061s (58.7%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    ucsr   total=  0.5070s storage=  0.3062s (60.4%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            bfs    barry  total=  0.7320s storage=  0.5043s (68.9%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            pr     csr    total=  2.8656s storage=  1.3091s (45.7%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     tcsr   total=  3.0954s storage=  1.5337s (49.5%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     ucsr   total=  3.1138s storage=  1.5472s (49.7%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     barry  total=  4.4217s storage=  2.8985s (65.6%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     csr    total=  2.8686s storage=  1.3104s (45.7%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     tcsr   total=  3.0874s storage=  1.5306s (49.6%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     ucsr   total=  3.1091s storage=  1.5459s (49.7%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     barry  total=  4.4217s storage=  2.8988s (65.6%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     csr    total=  2.8717s storage=  1.3125s (45.7%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     tcsr   total=  3.0969s storage=  1.5347s (49.6%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     ucsr   total=  3.0969s storage=  1.5411s (49.8%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            pr     barry  total=  4.4171s storage=  2.8954s (65.5%)  edges=486449165  chk=68aff436e9ea8d87
+[e13] tc-theia-e3            cc     csr    total=  2.1496s storage=  1.2150s (56.5%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     tcsr   total=  2.1747s storage=  1.2467s (57.3%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     ucsr   total=  2.2322s storage=  1.2983s (58.2%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     barry  total=  3.3877s storage=  2.3177s (68.4%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     csr    total=  2.1493s storage=  1.2158s (56.6%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     tcsr   total=  2.1689s storage=  1.2436s (57.3%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     ucsr   total=  2.2235s storage=  1.2946s (58.2%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     barry  total=  3.3839s storage=  2.3162s (68.4%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     csr    total=  2.1497s storage=  1.2148s (56.5%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     tcsr   total=  2.1716s storage=  1.2452s (57.3%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     ucsr   total=  2.2335s storage=  1.2998s (58.2%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            cc     barry  total=  3.3820s storage=  2.3145s (68.4%)  edges=389159332  chk=bf541783c864b99a
+[e13] tc-theia-e3            bfs    csr    total=  0.4904s storage=  0.2546s (51.9%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            twbfs  tcsr   total=  0.0131s storage=  0.0000s ( 0.0%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  ucsr   total=  0.0239s storage=  0.0162s (67.9%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  barry  total=  0.0076s storage=  0.0000s ( 0.2%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            bfs    csr    total=  0.4793s storage=  0.2522s (52.6%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            twbfs  tcsr   total=  0.0131s storage=  0.0000s ( 0.0%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  ucsr   total=  0.0235s storage=  0.0161s (68.5%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  barry  total=  0.0074s storage=  0.0000s ( 0.2%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            bfs    csr    total=  0.4788s storage=  0.2515s (52.5%)  edges=82559651  chk=d196684beb9eabba
+[e13] tc-theia-e3            twbfs  tcsr   total=  0.0131s storage=  0.0000s ( 0.0%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  ucsr   total=  0.0238s storage=  0.0163s (68.5%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            twbfs  barry  total=  0.0076s storage=  0.0000s ( 0.2%)  edges=0  chk=8ff148dde7b27440
+[e13] tc-theia-e3            bfsw   csr    total=  0.5901s storage=  0.2864s (48.5%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   tcsr   total=  0.6011s storage=  0.2895s (48.2%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   barry  total=  1.3731s storage=  1.0564s (76.9%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   csr    total=  0.5990s storage=  0.2881s (48.1%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   tcsr   total=  0.5962s storage=  0.2884s (48.4%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   barry  total=  1.3286s storage=  1.0092s (76.0%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   csr    total=  0.6015s storage=  0.2896s (48.1%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   tcsr   total=  0.5961s storage=  0.2880s (48.3%)  edges=82559651  chk=d196684ba49af3d1
+[e13] tc-theia-e3            bfsw   barry  total=  1.3289s storage=  1.0092s (75.9%)  edges=82559651  chk=d196684ba49af3d1

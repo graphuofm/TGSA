@@ -1,0 +1,2 @@
+[e33] $ nice -n 0 /home/jding/Barry/build/bench_e33_matrix --dataset /home/jding/dataset/bin/tc-cadets-e3.bin --system tgsr --phases ingest,compact,q1,q2,q3,q4,bfs --batch 65536 --samples 1000 --threads 8 --ingest_budget_sec 5400 --phase_budget_sec 1800 --rss_guard_gb 150 --outdir /home/jding/Barry/results/e33_matrix
+[e33] tgsr       tc-cadets-e3         ok                           21 s

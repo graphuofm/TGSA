@@ -1,0 +1,9 @@
+[e33] wrote 1000 queries to results/e23_ablation/notscache_e33/lanl-auth.queries
+[e33] lanl-auth: n=1051430459 V=17666 t=[1,5011199] w=50111 bfs_root=1 (deg 55394572)
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fac71bc6000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e33] tgsr      lanl-auth          ingest   1051430459 events     13.93 s  75.468 Meps  rss   38129 MB  
+[e33] tgsr      lanl-auth          q2        1000/1000 q   182.417 s  median     8946.5 us  p95   777170.8 us  count 127287551  chk 323397313050681  REF
+[e33] tgsr      lanl-auth          q4        1000/1000 q   575.321 s  median    19149.5 us  p95  2546861.0 us  count 96322  chk 501897843358362  REF

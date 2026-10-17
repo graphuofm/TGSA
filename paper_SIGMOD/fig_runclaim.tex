@@ -1,64 +1,46 @@
-% TVA-Fig-2-grade mechanism figure: the run-claiming insert, before and
-% after, on the case that motivates it (all writers in one window).
+% Figure 5. The run-claiming insert, before and after, on the case that
+% motivates it (all writers in one window). Smallest font: \scriptsize.
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  font=\tiny,
-  ev/.style={draw=black!60, fill=green!11, minimum width=5.6mm,
-             minimum height=3.6mm, inner sep=0pt},
-  ctr/.style={draw=black!70, fill=blue!12, minimum width=13mm,
-              minimum height=4.2mm, inner sep=1pt, font=\tiny},
-  wl/.style={font=\tiny, anchor=east},
-  hit/.style={-{Stealth[length=1.2mm]}, wins, semithick},
-  lab/.style={font=\scriptsize\bfseries},
+  font=\scriptsize,
+  ev/.style={draw=black!60, fill=sysc!12, minimum width=6.4mm,
+             minimum height=4.2mm, inner sep=0pt},
+  ctr/.style={draw=black!70, fill=sysc!30, minimum width=16mm,
+              minimum height=5mm, inner sep=1pt, font=\scriptsize},
+  wl/.style={font=\scriptsize, anchor=east},
+  hit/.style={-{Stealth[length=1.3mm]}, wins, semithick},
+  lab/.style={font=\footnotesize\bfseries},
 ]
-% ================= left: per-edge claim =================
-\node[lab, anchor=west] at (-0.15, 2.28) {Per-edge claim};
-\node[font=\tiny, anchor=west, text=black!60] at (-0.15, 1.98)
-  {one \texttt{fetch\_add} per event};
-\foreach \w/\y in {1/1.55, 2/1.05, 3/0.55}{
-  \node[wl] at (0.32, \y) {$w_\w$};
-  \foreach \i in {0,1,2}{
-    \node[ev] at (0.72 + \i*0.62, \y) {};
-  }
+% ================= left: per-event claim =================
+\node[lab, anchor=west] at (-0.2, 2.7) {Per-event claim};
+\node[anchor=west, text=black!65] at (-0.2, 2.33) {one \texttt{fetch\_add} per event};
+\foreach \w/\y in {1/1.85, 2/1.25, 3/0.65}{
+  \node[wl] at (0.35, \y) {writer $w_\w$};
+  \foreach \i in {0,1,2}{ \node[ev] at (0.85 + \i*0.72, \y) {}; }
 }
-\node[ctr] (c1) at (1.34, -0.12) {\texttt{count} $+{=}1$};
-\foreach \y in {1.55, 1.05, 0.55}{
-  \foreach \i in {0,1,2}{
-    \draw[hit] (0.72 + \i*0.62, \y) -- (c1.north);
-  }
+\node[ctr] (c1) at (1.57, -0.2) {\texttt{count} $+{=}1$};
+\foreach \y in {1.85, 1.25, 0.65}{
+  \foreach \i in {0,1,2}{ \draw[hit] (0.85 + \i*0.72, \y) -- (c1.north); }
 }
-\node[font=\tiny, anchor=north, text=wins, align=center] at (1.34, -0.42)
-  {9 atomics on one\\[-2pt] cache line};
+\node[anchor=north, text=wins, align=center] at (1.57, -0.55)
+  {9 atomics on one cache line};
 
 % ================= right: run claim =================
-\node[lab, anchor=west] at (3.35, 2.28) {Run claim};
-\node[font=\tiny, anchor=west, text=black!60] at (3.35, 1.98)
-  {one \texttt{fetch\_add} per run};
-\foreach \w/\y in {1/1.55, 2/1.05, 3/0.55}{
-  \node[wl] at (3.82, \y) {$w_\w$};
-  \draw[draw=qnbr, thick, rounded corners=1pt]
-    (4.16, \y-0.23) rectangle (6.02, \y+0.23);
-  \foreach \i in {0,1,2}{
-    \node[ev] at (4.22 + \i*0.62, \y) {};
-  }
+\node[lab, anchor=west] at (4.1, 2.7) {Run claim};
+\node[anchor=west, text=black!65] at (4.1, 2.33) {one \texttt{fetch\_add} per run};
+\foreach \w/\y in {1/1.85, 2/1.25, 3/0.65}{
+  \node[wl] at (4.65, \y) {writer $w_\w$};
+  \draw[draw=sysc, thick, rounded corners=1pt] (4.78, \y-0.27) rectangle (7.0, \y+0.27);
+  \foreach \i in {0,1,2}{ \node[ev] at (5.17 + \i*0.72, \y) {}; }
 }
-\node[ctr] (c2) at (4.84, -0.12) {\texttt{count} $+{=}3$};
-\foreach \y in {1.55, 1.05, 0.55}{
-  \draw[hit, qnbr] (5.09, \y-0.25) -- (c2.north);
-}
-\node[font=\tiny, anchor=north, text=qnbr, align=center] at (4.84, -0.42)
-  {3 atomics, same\\[-2pt] 9 events placed};
+\node[ctr] (c2) at (5.89, -0.2) {\texttt{count} $+{=}3$};
+\foreach \y in {1.85, 1.25, 0.65}{ \draw[hit, sysc] (5.89, \y-0.29) -- (c2.north); }
+\node[anchor=north, text=sysc, align=center] at (5.89, -0.55)
+  {3 atomics, same 9 events placed};
 
-\draw[black!35] (3.16, -0.75) -- (3.16, 2.45);
-\node[font=\tiny, anchor=north, align=center] at (3.16, -0.95)
-  {wiki-talk, 8 writers: \textcolor{wins}{\textbf{6.1}} $\rightarrow$
-   \textcolor{qnbr}{\textbf{73.2}} M events/s (\S\ref{sec:eval-ablation})};
+\draw[black!35] (3.85, -1.0) -- (3.85, 2.9);
 \end{tikzpicture}
-\caption{Run claiming, the mechanism a time-ordered stream forces. Every
-writer lands in the same window at the same instant, so the window's
-counter serializes them. Detecting the run inside one writer's chunk
-replaces one atomic per event with one per run, and readers stay
-correct because they clamp to $\min(count, capacity)$.}
+\caption{Run claiming.}
 \label{fig:runclaim}
 \end{figure}

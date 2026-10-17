@@ -1,0 +1,8 @@
+[e33] wrote 1000 queries to results/e33_matrix/tgsr_ingest_trials/single_t3/wiki-talk-temporal.queries
+[e33] wiki-talk-temporal: n=7833140 V=1140149 t=[999130846,1199614728] w=2004838 bfs_root=1034 (deg 264905)
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fef73498000 (huge=0 thp=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=9.8 GB virtual
+[e33] tgsr      wiki-talk-temporal ingest      7833140 events      0.13 s  60.663 Meps  rss     452 MB  
+[e33] tgsr      wiki-talk-temporal compact       0.20 s  rss     459 MB

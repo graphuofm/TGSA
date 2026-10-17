@@ -1,0 +1,30 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] none           13.88s   75.73 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] write_only     41.07s   25.60 Meps  wal=  21.03 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] async_64MB    154.83s    6.79 Meps  wal=  21.03 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] async_4MB     196.83s    5.34 Meps  wal=  21.03 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] sync_4MB      209.02s    5.03 Meps  wal=  21.03 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f7f7c0c2000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e18-cost] fsync_batch   209.98s    5.01 Meps  wal=  21.03 GB

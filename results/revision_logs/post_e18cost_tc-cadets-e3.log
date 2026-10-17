@@ -1,0 +1,30 @@
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] none            0.33s   69.05 Meps  wal=   0.00 GB
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] write_only      0.93s   24.15 Meps  wal=   0.45 GB
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] async_64MB      3.36s    6.71 Meps  wal=   0.45 GB
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] async_4MB       4.21s    5.36 Meps  wal=   0.45 GB
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] sync_4MB        4.34s    5.19 Meps  wal=   0.45 GB
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7f34fc8d8000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e18-cost] fsync_batch     4.36s    5.17 Meps  wal=   0.45 GB

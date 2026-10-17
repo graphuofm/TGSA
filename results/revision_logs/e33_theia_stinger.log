@@ -1,0 +1,2 @@
+[e33] $ nice -n 0 timeout 2700 /home/jding/Barry/build/bench_e31_stinger --dataset /home/jding/dataset/bin/tc-theia-e3.bin --threads 8 --output /home/jding/Barry/results/e33_matrix/e31e32.csv
+[e33] stinger    tc-theia-e3          ok                          248 s

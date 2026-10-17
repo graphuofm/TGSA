@@ -1,0 +1,10 @@
+[e26] tc-theia-e3: preload=48644916 stream=48644917
+[e26] tgsr       W=8 R=1  stream   0.91s =  53.49 Meps  queries=     319 (      351 q/s)  mismatches=0
+[e26] tgsr       W=4 R=4  stream   1.03s =  47.27 Meps  queries=    1211 (     1177 q/s)  mismatches=0
+[e26] tgsr       W=2 R=8  stream   1.34s =  36.31 Meps  queries=    2019 (     1507 q/s)  mismatches=0
+[e26] lanl-auth: preload=525715229 stream=525715230
+[e26] tgsr       W=8 R=1  stream   7.09s =  74.16 Meps  queries=     319 (       45 q/s)  mismatches=0
+[e26] tgsr       W=4 R=4  stream  12.58s =  41.79 Meps  queries=    2103 (      167 q/s)  mismatches=0
+[e26] tgsr       W=2 R=8  stream  24.31s =  21.62 Meps  queries=    5525 (      227 q/s)  mismatches=0
+
+[e26] all runs complete, CSV at /home/jding/Barry/results/e26_concurrent/e26.csv

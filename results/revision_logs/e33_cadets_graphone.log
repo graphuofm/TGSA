@@ -1,0 +1,5 @@
+[e20] tc-cadets-e3             weight64  j20  batch=0.716526s durable=0.716639s make=0.71734s (31.416 Meps)  
+[e20] tc-cadets-e3             weight64  j28  batch=0.67179s durable=0.671952s make=0.672695s (33.501 Meps) q2: 1.30951s count=12571155 chk=4512028163337490221 match=yes done=1000/1000 
+[e20] tc-cadets-e3             weight64  j34  batch=0.667778s durable=0.667992s make=0.668734s (33.7 Meps) q1: 0.0188939s count=310976 chk=5061283283283802387 match=yes done=- 
+[e20] tc-cadets-e3             weight64  j35  batch=0.710223s durable=0.710389s make=0.711086s (31.692 Meps) q3: 2.01185s count=1682506 chk=15541415357794589271 match=yes done=1000/1000 
+[e20] tc-cadets-e3             weight64  j36  batch=0.642104s durable=0.642326s make=0.643042s (35.046 Meps) q4: 7.47326s count=21292086 chk=13790888740093751363 match=yes done=1000/1000 

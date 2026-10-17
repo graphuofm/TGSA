@@ -1,0 +1,5 @@
+[e20] tc-theia-e3              weight64  j20  batch=2.79418s durable=2.79434s make=2.79602s (34.796 Meps)  
+[e20] tc-theia-e3              weight64  j28  batch=2.85959s durable=2.85975s make=2.86145s (34.0 Meps) q2: 3.21579s count=194505076 chk=10491692184863895803 match=yes done=1000/1000 
+[e20] tc-theia-e3              weight64  j34  batch=2.79747s durable=2.79769s make=2.80032s (34.742 Meps) q1: 0.0412047s count=2016814 chk=16951969486573769268 match=yes done=- 
+[e20] tc-theia-e3              weight64  j35  batch=2.80837s durable=2.80859s make=2.81007s (34.622 Meps) q3: 64.6865s count=132276860 chk=17171673674305138363 match=yes done=1000/1000 
+[e20] tc-theia-e3              weight64  j36  batch=2.79617s durable=2.79628s make=2.79887s (34.76 Meps) q4: 12.3006s count=5954966 chk=15444198202714801900 match=yes done=1000/1000 

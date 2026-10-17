@@ -1,0 +1,35 @@
+[TimeMapper] span=5011198 edges=1051430459 target_avg=16 shift=0 (window=1)
+[TimeMapper] span=5011198 edges=1048576 target_avg=16 shift=7 (window=128)
+[Timeline] 40173 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56e21a000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=16   shift=0  mu=   209.8 in[  8.0,  64.0) holds=0  ingest= 78.63 Meps  query= 65736.1 ms
+[TimeMapper] span=5011198 edges=1051430459 target_avg=32 shift=0 (window=1)
+[TimeMapper] span=5011198 edges=1048576 target_avg=32 shift=8 (window=256)
+[Timeline] 20598 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56e240000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=32   shift=0  mu=   209.8 in[ 16.0, 128.0) holds=0  ingest= 77.70 Meps  query= 65808.0 ms
+[TimeMapper] span=5011198 edges=1051430459 target_avg=64 shift=0 (window=1)
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56e269000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=64   shift=0  mu=   209.8 in[ 32.0, 256.0) holds=1  ingest= 78.18 Meps  query= 65738.9 ms
+[TimeMapper] span=5011198 edges=1051430459 target_avg=128 shift=0 (window=1)
+[TimeMapper] span=5011198 edges=1048576 target_avg=128 shift=10 (window=1024)
+[Timeline] 5917 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56e269000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=128  shift=0  mu=   209.8 in[ 64.0, 512.0) holds=1  ingest= 78.28 Meps  query= 63851.8 ms
+[TimeMapper] span=5011198 edges=1051430459 target_avg=256 shift=0 (window=1)
+[TimeMapper] span=5011198 edges=1048576 target_avg=256 shift=11 (window=2048)
+[Timeline] 3470 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56e269000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=256  shift=0  mu=   209.8 in[128.0,1024.0) holds=1  ingest= 77.87 Meps  query= 63739.3 ms
+[TimeMapper] span=5011198 edges=1051430459 target_avg=512 shift=1 (window=2)
+[Timeline] 2506623 slots = 0.02 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7fa56cf49000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-tau] tau=512  shift=1  mu=   419.6 in[256.0,2048.0) holds=1  ingest= 71.98 Meps  query= 63828.6 ms

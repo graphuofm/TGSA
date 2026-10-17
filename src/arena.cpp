@@ -9,7 +9,7 @@
 namespace barry {
 
 static void* try_mmap(size_t bytes, bool huge) {
-    int flags = MAP_PRIVATE | MAP_ANONYMOUS;
+    int flags = MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE;
     if (huge) flags |= MAP_HUGETLB;
     void* p = mmap(nullptr, bytes, PROT_READ | PROT_WRITE, flags, -1, 0);
     return p;

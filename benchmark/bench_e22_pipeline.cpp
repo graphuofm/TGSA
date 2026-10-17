@@ -39,6 +39,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <cstring>
 #include <string>
 #include <vector>
@@ -151,6 +152,14 @@ int main(int argc, char** argv) {
     const int    threads = static_cast<int>(args.getl("threads", 8));
     const int    iters   = static_cast<int>(args.getl("iters", 10));
     const int    trial   = static_cast<int>(args.getl("trial", 0));
+    // --systems tgsr,livegraph,duckdb (default all). One store per process
+    // is how the billion-edge corpus fits in memory; the compute phase is
+    // deterministic, so checksums stay comparable across processes.
+    const std::string systems = args.get("systems", "tgsr,livegraph,duckdb");
+    const bool want_gn = systems.find("tgsr") != std::string::npos ||
+                         systems.find("gnomon") != std::string::npos;
+    const bool want_lg = systems.find("livegraph") != std::string::npos;
+    const bool want_dd = systems.find("duckdb") != std::string::npos;
 
     if (in_path.empty() || out_csv.empty()) {
         std::fprintf(stderr,
@@ -191,34 +200,46 @@ int main(int argc, char** argv) {
     cfg.num_vertices = V + 1;              // +1 for the result sink vertex
     cfg.arena_reserve_bytes        = std::max<size_t>(1ULL << 30, n * sizeof(Edge) * 6);
     cfg.vertex_arena_reserve_bytes = std::max<size_t>(1ULL << 28, n * sizeof(EdgeRef) * 10);
-    Barry gn(cfg);
-    double gn_load = now_sec();
-    for (size_t off = 0; off < n; off += batch)
-        gn.insert_batch(ef.edges + off, std::min(batch, n - off), threads);
-    gn.finalize();
-    gn_load = now_sec() - gn_load;
+    std::unique_ptr<Barry> gnp;
+    double gn_load = 0;
+    if (want_gn) {
+        gnp = std::make_unique<Barry>(cfg);
+        gn_load = now_sec();
+        for (size_t off = 0; off < n; off += batch)
+            gnp->insert_batch(ef.edges + off, std::min(batch, n - off), threads);
+        gnp->finalize();
+        gn_load = now_sec() - gn_load;
+    }
+    Barry& gn = *gnp;
 
-    lg::Graph lgg("", "", 1ul << 40, static_cast<lg::vertex_t>(V) + 16);
-    double lg_load = now_sec();
-    {
-        auto txn = lgg.begin_batch_loader();
-        for (uint32_t v = 0; v <= V; ++v) txn.new_vertex();
-        txn.commit();
-    }
-    for (size_t off = 0; off < n; off += batch) {
-        const size_t m = std::min(batch, n - off);
-        auto txn = lgg.begin_batch_loader();
-        for (size_t i = off; i < off + m; ++i) {
-            const Edge& e = ef.edges[i];
-            txn.put_edge(e.src, 0, e.dst, ts_view(e.timestamp), true);
+    std::unique_ptr<lg::Graph> lgp;
+    double lg_load = 0;
+    if (want_lg) {
+        lgp = std::make_unique<lg::Graph>("", "", 1ul << 40, static_cast<lg::vertex_t>(V) + 16);
+        lg_load = now_sec();
+        {
+            auto txn = lgp->begin_batch_loader();
+            for (uint32_t v = 0; v <= V; ++v) txn.new_vertex();
+            txn.commit();
         }
-        txn.commit();
+        for (size_t off = 0; off < n; off += batch) {
+            const size_t m = std::min(batch, n - off);
+            auto txn = lgp->begin_batch_loader();
+            for (size_t i = off; i < off + m; ++i) {
+                const Edge& e = ef.edges[i];
+                txn.put_edge(e.src, 0, e.dst, ts_view(e.timestamp), true);
+            }
+            txn.commit();
+        }
+        lg_load = now_sec() - lg_load;
     }
-    lg_load = now_sec() - lg_load;
+    lg::Graph& lgg = *lgp;
 
     duckdb_database db = nullptr; duckdb_connection con = nullptr;
+    if (want_dd) {
     if (duckdb_open(nullptr, &db) == DuckDBError) { std::fprintf(stderr, "duckdb_open\n"); return 1; }
     if (duckdb_connect(db, &con) == DuckDBError) { std::fprintf(stderr, "duckdb_connect\n"); return 1; }
+    }
     auto dsql = [&](const char* sql) {
         duckdb_result r;
         if (duckdb_query(con, sql, &r) == DuckDBError) {
@@ -228,6 +249,7 @@ int main(int argc, char** argv) {
         duckdb_destroy_result(&r); return true;
     };
     double dd_load = now_sec();
+    if (want_dd) {
     if (!dsql("CREATE TABLE edges(src UINTEGER, dst UINTEGER, ts UBIGINT)")) return 1;
     if (!dsql("CREATE TABLE results(v UINTEGER, val DOUBLE, ts UBIGINT)")) return 1;
     {
@@ -244,7 +266,8 @@ int main(int argc, char** argv) {
         duckdb_appender_destroy(&app);
     }
     if (!dsql("CREATE INDEX idx_ts ON edges(ts)")) return 1;   // give it the index it wants
-    dd_load = now_sec() - dd_load;
+    }
+    dd_load = want_dd ? now_sec() - dd_load : 0;
 
     std::fprintf(stderr, "[e22] load: gnomon %.2fs  livegraph %.2fs  duckdb %.2fs\n",
                  gn_load, lg_load, dd_load);
@@ -261,6 +284,7 @@ int main(int argc, char** argv) {
         size_t ref_edges = 0;
 
         for (int sys = 0; sys < 3; ++sys) {
+            if ((sys == 0 && !want_gn) || (sys == 1 && !want_lg) || (sys == 2 && !want_dd)) continue;
             std::vector<uint32_t> src, dst;
             Csr g;
             double t_extract = 0, t_compute = 0, t_write = 0;
@@ -371,10 +395,9 @@ int main(int argc, char** argv) {
         }
         // Results accumulate across windows in every store alike, so no store
         // gets a cleaner table than another on the next iteration.
-        dsql("DELETE FROM results");
+        if (want_dd) dsql("DELETE FROM results");
     }
 
-    duckdb_disconnect(&con);
-    duckdb_close(&db);
+    if (want_dd) { duckdb_disconnect(&con); duckdb_close(&db); }
     return 0;
 }

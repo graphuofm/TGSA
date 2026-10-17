@@ -1,0 +1,4 @@
+[e22] load: gnomon 0.00s  livegraph 192.65s  duckdb 0.00s
+[e22] w=0.001   livegraph  edges=   1040226  extract=   6.642s  compute=   0.021s  write=  0.002s  total=   6.665s  extract=99.7%  CHECKSUM DIFFERS
+[e22] w=0.01    livegraph  edges=  13305296  extract=   6.980s  compute=   0.290s  write=  0.003s  total=   7.273s  extract=96.0%  CHECKSUM DIFFERS
+[e22] w=0.1     livegraph  edges= 114074073  extract=   9.500s  compute=   2.598s  write=  0.004s  total=  12.102s  extract=78.5%  CHECKSUM DIFFERS

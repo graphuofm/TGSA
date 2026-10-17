@@ -1,0 +1,23 @@
+	Command being timed: "python3 scripts/run_graphone.py --corpora lanl-auth --out results/e33_matrix/graphone.csv --query-dir results/e33_matrix --threads 8 --timeout 7200 --no-plain32"
+	User time (seconds): 1417.05
+	System time (seconds): 227.52
+	Percent of CPU this job got: 183%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 14:54.27
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 62497616
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 85154144
+	Voluntary context switches: 12355492
+	Involuntary context switches: 9578
+	Swaps: 0
+	File system inputs: 16
+	File system outputs: 251806736
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

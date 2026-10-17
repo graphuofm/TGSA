@@ -1,0 +1,161 @@
+system,dataset,phase,threads,events,samples_total,samples_done,seconds,rate,median_us,p95_us,count,checksum,checksum_ok,rss_MB,note
+tgsr,wiki-talk-temporal,ingest,8,7833140,0,0,0.14461112,54166927.1,0,0,0,0,-1,453.91872,
+tgsr,wiki-talk-temporal,compact,8,7833140,0,0,0.19386673,0,0,0,0,0,-1,460.873728,
+tgsr,wiki-talk-temporal,q1,8,7833140,1,1,0.000875473022,0,0,0,283276,3594989818021826228,1,460.873728,
+tgsr,wiki-talk-temporal,q2,8,7833140,1000,1000,0.00701165199,142619.742,1.66893005,42.9391861,1441186,1700791533380746,1,460.873728,
+tgsr,wiki-talk-temporal,q3,8,7833140,1000,1000,11.764816,84.9992041,12600.8987,22630.4173,26062800,30619538371047394,1,460.873728,
+tgsr,wiki-talk-temporal,q4,8,7833140,1000,1000,0.655082464,1526.52537,22.5305557,4448.65227,5001951,2172262231193549779,1,467.423232,
+tgsr,wiki-talk-temporal,bfs,8,7833140,1,1,0.0989592075,0,0,0,0,4064292456450990964,1,470.032384,
+livegraph,wiki-talk-temporal,ingest,1,7833140,0,0,1.59052324,4924882.45,0,0,0,0,-1,761.09824,
+livegraph,wiki-talk-temporal,compact,1,7833140,0,0,0,0,0,0,0,0,-1,761.09824,n/a: no separate compaction step
+livegraph,wiki-talk-temporal,q1,1,7833140,1,1,0.158141851,0,0,0,283276,3594989818021826228,1,771.969024,
+livegraph,wiki-talk-temporal,q2,1,7833140,1000,1000,0.129717588,7709.05482,8.34465027,1392.55524,1441186,1700791533380746,1,766.455808,
+livegraph,wiki-talk-temporal,q3,1,7833140,1000,1000,38.9212046,25.6929355,44834.0178,66575.9921,26062800,30619538371047394,1,769.486848,
+livegraph,wiki-talk-temporal,q4,1,7833140,1000,1000,0.825383663,1211.55778,31.2328339,6173.03848,5001951,2172262231193549779,1,774.08256,
+livegraph,wiki-talk-temporal,bfs,1,7833140,1,1,0.215426207,0,0,0,0,4064292456450990964,1,777.596928,
+rocksdb,wiki-talk-temporal,ingest,8,7833140,0,0,3.48173642,2249779.72,0,0,0,0,-1,11.132928,
+rocksdb,wiki-talk-temporal,compact,8,7833140,0,0,0,0,0,0,0,0,-1,11.132928,n/a: Flush() inside ingest
+rocksdb,wiki-talk-temporal,q1,8,7833140,1,1,0.0605201721,0,0,0,283276,3594989818021826228,1,24.358912,
+rocksdb,wiki-talk-temporal,q2,8,7833140,1000,1000,23.3402221,42.8444937,26380.4197,32540.8936,1441186,1700791533380746,1,46.514176,
+rocksdb,wiki-talk-temporal,q3,8,7833140,1000,4,903.378082,0.00442782494,190694904,455882486,99362,116089186006608,1,46.784512,DNF; checked against the 4-query prefix
+rocksdb,wiki-talk-temporal,q4,8,7833140,1000,1000,496.339538,2.01474983,502608.18,902018.976,5001951,2172262231193549779,1,57.868288,
+duckdb,wiki-talk-temporal,ingest,8,7833140,0,0,5.59183002,1400818.69,0,0,0,0,-1,821.260288,
+duckdb,wiki-talk-temporal,compact,8,7833140,0,0,0,0,0,0,0,0,-1,821.260288,n/a: index build inside ingest
+duckdb,wiki-talk-temporal,q1,8,7833140,1,1,0.0118527412,0,0,0,283276,3594989818021826228,1,789.561344,
+duckdb,wiki-talk-temporal,q2,8,7833140,1000,1000,0.938468695,1065.56565,881.671906,1421.6423,1441186,1700791533380746,1,778.79296,
+duckdb,wiki-talk-temporal,q3,8,7833140,1000,49,900.274209,0.0544278615,18232191.6,34678026.8,1281736,1505528375930902,1,742.592512,DNF; checked against the 49-query prefix
+duckdb,wiki-talk-temporal,q4,8,7833140,1000,1000,2.03592682,491.17679,1831.41232,4007.49445,5001951,2172262231193549779,1,771.95264,
+stinger,wiki-talk-temporal,ingest,8,7833140,0,0,26.2457883,298453.2188732163,0,0,0,0,-1,775.716864,one edge per pair; unique_pairs=3309592; probe_ok=1
+stinger,wiki-talk-temporal,compact,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+stinger,wiki-talk-temporal,q1,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,wiki-talk-temporal,q2,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,wiki-talk-temporal,q3,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,wiki-talk-temporal,q4,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,wiki-talk-temporal,bfs,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+sortledton,wiki-talk-temporal,ingest,8,7833140,0,0,1.665658,4702730.092251831,0,0,0,0,-1,269.27104,one edge per pair; unique_pairs=3309592; probe_ok=1
+sortledton,wiki-talk-temporal,compact,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+sortledton,wiki-talk-temporal,q1,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,wiki-talk-temporal,q2,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,wiki-talk-temporal,q3,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,wiki-talk-temporal,q4,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,wiki-talk-temporal,bfs,8,7833140,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+tgsr,tc-cadets-e3,ingest,8,22536062,0,0,0.373927832,60268479.9,0,0,0,0,-1,1168.77722,
+tgsr,tc-cadets-e3,compact,8,22536062,0,0,0.691989183,0,0,0,0,0,-1,1181.84346,
+tgsr,tc-cadets-e3,q1,8,22536062,1,1,0.00101399422,0,0,0,310976,5061283283283802387,1,1181.84346,
+tgsr,tc-cadets-e3,q2,8,22536062,1000,1000,0.050183773,19926.76,23.3650208,160.467625,12571155,4512028163337490221,1,1181.84346,
+tgsr,tc-cadets-e3,q3,8,22536062,1000,1000,0.626212358,1596.90237,469.088554,1973.65284,1682506,15541415357794589271,1,1181.84346,
+tgsr,tc-cadets-e3,q4,8,22536062,1000,1000,16.5231166,60.52127,2807.97482,88161.7546,21292086,13790888740093751363,1,1235.53382,
+tgsr,tc-cadets-e3,bfs,8,22536062,1,1,0.0673716068,0,0,0,0,10737868510535678646,1,1213.87008,
+livegraph,tc-cadets-e3,ingest,1,22536062,0,0,3.03724837,7419894.34,0,0,0,0,-1,2074.37824,
+livegraph,tc-cadets-e3,compact,1,22536062,0,0,0,0,0,0,0,0,-1,2074.64858,n/a: no separate compaction step
+livegraph,tc-cadets-e3,q1,1,22536062,1,1,0.245065689,0,0,0,310976,5061283283283802387,1,2091.13907,
+livegraph,tc-cadets-e3,q2,1,22536062,1000,1000,7.04723024,141.89972,1795.76874,27498.7221,12571155,4512028163337490221,1,2091.13907,
+livegraph,tc-cadets-e3,q3,1,22536062,1000,1000,8.69972587,114.946151,4329.80061,28112.0181,1682506,15541415357794589271,1,2091.13907,
+livegraph,tc-cadets-e3,q4,1,22536062,1000,1000,21.4920816,46.5287643,3766.05988,108170.76,21292086,13790888740093751363,1,2157.72774,
+livegraph,tc-cadets-e3,bfs,1,22536062,1,1,0.134018183,0,0,0,0,10737868510535678646,1,2119.30317,
+rocksdb,tc-cadets-e3,ingest,8,22536062,0,0,7.78729081,2893954.08,0,0,0,0,-1,655.839232,
+rocksdb,tc-cadets-e3,compact,8,22536062,0,0,0,0,0,0,0,0,-1,654.118912,n/a: Flush() inside ingest
+rocksdb,tc-cadets-e3,q1,8,22536062,1,1,0.0697844028,0,0,0,310976,5061283283283802387,1,30.507008,
+rocksdb,tc-cadets-e3,q2,8,22536062,1000,1000,29.1253705,34.3343272,26872.2773,48678.2432,12571155,4512028163337490221,1,48.61952,
+rocksdb,tc-cadets-e3,q3,8,22536062,1000,44,902.879429,0.0487329743,5142413.5,89576881,57514,2405395519982926503,1,49.700864,DNF; checked against the 44-query prefix
+rocksdb,tc-cadets-e3,q4,8,22536062,1000,633,901.862045,0.701881184,1401269.2,2671521.09,13264305,8819791360495455384,1,129.748992,DNF; checked against the 633-query prefix
+duckdb,tc-cadets-e3,ingest,8,22536062,0,0,7.34804058,3066948.49,0,0,0,0,-1,1708.87168,
+duckdb,tc-cadets-e3,compact,8,22536062,0,0,0,0,0,0,0,0,-1,1708.87168,n/a: index build inside ingest
+duckdb,tc-cadets-e3,q1,8,22536062,1,1,0.00757050514,0,0,0,310976,5061283283283802387,1,1708.87168,
+duckdb,tc-cadets-e3,q2,8,22536062,1000,1000,1.33146429,751.052812,1295.92419,2018.47553,12571155,4512028163337490221,1,1538.91226,
+duckdb,tc-cadets-e3,q3,8,22536062,1000,704,900.162156,0.782081312,273976.445,6119472.87,1177612,7621897250933953931,1,1504.0512,DNF; checked against the 704-query prefix
+duckdb,tc-cadets-e3,q4,8,22536062,1000,1000,4.84102654,206.567758,3622.17426,13938.8323,21292086,13790888740093751363,1,1532.7232,
+stinger,tc-cadets-e3,ingest,8,22536062,0,0,902.425388,24972.770380436148,0,0,0,0,-1,1107.6608,one edge per pair; unique_pairs=4020734; probe_ok=1
+stinger,tc-cadets-e3,compact,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+stinger,tc-cadets-e3,q1,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-cadets-e3,q2,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-cadets-e3,q3,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-cadets-e3,q4,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-cadets-e3,bfs,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+sortledton,tc-cadets-e3,ingest,8,22536062,0,0,7.75775862,2904970.765898875,0,0,0,0,-1,351.854592,one edge per pair; unique_pairs=4020734; probe_ok=1
+sortledton,tc-cadets-e3,compact,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+sortledton,tc-cadets-e3,q1,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-cadets-e3,q2,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-cadets-e3,q3,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-cadets-e3,q4,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-cadets-e3,bfs,8,22536062,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+livegraph,tc-theia-e3,ingest,1,97289833,0,0,12.2516375,7940965.71,0,0,0,0,-1,9157.40262,
+livegraph,tc-theia-e3,compact,1,97289833,0,0,0,0,0,0,0,0,-1,9157.40262,n/a: no separate compaction step
+livegraph,tc-theia-e3,q1,1,97289833,1,1,0.98636651,0,0,0,2016814,16951969486573769268,1,9229.312,
+livegraph,tc-theia-e3,q2,1,97289833,1000,1000,18.5481212,53.9138163,331.163406,84720.85,194505076,10491692184863895803,1,9227.45242,
+livegraph,tc-theia-e3,q3,1,97289833,1000,1000,285.992713,3.49659258,320061.684,526246.25,132276860,17171673674305138363,1,9228.23066,
+livegraph,tc-theia-e3,q4,1,97289833,1000,1000,96.8133264,10.3291565,1739.85958,535399.973,5954966,15444198202714801900,1,9390.60429,
+livegraph,tc-theia-e3,bfs,1,97289833,1,1,1.06561184,0,0,0,0,15102373075718417338,1,9251.89734,
+rocksdb,tc-theia-e3,ingest,8,97289833,0,0,32.3734498,3005235.27,0,0,0,0,-1,767.021056,
+rocksdb,tc-theia-e3,compact,8,97289833,0,0,0,0,0,0,0,0,-1,39.903232,n/a: Flush() inside ingest
+rocksdb,tc-theia-e3,q1,8,97289833,1,1,0.28672576,0,0,0,2016814,16951969486573769268,1,133.169152,
+rocksdb,tc-theia-e3,q2,8,97289833,1000,1000,395.518156,2.52832894,372039.437,688097.56,194505076,10491692184863895803,1,153.432064,
+rocksdb,tc-theia-e3,q3,8,97289833,1000,0,909.826904,0,0,0,0,0,-1,138.797056,DNF
+rocksdb,tc-theia-e3,q4,8,97289833,1000,148,902.116411,0.164058649,6063299.18,11354329.3,846690,7633207109879943469,1,287.88736,DNF; checked against the 148-query prefix
+duckdb,tc-theia-e3,ingest,8,97289833,0,0,65.6483743,1481983.89,0,0,0,0,-1,11275.9562,
+duckdb,tc-theia-e3,compact,8,97289833,0,0,0,0,0,0,0,0,-1,11275.9562,n/a: index build inside ingest
+duckdb,tc-theia-e3,q1,8,97289833,1,1,0.039999485,0,0,0,2016814,16951969486573769268,1,11366.8833,
+duckdb,tc-theia-e3,q2,8,97289833,1000,1000,3.36280894,297.370447,2332.44896,8692.5149,194505076,10491692184863895803,1,11360.4076,
+duckdb,tc-theia-e3,q3,8,97289833,1000,10,900.042555,0.0111105858,65275399.3,190993185,832619,3454914900852601132,1,11319.8408,DNF; checked against the 10-query prefix
+duckdb,tc-theia-e3,q4,8,97289833,1000,1000,8.92192626,112.083419,2076.2682,38253.8915,5954966,15444198202714801900,1,11309.5188,
+stinger,tc-theia-e3,ingest,8,97289833,0,0,244.937059,397203.40154815034,0,0,0,0,-1,4218.52774,one edge per pair; unique_pairs=10866373; probe_ok=1
+stinger,tc-theia-e3,compact,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+stinger,tc-theia-e3,q1,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-theia-e3,q2,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-theia-e3,q3,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-theia-e3,q4,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,tc-theia-e3,bfs,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+sortledton,tc-theia-e3,ingest,8,97289833,0,0,6.66024661,14607542.137242272,0,0,0,0,-1,1399.47622,one edge per pair; unique_pairs=10866373; probe_ok=1
+sortledton,tc-theia-e3,compact,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+sortledton,tc-theia-e3,q1,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-theia-e3,q2,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-theia-e3,q3,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-theia-e3,q4,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,tc-theia-e3,bfs,8,97289833,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+tgsr,lanl-auth,ingest,8,1051430459,0,0,14.5005465,72509712.8,0,0,0,0,-1,46532.2189,
+tgsr,lanl-auth,compact,8,1051430459,0,0,37.3179109,0,0,0,0,0,-1,46532.2516,
+tgsr,lanl-auth,q1,8,1051430459,1,1,0.0811495781,0,0,0,13305296,15358396018029434308,1,46798.2582,
+tgsr,lanl-auth,q2,8,1051430459,1000,1000,0.493495226,2026.36205,29.6831131,1884.69887,127287551,323397313050681,1,46542.9627,
+tgsr,lanl-auth,q3,8,1051430459,1000,1000,35.1587169,28.4424486,33545.0172,50912.3683,331996,864519020512,1,46560.2519,
+tgsr,lanl-auth,q4,8,1051430459,1000,1000,579.623523,1.72525779,9217.14306,3401438.55,96322,501897843358362,1,47418.0649,
+tgsr,lanl-auth,bfs,8,1051430459,1,1,1.91350961,0,0,0,0,5061645293651243791,1,46754.0664,
+livegraph,lanl-auth,ingest,1,1051430459,0,0,188.723202,5571283.49,0,0,0,0,-1,87889.834,
+livegraph,lanl-auth,compact,1,1051430459,0,0,0,0,0,0,0,0,-1,87889.834,n/a: no separate compaction step
+livegraph,lanl-auth,q1,1,1051430459,1,1,6.82328272,0,0,0,13305296,15358396018029434308,1,88085.1476,
+livegraph,lanl-auth,q2,1,1051430459,1000,1000,82.386605,12.1378955,2730.48878,367385.316,127287551,323397313050681,1,87846.5434,
+livegraph,lanl-auth,q3,1,1051430459,1000,354,899.965055,0.393348606,2590925.81,3055551.47,103762,255017771464,1,87847.4035,budget: projected 2539 s for 1000 queries; running 354; checked against the 354-query prefix
+livegraph,lanl-auth,q4,1,1051430459,1000,737,562.518662,1.31017875,16569.376,3643713.43,67760,344155467219696,1,88447.8239,budget: projected 1220 s for 1000 queries; running 737; checked against the 737-query prefix
+livegraph,lanl-auth,bfs,1,1051430459,1,1,4.71776199,0,0,0,0,5061645293651243791,1,87783.7844,
+rocksdb,lanl-auth,ingest,8,1051430459,0,0,544.080628,1932490.16,0,0,0,0,-1,761.524224,
+rocksdb,lanl-auth,compact,8,1051430459,0,0,0,0,0,0,0,0,-1,761.524224,n/a: Flush() inside ingest
+rocksdb,lanl-auth,q1,8,1051430459,1,1,1.89775515,0,0,0,13305296,15358396018029434308,1,489.803776,
+rocksdb,lanl-auth,q2,8,1051430459,1000,731,900.247378,0.811999033,1215657.95,1691266.42,94344940,238574035873420,1,252.551168,DNF; checked against the 731-query prefix
+rocksdb,lanl-auth,q3,8,1051430459,1000,4,915.78457,0.00436783948,183830758,490083211,1370,4593608224,1,252.551168,DNF; checked against the 4-query prefix
+rocksdb,lanl-auth,q4,8,1051430459,1000,15,903.462758,0.0166027873,62396117.2,116860904,817,2684681333418,1,812.91264,DNF; checked against the 15-query prefix
+duckdb,lanl-auth,ingest,8,1051430459,0,0,472.520104,2225154.97,0,0,0,0,-1,51163.8938,
+duckdb,lanl-auth,compact,8,1051430459,0,0,0,0,0,0,0,0,-1,51163.8938,n/a: index build inside ingest
+duckdb,lanl-auth,q1,8,1051430459,1,1,0.308045864,0,0,0,13305296,15358396018029434308,1,51487.4286,
+duckdb,lanl-auth,q2,8,1051430459,1000,1000,11.0426137,90.5582703,9584.54609,19903.3141,127287551,323397313050681,1,48206.9504,
+duckdb,lanl-auth,q3,8,1051430459,1000,404,900.98011,0.448400576,1183695.44,6414304.83,121880,293029852928,1,48202.6578,DNF; checked against the 404-query prefix
+duckdb,lanl-auth,q4,8,1051430459,1000,1000,209.63682,4.77015441,179097.295,462792.611,96322,501897843358362,1,48241.5084,
+stinger,lanl-auth,ingest,8,1051430459,0,0,739.853114,1421134.0590505374,0,0,0,0,-1,35.663872,one edge per pair; unique_pairs=419744; probe_ok=1
+stinger,lanl-auth,compact,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+stinger,lanl-auth,q1,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,lanl-auth,q2,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,lanl-auth,q3,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,lanl-auth,q4,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+stinger,lanl-auth,bfs,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+sortledton,lanl-auth,ingest,8,1051430459,0,0,0.143502474,7326915207.050716,0,0,0,0,-1,22.03648,one edge per pair; unique_pairs=419744; probe_ok=1
+sortledton,lanl-auth,compact,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: no separate compaction step
+sortledton,lanl-auth,q1,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,lanl-auth,q2,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,lanl-auth,q3,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,lanl-auth,q4,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: one edge per src-dst pair; the event multiset cannot round-trip
+sortledton,lanl-auth,bfs,8,1051430459,0,0,0,0,0,0,0,0,-1,0,n/a: harness measures ingest only
+tgsr,tc-theia-e3,ingest,8,97289833,0,0,2.92190623,33296699.2,0,0,0,0,-1,5094.77274,
+tgsr,tc-theia-e3,compact,8,97289833,0,0,3.67833948,0,0,0,0,0,-1,5101.84653,
+tgsr,tc-theia-e3,q1,8,97289833,1,1,0.0123150349,0,0,0,2016814,16951969486573769268,1,5142.1225,
+tgsr,tc-theia-e3,q2,8,97289833,1000,1000,0.813083649,1229.88576,77.1284103,4517.74597,194505076,10491692184863895803,1,5166.84595,
+tgsr,tc-theia-e3,q3,8,97289833,1000,1000,47.4393065,21.0795662,42801.2609,101162.446,132276860,17171673674305138363,1,5166.88282,
+tgsr,tc-theia-e3,q4,8,97289833,1000,1000,75.1690307,13.303351,1395.10632,415112.531,5954966,15444198202714801900,1,5329.48582,
+tgsr,tc-theia-e3,bfs,8,97289833,1,1,0.432435513,0,0,0,0,15102373075718417338,1,5206.04058,

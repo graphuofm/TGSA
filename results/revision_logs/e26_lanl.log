@@ -1,0 +1,6 @@
+[e26] lanl-auth: preload=525715229 stream=525715230
+[e26] tgsr       W=8 R=4  stream   7.44s =  70.69 Meps  queries=    1138 (      153 q/s)  mismatches=0
+[e26] lg_sharded W=8 R=4  stream  48.06s =  10.94 Meps  queries=    2679 (       56 q/s)  mismatches=0 aborts=0
+[e26] graphone   W=8 R=4  stream 33.3516s = 15.7628 Meps  queries=8440 (253.061 q/s)  mismatches=0  archive_catchup=0.0015521s
+
+[e26] all runs complete, CSV at /home/jding/Barry/results/e26_concurrent/e26.csv

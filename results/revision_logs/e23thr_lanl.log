@@ -1,0 +1,40 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=1            63685.8 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=8            63707.3 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=16           65751.7 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=32           65727.6 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=64           65734.3 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=128          65696.8 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=256          65716.4 ms  delivered=25178563990
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f323224d000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e23-thresh] bs_min=1000000000 2260136.7 ms  delivered=25178563990

@@ -1,0 +1,25 @@
+system,dataset,phase,threads,events,samples_total,samples_done,seconds,rate,median_us,p95_us,count,checksum,checksum_ok,rss_MB,note
+graphone,wiki-talk-temporal,ingest,8,7833140,0,0,0.235925,33201822.613,0,0,0,0,-1,0,Batch Update Time (edge log absorbed)
+graphone,wiki-talk-temporal,compact,8,7833140,0,0,0.288653,0,0,0,0,0,-1,0,"Make Graph Time (ingest+archive, same start as ingest)"
+graphone,wiki-talk-temporal,q2,8,7833140,1000,1000,0.031795,31451.981,3.18163,247.461,1441186,1700791533380746,1,0,archived adjacency
+graphone,wiki-talk-temporal,q1,8,7833140,1,1,0.007639,130.902,7639.28,7639.28,283276,3594989818021826228,1,0,archived adjacency
+graphone,wiki-talk-temporal,q3,8,7833140,1000,1000,17.6155,56.768,19327.7,31732.1,26062800,30619538371047394,1,0,archived adjacency
+graphone,wiki-talk-temporal,q4,8,7833140,1000,1000,0.679481,1471.711,66.4931,4128.8,5001951,2172262231193549779,1,0,archived adjacency
+graphone,tc-cadets-e3,ingest,8,22536062,0,0,0.716526,31451841.245,0,0,0,0,-1,0,Batch Update Time (edge log absorbed)
+graphone,tc-cadets-e3,compact,8,22536062,0,0,0.71734,0,0,0,0,0,-1,0,"Make Graph Time (ingest+archive, same start as ingest)"
+graphone,tc-cadets-e3,q2,8,22536062,1000,1000,1.30951,763.644,349.144,5137.46,12571155,4512028163337490221,1,0,archived adjacency
+graphone,tc-cadets-e3,q1,8,22536062,1,1,0.018894,52.927,18893.9,18893.9,310976,5061283283283802387,1,0,archived adjacency
+graphone,tc-cadets-e3,q3,8,22536062,1000,1000,2.01185,497.055,1475.69,5612.66,1682506,15541415357794589271,1,0,archived adjacency
+graphone,tc-cadets-e3,q4,8,22536062,1000,1000,7.47326,133.81,3406.17,28978.7,21292086,13790888740093751363,1,0,archived adjacency
+graphone,tc-theia-e3,ingest,8,97289833,0,0,2.79418,34818742.171,0,0,0,0,-1,0,Batch Update Time (edge log absorbed)
+graphone,tc-theia-e3,compact,8,97289833,0,0,2.79602,0,0,0,0,0,-1,0,"Make Graph Time (ingest+archive, same start as ingest)"
+graphone,tc-theia-e3,q2,8,97289833,1000,1000,3.21579,310.966,52.1945,15187.2,194505076,10491692184863895803,1,0,archived adjacency
+graphone,tc-theia-e3,q1,8,97289833,1,1,0.041205,24.269,41204.7,41204.7,2016814,16951969486573769268,1,0,archived adjacency
+graphone,tc-theia-e3,q3,8,97289833,1000,1000,64.6865,15.459,68223.5,124249.0,132276860,17171673674305138363,1,0,archived adjacency
+graphone,tc-theia-e3,q4,8,97289833,1000,1000,12.3006,81.297,505.261,63428.0,5954966,15444198202714801900,1,0,archived adjacency
+graphone,lanl-auth,ingest,8,1051430459,0,0,25.6623,40971793.604,0,0,0,0,-1,0,Batch Update Time (edge log absorbed)
+graphone,lanl-auth,compact,8,1051430459,0,0,25.6634,0,0,0,0,0,-1,0,"Make Graph Time (ingest+archive, same start as ingest)"
+graphone,lanl-auth,q2,8,1051430459,1000,1000,16.0003,62.499,804.766,67986.7,127287551,323397313050681,1,0,archived adjacency
+graphone,lanl-auth,q1,8,1051430459,1,1,1.46412,0.683,1464120.0,1464120.0,13305296,15358396018029434308,1,0,archived adjacency
+graphone,lanl-auth,q3,8,1051430459,1000,1000,561.626,1.781,547600.0,752740.0,331996,864519020512,1,0,archived adjacency
+graphone,lanl-auth,q4,8,1051430459,1000,1000,53.1422,18.817,1973.51,230052.0,96322,501897843358362,1,0,archived adjacency

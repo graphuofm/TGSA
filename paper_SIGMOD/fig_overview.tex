@@ -1,73 +1,70 @@
-% Engine component diagram: the subsystems and the paths between them,
-% each box carrying the section that specifies it. The data structures
-% themselves are Figure 2.
+% Figure 2. Engine components and the paths between them, each box
+% carrying the section that specifies it. The data structures themselves
+% are Figure 3. Smallest font: \scriptsize (7pt).
 \begin{figure}[t]
 \centering
 \begin{tikzpicture}[
-  font=\scriptsize,
-  comp/.style={draw=black!65, fill=white, rounded corners=1pt,
-               minimum width=15mm, minimum height=6.2mm, inner sep=1.5pt,
-               align=center, font=\scriptsize},
-  grp/.style={draw=black!55, fill=orange!6, rounded corners=1.5pt,
+  font=\footnotesize,
+  comp/.style={draw=sysc, fill=sysc!8, rounded corners=1pt,
+               minimum width=17mm, minimum height=7mm, inner sep=1.5pt,
+               align=center, font=\footnotesize},
+  grp/.style={draw=sysc!70, fill=sysc!5, rounded corners=1.5pt,
               inner sep=3pt},
-  io/.style={draw=black!65, fill=black!4, minimum height=6mm,
-             inner sep=2.5pt, align=center, font=\scriptsize},
-  fl/.style={-{Stealth[length=1.5mm]}, semithick},
+  io/.style={draw=black!65, fill=white, minimum height=6.5mm,
+             inner sep=2.5pt, align=center, font=\footnotesize},
+  sub/.style={font=\scriptsize, text=black!70},
+  fl/.style={-{Stealth[length=1.6mm]}, semithick},
 ]
 % ---------------- inputs ----------------
-\node[io] (stream) at (0.95, 3.45) {event stream};
-\node[io, draw=qwin, text=qwin] (query) at (5.25, 3.45) {temporal queries};
+\node[io] (stream) at (1.75, 4.25) {event stream};
+\node[io, draw=qwin, text=qwin] (query) at (6.3, 4.25)
+  {temporal queries Q1--Q4};
 
 % ---------------- ingest path ----------------
-\node[comp, draw=wins, text width=27mm] (ingest) at (0.95, 2.45)
-  {\textbf{Ingest path} (\S\ref{sec:storage-ingest})\\[-1pt]
-   \tiny shift, run claim, publish};
+\node[comp, draw=wins, text width=31mm, minimum height=9mm] (ingest) at (1.75, 3.05)
+  {\textbf{Ingest path} (\S\ref{sec:storage-ingest})\\[0pt]
+   {\scriptsize shift, claim run, publish}};
 \draw[fl, wins] (stream) -- (ingest);
 
 % ---------------- query engine ----------------
-\node[grp, minimum width=31mm, minimum height=16mm] (qe) at (5.25, 1.85) {};
-\node[font=\scriptsize\bfseries, anchor=north] at (5.25, 2.72)
-  {Query engine (\S\ref{sec:query})};
-\node[comp, minimum width=13mm] (qw) at (4.45, 2.1) {window};
-\node[comp, minimum width=13mm] (qx) at (6.05, 2.1) {expansion};
-\node[comp, minimum width=13mm] (qt) at (4.45, 1.42) {traversal};
-\node[comp, minimum width=13mm] (qa) at (6.05, 1.42) {as-of};
+\node[grp, minimum width=40mm, minimum height=21mm] (qe) at (6.3, 2.45) {};
+\node[anchor=north] at (6.3, 3.45) {\textbf{Query engine} (\S\ref{sec:query})};
+\node[comp, minimum width=17mm] (qw) at (5.35, 2.55) {Q1 window\\[-1pt]{\scriptsize\S\ref{sec:query-window}}};
+\node[comp, minimum width=17mm] (qx) at (7.25, 2.55) {Q2 neighbors\\[-1pt]{\scriptsize\S\ref{sec:query-expand}}};
+\node[comp, minimum width=17mm] (qt) at (5.35, 1.72) {Q3 traversal\\[-1pt]{\scriptsize\S\ref{sec:query-traverse}}};
+\node[comp, minimum width=17mm] (qa) at (7.25, 1.72) {Q4 as-of\\[-1pt]{\scriptsize\S\ref{sec:query-expand}}};
 \draw[fl, qwin] (query) -- (qe.north);
 
 % ---------------- storage engine ----------------
-\node[grp, minimum width=70mm, minimum height=14mm] (se) at (3.1, 0.25) {};
-\node[font=\scriptsize\bfseries, anchor=north] at (3.1, 0.92)
-  {Storage engine (\S\ref{sec:storage})};
-\node[comp, minimum width=14mm] (tl) at (0.78, 0.0)
-  {Timeline\\[-2pt]\tiny \S\ref{sec:storage-tl}};
-\node[comp, minimum width=14mm] (ar) at (2.32, 0.0)
-  {Arena\\[-2pt]\tiny \S\ref{sec:storage-tl}};
-\node[comp, minimum width=14mm] (vi) at (3.88, 0.0)
-  {Vertex index\\[-2pt]\tiny \S\ref{sec:storage-vi}};
-\node[comp, minimum width=14mm] (wal) at (5.42, 0.0)
-  {Log\\[-2pt]\tiny \S\ref{sec:storage-ret}};
+\node[grp, minimum width=83mm, minimum height=16mm] (se) at (4.15, 0.25) {};
+\node[anchor=north] at (4.15, 1.0) {\textbf{Storage engine} (\S\ref{sec:storage})};
+\node[comp, minimum width=18mm] (tl) at (1.05, 0.05)
+  {timeline\\[-1pt]{\scriptsize\S\ref{sec:storage-tl}}};
+\node[comp, minimum width=18mm] (ar) at (3.1, 0.05)
+  {arena\\[-1pt]{\scriptsize\S\ref{sec:storage-tl}}};
+\node[comp, minimum width=18mm] (vi) at (5.2, 0.05)
+  {vertex index\\[-1pt]{\scriptsize\S\ref{sec:storage-vi}}};
+\node[comp, minimum width=18mm] (wal) at (7.25, 0.05)
+  {log\\[-1pt]{\scriptsize\S\ref{sec:storage-ret}}};
 \draw[fl, wins] (ingest.south) -- (ingest.south |- se.north);
 \draw[fl, qnbr] (qe.south) -- (qe.south |- se.north);
 
 % ---------------- lifecycle operators ----------------
-\node[comp, draw=black!55, text width=24mm] (ret) at (1.0, -1.1)
-  {\textbf{Retention} (\S\ref{sec:storage-ret})\\[-1pt]
-   \tiny address-prefix release};
-\node[comp, draw=black!55, text width=24mm] (rec) at (5.1, -1.1)
-  {\textbf{Recovery} (\S\ref{sec:storage-ret})\\[-1pt]
-   \tiny replay through ingest};
+\node[comp, draw=black!55, text width=30mm, minimum height=9mm] (ret) at (1.75, -1.25)
+  {\textbf{Retention} (\S\ref{sec:storage-ret})\\[0pt]
+   {\scriptsize release an address prefix}};
+\node[comp, draw=black!55, text width=30mm, minimum height=9mm] (rec) at (6.55, -1.25)
+  {\textbf{Recovery} (\S\ref{sec:storage-ret})\\[0pt]
+   {\scriptsize replay the log through ingest}};
 \draw[fl] (ret.north) -- (ret.north |- se.south);
 \draw[fl] (rec.north) -- (rec.north |- se.south);
 
 % the abstraction underneath
-\node[font=\tiny, text=black!60, anchor=north] at (3.1, -1.72)
-  {every box above is addressed by \cref{eq:mapping}: the timestamp is
-   the location (\S\ref{sec:tmap-principle})};
+\node[sub, anchor=north, align=center] at (4.15, -1.95)
+  {every structure above is placed by \cref{eq:mapping}: the timestamp is the address (\S\ref{sec:tmap})};
 \end{tikzpicture}
-\caption{Engine components and the paths between them. Ingestion
-(\textcolor{wins}{orange}) writes the timeline, arena and vertex
-index; queries (\textcolor{qnbr}{green}) read them; retention and
-recovery act on the same structures without a separate index to
-maintain. Figure~\ref{fig:arch} opens these boxes.}
+\caption{Engine components. Ingestion (\textcolor{wins}{vermillion})
+writes, queries (\textcolor{qnbr}{green}) read; retention and
+recovery act on the same four structures.}
 \label{fig:overview}
 \end{figure}

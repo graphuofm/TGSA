@@ -1,169 +1,163 @@
-% TVA-Fig-3-grade architecture figure: real structures with their real
+% Figure 3. Architecture on a live stream, with the formats strip merged in (was Figure 4): real structures with their real
 % names, cell-level detail with example data, and the two example queries
-% drawn as numbered colored steps ON the structures they touch.
+% drawn as numbered colored steps ON the structures they touch. Two panels
+% stacked so that every label is at least \scriptsize (7pt).
 \begin{figure*}[t]
 \centering
 \tikzset{
-  wstep/.style={circle, fill=wins, text=white, inner sep=0.16mm,
-                font=\tiny\bfseries},
-  bstep/.style={circle, fill=qwin, text=white, inner sep=0.16mm,
-                font=\tiny\bfseries},
-  gstep/.style={circle, fill=qnbr, text=white, inner sep=0.16mm,
-                font=\tiny\bfseries},
+  wstep/.style={circle, fill=wins, text=white, inner sep=0.25mm, font=\scriptsize\bfseries},
+  bstep/.style={circle, fill=qwin, text=white, inner sep=0.25mm, font=\scriptsize\bfseries},
+  gstep/.style={circle, fill=qnbr, text=white, inner sep=0.25mm, font=\scriptsize\bfseries},
 }
-\newcommand{\stepc}[2]{\tikz[baseline=-0.62ex]\node[#1]{#2};}
+\newcommand{\stepc}[2]{\tikz[baseline=-0.65ex]\node[#1]{#2};}
 \begin{tikzpicture}[
   font=\footnotesize,
-  panel/.style={draw=black!60, fill=orange!6, rounded corners=1pt,
-                inner sep=3pt},
-  cell/.style={draw=black!55, inner sep=0pt, minimum height=4.4mm,
-               font=\tiny},
-  hdrc/.style={cell, fill=blue!12},
-  edgec/.style={cell, fill=green!11, minimum width=8.4mm},
-  refc/.style={cell, fill=yellow!22, minimum width=9.6mm},
-  slotc/.style={cell, minimum width=5.4mm},
-  lab/.style={font=\scriptsize},
-  tt/.style={font=\tiny\ttfamily},
-  flow/.style={-{Stealth[length=1.5mm]}, semithick},
+  panel/.style={draw=sysc!70, fill=sysc!5, rounded corners=1pt, inner sep=3pt},
+  cell/.style={draw=black!55, inner sep=0pt, minimum height=5.2mm, font=\scriptsize},
+  hdrc/.style={cell, fill=sysc!30},
+  edgec/.style={cell, fill=sysc!12, minimum width=11.5mm},
+  refc/.style={cell, fill=white, minimum width=14mm},
+  slotc/.style={cell, minimum width=7mm},
+  note/.style={font=\scriptsize, text=black!65},
+  flow/.style={-{Stealth[length=1.6mm]}, semithick},
 ]
 
-% ================= input strip: the stream and the two queries =========
-\node[draw=black!60, inner sep=2.5pt, align=left] (stream) at (1.55, 4.62)
-  {\scriptsize event stream, never ends\\[-1pt]
-   \tiny $e=(\mathit{src},\mathit{dst},t,w)$, immutable};
-\node[draw=qwin, thick, inner sep=2.5pt, align=left, text=qwin]
-  (q1) at (6.15, 4.62)
-  {\scriptsize \textbf{Q1} ``all events in $[t_1,t_2]$''\\[-1pt]
-   \tiny time-keyed: touches only the timeline};
-\node[draw=qnbr, thick, inner sep=2.5pt, align=left, text=qnbr]
-  (q2) at (13.65, 4.62)
-  {\scriptsize \textbf{Q2} ``what did $v_3$ touch in $[t_1,t_2]$''\\[-1pt]
-   \tiny entity-keyed: index first, arena only per hit};
-
 % ======================= Panel A: time-keyed storage ====================
-\node[panel, minimum width=112mm, minimum height=37mm,
-      anchor=north west] (pA) at (-0.35, 3.95) {};
-\node[lab, anchor=north west] at (1.05, 3.9)
-  {\textbf{Time-keyed storage} (\S4.1--\S4.2):\;
-   \texttt{Timeline} = \tmap$\langle$block ptr$\rangle$ + \texttt{Arena}};
-\node[font=\tiny, text=black!60, anchor=west] at (7.6, 3.42)
-  {one anonymous reservation};
+\node[panel, minimum width=176mm, minimum height=44mm, anchor=north west] (pA) at (-0.25, 9.6) {};
+\node[anchor=north west] at (-0.1, 9.65)
+  {\textbf{Time-keyed storage} (\S\ref{sec:storage-tl}, \S\ref{sec:storage-ingest}):\;
+   \texttt{Timeline} = \tmap$\langle$block ptr$\rangle$ and \texttt{Arena} of 20\,B edges};
 
-% ---- insert path, step 1: the address computation
-\node[wins, font=\scriptsize, anchor=west] (eq) at (0.0, 3.42)
-  {\stepc{wstep}{1}\;
-   $A(T)=A_{\mathrm{base}}+((T-T_0)\!\gg\!S)\times P$};
-\draw[flow, wins] (stream.south) to[bend right=14] (0.35, 3.52);
+% stream
+\node[draw=black!60, inner sep=3pt, align=left, font=\scriptsize] (stream) at (1.55, 8.35)
+  {event stream, never ends\\[-1pt] $e=(\mathit{src},\mathit{dst},t,w)$, immutable};
+\node[note, anchor=west, align=left] at (-0.05, 7.45)
+  {one anonymous reservation;\\[-2pt] arena: 20\,B packed edges,\\[-2pt] never sorted on insert};
+\node[wins, font=\scriptsize, anchor=west] at (-0.05, 6.5)
+  {\stepc{wstep}{2}\;one \texttt{fetch\_add} claims the run};
+\node[wins, font=\scriptsize, anchor=west, align=left] at (-0.05, 5.95)
+  {\stepc{wstep}{3}\;payload first, $t$ last\\[-2pt] \hphantom{\stepc{wstep}{3}\;}(release, T5)};
 
-% ---- timeline slot array with window labels
-\foreach \i/\f/\t in {0/black!25/, 1/black!25/, 2/black!25/,
-                      3/black!10/, 4/white/0, 5/wins!40/,
-                      6/black!10/, 7/white/0, 8/black!10/,
-                      9/black!10/, 10/white/0, 11/black!10/}{
-  \node[slotc, fill=\f] (s\i) at (0.55 + \i*0.56, 2.45) {\t};
+% insert step 1: the address computation
+\node[wins, font=\scriptsize, anchor=west] (eq) at (3.55, 8.75)
+  {\stepc{wstep}{1}\;$A(T)=A_{\mathrm{base}}+((T-T_0)\gg S)\times P$};
+\draw[flow, wins] (stream.east) -- (3.6, 8.5);
+
+% timeline slot array
+\foreach \i/\f/\t in {0/black!25/, 1/black!25/, 2/black!25/, 3/black!10/, 4/white/0,
+                      5/wins!40/, 6/black!10/, 7/white/0, 8/black!10/, 9/black!10/,
+                      10/white/0, 11/black!10/}{
+  \node[slotc, fill=\f] (s\i) at (4.1 + \i*0.72, 7.75) {\t};
 }
-\node[tt, anchor=west] at (7.35, 2.45)
-  {W$_{0}..$W$_{11}$, $2^{S}$ ticks each};
+\node[font=\scriptsize\ttfamily, anchor=west] at (12.55, 7.95) {W$_0$ .. W$_{11}$, $2^{S}$ ticks each};
+\node[note, anchor=west] at (12.55, 7.55) {0 = never faulted, costs nothing (T2)};
 \draw[black!50] (s0.south west) -- (s2.south east)
-  node[midway, below=0.4mm, font=\tiny, black!60, align=center]
-  {evicted: \texttt{madvise}\\[-2pt] prefix (T3)};
-\node[font=\tiny, text=black!60, anchor=west] at (7.35, 2.12)
-  {0 = never faulted, costs nothing (T2)};
-\draw[flow, wins] (eq.south -| s5) -- (s5.north);
+  node[midway, below=0.5mm, note, align=center] {evicted prefix: \texttt{madvise} (T3)};
+\draw[flow, wins] (5.35, 8.55) -- (s5.north);
 
-% ---- arena blocks: header + example edge cells
-% block under s3 (published, sorted history)
-\node[hdrc, minimum width=9mm]  (b1h) at (0.95, 1.05) {\shortstack{cnt 4\\flags}};
+% arena blocks
+\node[hdrc, minimum width=11mm] (b1h) at (4.3, 6.35) {\shortstack{cnt 4\\flags}};
 \node[edgec, right=0mm of b1h] (b1e0) {$(v_3,t_{17})$};
 \node[edgec, right=0mm of b1e0] (b1e1) {$(v_9,t_{18})$};
 \node[edgec, right=0mm of b1e1] (b1e2) {$(v_3,t_{21})$};
-% block under s5 (hot: being appended)
-\node[hdrc, minimum width=9mm]  (b2h) at (4.35, 1.05) {\shortstack{cnt 4\\flags}};
+\node[hdrc, minimum width=11mm] (b2h) at (9.0, 6.35) {\shortstack{cnt 4\\flags}};
 \node[edgec, right=0mm of b2h] (b2e0) {$(v_1,t_{40})$};
 \node[edgec, right=0mm of b2e0] (b2e1) {$(v_3,t_{41})$};
 \node[edgec, fill=wins!25, right=0mm of b2e1] (b2e2) {$(v_8,t_{42})$};
-% overflow block
-\node[hdrc, minimum width=9mm] (b3h) at (7.95, 1.05) {\shortstack{cnt 4\\flags}};
+\node[hdrc, minimum width=11mm] (b3h) at (14.25, 6.35) {\shortstack{cnt 4\\flags}};
 \node[edgec, right=0mm of b3h] (b3e0) {$(v_3,t_{44})$};
-\node[cell, fill=green!11, minimum width=6mm, right=0mm of b3e0] (b3e1) {$t{=}0$};
+\node[cell, fill=sysc!12, minimum width=8mm, right=0mm of b3e0] (b3e1) {$t{=}0$};
 \draw[flow, black!60] (s3.south) -- (b1e1.north);
 \draw[flow, black!60] (s5.south) -- (b2e0.north);
 \draw[flow, black!60, dashed] (b2e2.east) -- (b3h.west)
-  node[midway, above=0.3mm, font=\tiny, black!60] {CAS chain};
-\node[wins, font=\tiny, anchor=north west] at (5.0, 0.80)
-  {\stepc{wstep}{2}\, one \texttt{fetch\_add} claims the run};
-\node[wins, font=\tiny, anchor=north west] at (5.0, 0.52)
-  {\stepc{wstep}{3}\, payload first, $t$ last (release, T5)};
-\node[font=\tiny, text=black!60, anchor=north west, align=left]
-  at (-0.2, 0.62) {20\,B packed edges,\\[-2pt] never sorted on insert};
+  node[midway, below=0.6mm, note] {CAS chain};
 
-% ---- Q1 steps drawn on the timeline
-\draw[qwin, very thick, {Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
-  ([yshift=1.1mm]s6.north west) -- ([yshift=1.1mm]s9.north east);
-\node[qwin, font=\tiny, anchor=west] at (4.62, 2.98)
-  {\stepc{bstep}{1}\,map $t_1,t_2$\;\;
-   \stepc{bstep}{2}\,walk W$_6..$W$_9$};
-\draw[flow, qwin] (q1.south) to[bend left=6] (6.35, 3.12);
-\node[qwin, font=\tiny, anchor=west, align=left] at (8.55, 1.78)
-  {\stepc{bstep}{3}\,interior blocks\\[-2pt]
-   \hphantom{\stepc{bstep}{3}\,}copied comparison-free};
-\draw[flow, qwin] (s8.south) to[bend left=8] (b3e0.north);
 
-% ======================= Panel B: entity index ==========================
-\node[panel, minimum width=63mm, minimum height=38mm,
-      anchor=north west] (pB) at (11.15, 3.95) {};
-\node[lab, anchor=north west] at (11.3, 3.9)
-  {\textbf{Vertex index} (\S4.3): append chains, sorted only by
-   \texttt{compact()}};
+% Q1 on the timeline
+\node[draw=qwin, thick, inner sep=3pt, align=left, text=qwin, font=\scriptsize] (q1) at (15.55, 8.75)
+  {\textbf{Q1} ``all events in $[t_1,t_2]$''\\[-1pt] touches only the timeline};
+\draw[qwin, very thick, {Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+  ([yshift=1.2mm]s6.north west) -- ([yshift=1.2mm]s9.north east);
+\node[qwin, font=\scriptsize, anchor=west] (q1s) at (9.3, 8.75)
+  {\stepc{bstep}{1}\;map $t_1,t_2$\;\;\stepc{bstep}{2}\;walk W$_6$ .. W$_9$};
+\draw[flow, qwin] (q1.west) -- (q1s.east);
+\node[qwin, font=\scriptsize, anchor=west] at (12.3, 5.55)
+  {\stepc{bstep}{3}\;interior blocks copied comparison-free};
+\draw[flow, qwin] (s8.south) to[bend left=10] (b3e0.north);
+
+% ======================= Panel B: vertex index ==========================
+\node[panel, minimum width=176mm, minimum height=43mm, anchor=north west] (pB) at (-0.25, 4.85) {};
+\node[anchor=north west] at (-0.1, 4.7)
+  {\textbf{Vertex index} (\S\ref{sec:storage-vi}): per-vertex append chains of 24\,B references,
+   sorted only by \texttt{compact()}};
 
 % head array
-\foreach \i/\f in {1/white, 2/white, 3/qnbr!25, 4/white}{
-  \node[cell, fill=\f, minimum width=6.2mm]
-    (h\i) at (11.9 + \i*0.62 - 0.62, 3.15) {$v_{\i}$};
+\foreach \i/\f in {1/sysc!12, 2/sysc!12, 3/qnbr!30, 4/sysc!12}{
+  \node[cell, fill=\f, minimum width=8mm] (h\i) at (0.45 + \i*0.8, 3.75) {$v_{\i}$};
 }
-\node[tt, anchor=west] at (14.5, 3.15) {heads, one per vertex};
+\node[font=\scriptsize\ttfamily, anchor=west] at (4.05, 3.35) {heads, one per vertex};
 
 % bucket 1: sorted prefix
-\node[hdrc, minimum width=10mm] (k1) at (12.25, 2.28)
-  {\shortstack{cnt 3\\\textbf{sorted 1}}};
+\node[hdrc, minimum width=13mm] (k1) at (1.1, 2.75) {\shortstack{cnt 3\\\textbf{sorted 1}}};
 \node[refc, right=0mm of k1] (r1) {$v_9\,|\,t_{18}$};
 \node[refc, right=0mm of r1] (r2) {$v_3\,|\,t_{21}$};
 \node[refc, right=0mm of r2] (r3) {$v_1\,|\,t_{40}$};
 % bucket 2: arrival-order tail
-\node[hdrc, minimum width=10mm] (k2) at (12.25, 1.28)
-  {\shortstack{cnt 2\\\textbf{sorted 0}}};
+\node[hdrc, minimum width=13mm] (k2) at (1.1, 1.6) {\shortstack{cnt 2\\\textbf{sorted 0}}};
 \node[refc, right=0mm of k2] (r4) {$v_3\,|\,t_{44}$};
-\node[refc, fill=yellow!10, right=0mm of r4] (r5) {appending$\dots$};
-\draw[flow, black!60] (h3.south) to[bend right=14] (k1.north);
+\node[refc, fill=sysc!4, right=0mm of r4] (r5) {appending$\dots$};
+\draw[flow, black!60] (h3.south) to[bend right=12] (k1.north);
 \draw[flow, black!60] (k1.south) to[bend right=25] (k2.west);
-\node[tt, anchor=west] at (11.55, 0.62)
-  {24\,B \texttt{EdgeRef}: \{dst, blk, off, \textbf{ts inline}\}
-   (Fig.~\ref{fig:format})};
-\node[font=\tiny, text=black!60, anchor=west] at (11.55, 0.28)
-  {appends clear \emph{sorted} BEFORE bumping \emph{cnt} (Thm 4.4)};
+\node[font=\scriptsize\ttfamily, anchor=west] at (-0.05, 0.9)
+  {24\,B EdgeRef = \{dst, block, offset, \textbf{ts inline}\} (formats below)};
+\node[note, anchor=west] at (-0.05, 0.5)
+  {an append clears \emph{sorted} \textbf{before} it bumps \emph{cnt} (\cref{thm:conc})};
 
-% ---- Q2 steps
-\draw[flow, qnbr] (q2.south) to[bend left=10] (h3.north);
-\node[qnbr, font=\tiny, anchor=west] at (15.05, 2.78)
-  {\stepc{gstep}{1}\,head of $v_3$};
-\draw[qnbr, very thick, {Stealth[length=1.4mm]}-{Stealth[length=1.4mm]}]
-  ([yshift=-1.1mm]k1.south east) -- ([yshift=-1.1mm]r3.south east);
-\node[qnbr, font=\tiny, anchor=west, align=left] at (16.15, 2.28)
-  {\stepc{gstep}{2}\,binary-\\[-2pt]search on\\[-2pt]inline ts};
-\node[qnbr, font=\tiny, anchor=west, align=left] at (16.15, 1.28)
-  {\stepc{gstep}{3}\,arena\\[-2pt]per hit};
-\draw[flow, qnbr, very thick] (r4.south west)
-  .. controls (10.6,-0.42) and (6.0,-0.42) .. (b1e2.south);
+% Q2 on the index
+\node[draw=qnbr, thick, inner sep=3pt, align=left, text=qnbr, font=\scriptsize] (q2) at (14.9, 3.75)
+  {\textbf{Q2} ``what did $v_3$ touch in $[t_1,t_2]$''\\[-1pt] index first, arena only per hit};
+\node[qnbr, font=\scriptsize, anchor=west] at (7.6, 3.75) {\stepc{gstep}{1}\;head of $v_3$};
+\draw[flow, qnbr] (q2.west) -- (9.75, 3.75);
+\draw[flow, qnbr] (7.55, 3.75) -- (h3.east);
+\draw[qnbr, very thick, {Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}]
+  ([yshift=-1.2mm]k1.south east) -- ([yshift=-1.2mm]r3.south east);
+\node[qnbr, font=\scriptsize, anchor=west] at (7.6, 2.75)
+  {\stepc{gstep}{2}\;binary-search the sorted prefix on the inline timestamps};
+\node[qnbr, font=\scriptsize, anchor=west] at (7.6, 1.6)
+  {\stepc{gstep}{3}\;dereference the arena only for references that pass the window test};
+\draw[flow, qnbr, very thick] (r4.north) .. controls (3.6, 4.9) and (7.0, 4.9) .. (b1e2.south);
+
+% ======================= Panel C: formats ===============================
+\node[panel, minimum width=176mm, minimum height=26mm, anchor=north west] (pC) at (-0.25, 0.3) {};
+\node[anchor=north west] at (-0.1, 0.25)
+  {\textbf{Formats}: cell widths proportional to bytes; the release-published timestamp (\textcolor{wins}{vermillion}) is the only synchronization either read path needs};
+% Edge, 20 B at 3.0 mm/B
+\node[font=\scriptsize\bfseries, anchor=west] at (-0.1, -0.60) {\texttt{Edge} 20\,B};
+\node[cell, fill=sysc!12, minimum width=12mm] (fe1) at (2.0, -0.60) {src 4};
+\node[cell, fill=sysc!12, minimum width=12mm, right=0mm of fe1] (fe2) {dst 4};
+\node[cell, fill=wins!22, minimum width=24mm, right=0mm of fe2] (fe3) {timestamp 8, stored last};
+\node[cell, fill=sysc!12, minimum width=12mm, right=0mm of fe3] (fe4) {w 4};
+\node[note, anchor=west] at (7.5, -0.60) {$t=0$ marks an unpublished slot (T5)};
+% EdgeRef, 24 B at 3.0 mm/B
+\node[font=\scriptsize\bfseries, anchor=west] at (-0.1, -1.35) {\texttt{EdgeRef} 24\,B};
+\node[cell, fill=white, minimum width=12mm] (fr1) at (2.0, -1.35) {dst 4};
+\node[cell, fill=white, minimum width=12mm, right=0mm of fr1] (fr2) {offset 4};
+\node[cell, fill=white, minimum width=24mm, right=0mm of fr2] (fr3) {block pointer 8, stored last};
+\node[cell, fill=wins!22, minimum width=24mm, right=0mm of fr3] (fr4) {\textbf{timestamp copy 8}};
+\node[note, anchor=west] at (8.7, -1.35) {predicates read the copy, never the arena (\S\ref{sec:storage-vi})};
+% Block header, one 64 B line
+\node[font=\scriptsize\bfseries, anchor=west] at (-0.1, -2.10) {\texttt{Block} header 64\,B};
+\node[cell, fill=sysc!30, minimum width=9mm] (fh1) at (2.65, -2.10) {cnt 4};
+\node[cell, fill=sysc!30, minimum width=9mm, right=0mm of fh1] (fh2) {cap 4};
+\node[cell, fill=sysc!30, minimum width=11mm, right=0mm of fh2] (fh3) {next 8};
+\node[cell, fill=sysc!30, minimum width=10mm, right=0mm of fh3] (fh4) {flags 4};
+\node[cell, fill=black!6, minimum width=14mm, right=0mm of fh4] (fh5) {pad to 64};
+\node[cell, fill=sysc!12, minimum width=11mm, right=0mm of fh5] (fh6) {Edge$_0$};
+\node[cell, fill=sysc!12, minimum width=13mm, right=0mm of fh6] (fh7) {Edge$_{\mathit{cap}-1}$};
+\node[note, anchor=west] at (10.2, -2.10)
+  {property sidecar: $\mathrm{prop}(e) = P_{\mathrm{base}} + \lfloor (\&e - A_{\mathrm{base}})/20 \rfloor \times \texttt{prop\_bytes}$ (\S\ref{sec:storage-tl})};
 \end{tikzpicture}
-\caption{\sys architecture on a live CADETS-style stream, with the two
-queries of Example~\ref{ex:queries} drawn in their colors. The
-\textcolor{wins}{insert path} \textcolor{wins}{\ding{182}} computes the
-slot arithmetically, \textcolor{wins}{\ding{183}} claims an arrival run
-with one atomic, and \textcolor{wins}{\ding{184}} publishes payload-first,
-timestamp-last, so \textcolor{qwin}{\textbf{Q1}} walks only the timeline
-(interior blocks copied without comparisons) and
-\textcolor{qnbr}{\textbf{Q2}} binary-searches the sorted prefix and
-touches the arena only for edges that pass the window test. No structure
-here is maintained per write except the append chains themselves.}
+\caption{\sys architecture on a live stream: the structures, the two
+queries of Example~\ref{ex:queries} drawn on them, and the formats.}
 \label{fig:arch}
 \end{figure*}

@@ -15,6 +15,12 @@
 //
 // Query file layout (little-endian, repeated): u64 vertex, u64 t_lo, u64 t_hi.
 // Path comes from the GNOMON_QUERY_FILE environment variable.
+//
+// E33 additions (docs/E33_SPEC.md, phase q2): each query is timed and the
+// loop runs under the phase budget (GNOMON_PHASE_BUDGET_SEC, default 1800 s;
+// the first 20 queries are timed and the total projected). The original
+// output lines are unchanged; "Window Median us", "Window P95 us" and
+// "Window Done = k/N" are appended. Helpers come from e33_queries.h.
 
 #include <cstdint>
 #include <cstdio>
@@ -50,8 +56,10 @@ void mem_window_query(gview_t<T>* snaph)
     index_t delivered = 0;
     index_t scanned = 0;
 
-    double start = mywtime();
-    for (size_t i = 0; i < queries.size(); ++i) {
+    std::vector<double> lat_us;
+    double total = 0;
+    size_t done = e33_run_budgeted(queries.size(), e33_budget_sec(), lat_us, &total,
+        [&](size_t i) {
         const vid_t v = (vid_t)queries[i].v;
         const uint64_t lo = queries[i].lo, hi = queries[i].hi;
 
@@ -84,14 +92,15 @@ void mem_window_query(gview_t<T>* snaph)
                 ++delivered;
             }
         }
-    }
-    double end = mywtime();
+        });
 
-    const double total = end - start;
     cout << "Window Query Time = " << total << endl;
     cout << "Window Delivered = " << delivered << endl;
     cout << "Window Scanned = " << scanned << endl;
     cout << "Window Checksum = " << checksum << endl;
     cout << "Window ns per delivered edge = "
          << (delivered ? total * 1e9 / delivered : 0.0) << endl;
+    cout << "Window Median us = " << e33_percentile(lat_us, 0.5) << endl;
+    cout << "Window P95 us = " << e33_percentile(lat_us, 0.95) << endl;
+    cout << "Window Done = " << done << "/" << queries.size() << endl;
 }

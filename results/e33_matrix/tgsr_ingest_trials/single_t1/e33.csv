@@ -1,0 +1,9 @@
+system,dataset,phase,threads,events,samples_total,samples_done,seconds,rate,median_us,p95_us,count,checksum,checksum_ok,rss_MB,note
+tgsr,wiki-talk-temporal,ingest,8,7833140,0,0,0.130801201,59885841.6,0,0,0,0,-1,452.448256,
+tgsr,wiki-talk-temporal,compact,8,7833140,0,0,0.201860189,0,0,0,0,0,-1,459.649024,
+tgsr,tc-cadets-e3,ingest,8,22536062,0,0,0.289567709,77826571.5,0,0,0,0,-1,1164.75494,
+tgsr,tc-cadets-e3,compact,8,22536062,0,0,0.770097017,0,0,0,0,0,-1,1177.65325,
+tgsr,tc-theia-e3,ingest,8,97289833,0,0,1.24667263,78039599.7,0,0,0,0,-1,5014.74509,
+tgsr,tc-theia-e3,compact,8,97289833,0,0,2.29189849,0,0,0,0,0,-1,5021.86803,
+tgsr,lanl-auth,ingest,8,1051430459,0,0,13.6551478,76998834.1,0,0,0,0,-1,46374.8751,
+tgsr,lanl-auth,compact,8,1051430459,0,0,59.7149899,0,0,0,0,0,-1,46375.0349,

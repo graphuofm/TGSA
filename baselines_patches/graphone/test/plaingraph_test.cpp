@@ -1179,6 +1179,38 @@ void test_window_query(const string& idir, const string& odir)
     manager.run_window_query();
 }
 
+// E33 matrix phases on the archived adjacency: ingest exactly as job 20 does,
+// then run one query kernel from analytics/e33_queries.h.
+template <class T>
+void test_scan_query(const string& idir, const string& odir)
+{
+    plaingraph_manager_t<T> manager;
+    manager.schema(_dir);
+    manager.setup_graph(_global_vcount);
+    manager.prep_graph2(idir, odir);
+    manager.run_scan_query();
+}
+
+template <class T>
+void test_reach_query(const string& idir, const string& odir)
+{
+    plaingraph_manager_t<T> manager;
+    manager.schema(_dir);
+    manager.setup_graph(_global_vcount);
+    manager.prep_graph2(idir, odir);
+    manager.run_reach_query();
+}
+
+template <class T>
+void test_asof_query(const string& idir, const string& odir)
+{
+    plaingraph_manager_t<T> manager;
+    manager.schema(_dir);
+    manager.setup_graph(_global_vcount);
+    manager.prep_graph2(idir, odir);
+    manager.run_asof_query();
+}
+
 // E26 concurrent throughput protocol; see analytics/concurrent_stream.h.
 template <class T>
 void test_concurrent_stream(const string& idir, const string& odir)
@@ -1399,6 +1431,17 @@ void plain_test(vid_t v_count1, const string& idir, const string& odir, int job)
             break;
         case 33:
             test_stream_wcc(idir, odir);
+            break;
+        // E33 matrix phases, weighted edges (Gnomon comparison). 30-33 are
+        // upstream streaming jobs, so these take the next free numbers.
+        case 34://q1 window scan over the whole adjacency
+            test_scan_query<weight_sid_t>(idir, odir);
+            break;
+        case 35://q3 time-respecting earliest-arrival reachability
+            test_reach_query<weight_sid_t>(idir, odir);
+            break;
+        case 36://q4 as-of neighbours
+            test_asof_query<weight_sid_t>(idir, odir);
             break;
 
 	case 40:

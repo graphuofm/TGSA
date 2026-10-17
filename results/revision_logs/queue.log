@@ -1,0 +1,133 @@
+[07:37:41] start e33_wiki_tgsr
+[07:37:41] end   e33_wiki_tgsr rc=0
+[07:37:41] start e33_wiki_livegraph
+[07:38:24] end   e33_wiki_livegraph rc=0
+[07:38:24] start e33_wiki_rocksdb
+[08:02:11] end   e33_wiki_rocksdb rc=0
+[08:02:11] start e33_wiki_duckdb
+[08:17:20] end   e33_wiki_duckdb rc=0
+[08:17:20] start e33_wiki_stinger
+[08:17:47] end   e33_wiki_stinger rc=0
+[08:17:47] start e33_wiki_sortledton
+[08:17:49] end   e33_wiki_sortledton rc=0
+[08:17:49] start e33_wiki_graphone
+[08:18:10] end   e33_wiki_graphone rc=0
+[08:18:10] start e33_cadets_tgsr
+[08:18:31] end   e33_cadets_tgsr rc=0
+[08:18:31] start e33_cadets_livegraph
+[08:19:12] end   e33_cadets_livegraph rc=0
+[08:19:12] start e33_cadets_rocksdb
+[08:49:55] orphaned RocksDB/CADETS run finished; restarting queue
+[skip] e33_wiki_tgsr
+[skip] e33_wiki_livegraph
+[skip] e33_wiki_rocksdb
+[skip] e33_wiki_duckdb
+[skip] e33_wiki_stinger
+[skip] e33_wiki_sortledton
+[skip] e33_wiki_graphone
+[skip] e33_cadets_tgsr
+[skip] e33_cadets_livegraph
+[08:49:55] start e33_cadets_rocksdb
+[08:49:55] end   e33_cadets_rocksdb rc=0
+[08:49:55] start e33_cadets_duckdb
+[09:05:09] end   e33_cadets_duckdb rc=0
+[09:05:09] start e33_cadets_stinger
+[09:20:13] end   e33_cadets_stinger rc=0
+[09:20:13] start e33_cadets_sortledton
+[09:20:22] end   e33_cadets_sortledton rc=0
+[09:20:22] start e33_cadets_graphone
+[09:20:37] end   e33_cadets_graphone rc=0
+[09:20:37] start e33_theia_tgsr
+[09:22:53] end   e33_theia_tgsr rc=0
+[09:22:53] start e33_theia_livegraph
+[09:29:50] end   e33_theia_livegraph rc=0
+[09:29:50] start e33_theia_rocksdb
+[10:07:11] end   e33_theia_rocksdb rc=0
+[10:07:11] start e33_theia_duckdb
+[10:23:30] end   e33_theia_duckdb rc=0
+[10:23:30] start e33_theia_stinger
+[10:27:38] end   e33_theia_stinger rc=0
+[10:27:38] start e33_theia_sortledton
+[10:27:49] end   e33_theia_sortledton rc=0
+[10:27:49] start e33_theia_graphone
+[10:29:27] end   e33_theia_graphone rc=0
+[10:29:27] start e33_lanl_tgsr
+[10:42:35] end   e33_lanl_tgsr rc=0
+[10:42:35] start e33_lanl_livegraph
+[11:11:48] end   e33_lanl_livegraph rc=0
+[11:11:48] start e33_lanl_rocksdb
+[12:06:30] end   e33_lanl_rocksdb rc=0
+[12:06:30] start e33_lanl_duckdb
+[12:33:11] end   e33_lanl_duckdb rc=0
+[12:33:11] start e33_lanl_stinger
+[12:45:52] end   e33_lanl_stinger rc=0
+[12:45:52] start e33_lanl_sortledton
+[12:46:13] end   e33_lanl_sortledton rc=0
+[12:46:13] start e33_lanl_graphone
+[13:01:08] end   e33_lanl_graphone rc=0
+[13:01:08] start notscache_build
+[13:01:09] end   notscache_build rc=2
+[13:01:09] start e33nots_wiki
+[13:01:09] end   e33nots_wiki rc=127
+[13:01:09] start e33nots_cadets
+[13:01:09] end   e33nots_cadets rc=127
+[13:01:09] start e33nots_theia
+[13:01:09] end   e33nots_theia rc=127
+[13:01:09] start e33nots_lanl
+[13:01:09] end   e33nots_lanl rc=127
+[13:01:09] start e13_theia
+[13:03:00] end   e13_theia rc=0
+[13:03:00] start e13_cadets
+[13:03:28] end   e13_cadets rc=0
+[13:03:28] start e18cost_cadets
+[13:03:31] end   e18cost_cadets rc=0
+[13:03:31] start e18cost_theia
+[13:03:43] end   e18cost_theia rc=0
+[13:03:43] start e18cost_lanl
+[13:06:23] end   e18cost_lanl rc=0
+[13:06:23] start e23rc_theia
+[13:07:26] end   e23rc_theia rc=0
+[13:07:26] start e23thr_theia
+[13:28:16] end   e23thr_theia rc=0
+[13:28:16] start e23tau_theia
+[13:38:02] end   e23tau_theia rc=0
+[13:38:02] start e25_theia_t1
+[13:38:53] end   e25_theia_t1 rc=0
+[13:38:53] start e25_theia_t2
+[13:39:43] end   e25_theia_t2 rc=0
+[13:39:43] start e25_theia_t3
+[13:40:33] end   e25_theia_t3 rc=0
+[13:40:33] start e27_theia
+[13:40:52] end   e27_theia rc=1
+[13:40:52] start e23rc_lanl
+[13:54:06] end   e23rc_lanl rc=0
+[13:54:06] start e23thr_lanl
+[14:49:02] end   e23thr_lanl rc=0
+[14:49:02] start e23tau_lanl
+[15:02:48] end   e23tau_lanl rc=0
+[15:02:48] start e25_lanl_t1
+[15:10:28] end   e25_lanl_t1 rc=0
+[15:10:28] start e25_lanl_t2
+[15:18:21] end   e25_lanl_t2 rc=0
+[15:18:21] start e25_lanl_t3
+[15:25:37] end   e25_lanl_t3 rc=0
+[15:25:37] start e27_lanl
+[15:48:29] end   e27_lanl rc=0
+[15:48:29] start e26_theia
+[15:49:06] end   e26_theia rc=0
+[15:49:06] start e26_tgsr_mixes
+[15:51:56] end   e26_tgsr_mixes rc=0
+[15:51:56] start e26_lanl
+[15:56:41] end   e26_lanl rc=0
+[15:56:41] start e24_theia
+[15:58:29] end   e24_theia rc=0
+[15:58:29] start e24_lanl
+[16:20:32] end   e24_lanl rc=0
+[16:20:32] start e22_lanl_tgsr
+[16:21:36] end   e22_lanl_tgsr rc=0
+[16:21:36] start e22_lanl_duckdb
+[16:23:26] end   e22_lanl_duckdb rc=0
+[16:23:26] start e22_lanl_livegraph
+[16:27:11] end   e22_lanl_livegraph rc=0
+[16:27:11] queue finished
+[16:27:27] queue finished; starting post-queue

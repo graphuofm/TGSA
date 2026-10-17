@@ -1,0 +1,5 @@
+[e20] wiki-talk-temporal       weight64  j20  batch=0.235925s durable=0.236034s make=0.288653s (27.137 Meps)  
+[e20] wiki-talk-temporal       weight64  j28  batch=0.254395s durable=0.254717s make=0.290015s (27.009 Meps) q2: 0.0317945s count=1441186 chk=1700791533380746 match=yes done=1000/1000 
+[e20] wiki-talk-temporal       weight64  j34  batch=0.263908s durable=0.265396s make=0.324293s (24.155 Meps) q1: 0.00763928s count=283276 chk=3594989818021826228 match=yes done=- 
+[e20] wiki-talk-temporal       weight64  j35  batch=0.245567s durable=0.245678s make=0.312495s (25.066 Meps) q3: 17.6155s count=26062800 chk=30619538371047394 match=yes done=1000/1000 
+[e20] wiki-talk-temporal       weight64  j36  batch=0.265587s durable=0.269803s make=0.320691s (24.426 Meps) q4: 0.679481s count=5001951 chk=2172262231193549779 match=yes done=1000/1000 

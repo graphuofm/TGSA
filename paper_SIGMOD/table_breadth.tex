@@ -1,40 +1,16 @@
 \begin{table}[t]
 \centering\footnotesize
-\setlength{\tabcolsep}{3.2pt}
-\caption{Corpora, organized by the workload families of the
-structure-to-time shift; the two structural-era corpora are retained
-deliberately as the audit set for the conceded axis
-(\S\ref{sec:eval-structural}). Ingestion is what the stream sees;
-compaction is the one optional pass. Traversal is the median
-time-respecting forward traversal over a 1\% window (LANL's hot hubs
-make its median a milliseconds-scale operation; the mean impact set
-there is 154 vertices). Bytes/edge are resident, against a 20\,B
-packed edge. Eight threads.}
+\setlength{\tabcolsep}{4pt}
+\caption{Corpora.}
 \label{tab:breadth}
-\begin{tabular}{@{}lrrrrrrr@{}}
+\begin{tabular}{@{}llrrrl@{}}
 \toprule
-Corpus & Edges & $|V|$ & Span & Ingest & Comp. & Trav. & B/ \\
- & & & (d) & (Meps) & (s) & ($\mu$s) & edge \\
+Corpus & Family & Events & $|V|$ & Span & Source \\
 \midrule
-\multicolumn{8}{@{}l}{\emph{System provenance}}\\
-TC-CADETS & 22.5M & 2.9M & 11 & 80.1 & 0.71 & 0.2 & 75 \\
-TC-THEIA & 97.3M & 6.9M & 10 & 94.6 & 2.14 & 0.2 & 73 \\
-\multicolumn{8}{@{}l}{\emph{Network and authentication telemetry}}\\
-bitcoin & 113.1M & 48.1M & 2585 & 16.4 & 3.79 & 0.2 & 138 \\
-LANL & 1.05B & 18K & 58 & 77.5 & 55.7 & 27334 & 65 \\
-\multicolumn{8}{@{}l}{\emph{Interaction streams}}\\
-CollegeMsg & 60K & 2K & 194 & 7.0 & 0.00 & 0.7 & 175 \\
-email-Eu & 332K & 986 & 804 & 25.5 & 0.01 & 1.0 & 88 \\
-act-mooc & 412K & 7K & 30 & 22.0 & 0.01 & 0.5 & 99 \\
-mathoverflow & 507K & 25K & 2350 & 30.4 & 0.01 & 0.2 & 99 \\
-askubuntu & 964K & 159K & 2614 & 30.1 & 0.03 & 0.2 & 107 \\
-superuser & 1.4M & 194K & 2773 & 29.1 & 0.04 & 0.2 & 102 \\
-wiki-talk & 7.8M & 1.1M & 2320 & 66.9 & 0.20 & 0.2 & 79 \\
-stackoverflow & 63.5M & 2.6M & 2774 & 52.5 & 1.57 & 0.2 & 77 \\
-LDBC-SNB SF10 & 65.7M & 2.2M & 1093 & 58.1 & 1.57 & 0.5 & 74 \\
-\multicolumn{8}{@{}l}{\emph{Structural-era references (the conceded-axis audit set)}}\\
-cit-Patents & 16.5M & 6.0M & 1826 & 24.5 & 0.54 & 0.2 & 91 \\
-LiveJournal & 69.0M & 4.8M & 1157 & 28.9 & 2.06 & 0.2 & 84 \\
+LANL      & authentication telemetry & 1.05B & 18K  & 58 d  & \cite{lanl2015data} \\
+THEIA     & system provenance        & 97.3M & 6.9M & 10 d  & \cite{darpa2020tc} \\
+CADETS    & system provenance        & 22.5M & 2.9M & 11 d  & \cite{darpa2020tc} \\
+wiki-talk & interaction stream       & 7.8M  & 1.1M & 6.4 y & \cite{leskovec2014snap} \\
 \bottomrule
 \end{tabular}
 \end{table}

@@ -1,0 +1,5 @@
+[e20] lanl-auth                weight64  j20  batch=25.6623s durable=64.8334s make=25.6634s (40.97 Meps)  
+[e20] lanl-auth                weight64  j28  batch=26.1527s durable=56.9892s make=26.1556s (40.199 Meps) q2: 16.0003s count=127287551 chk=323397313050681 match=yes done=1000/1000 
+[e20] lanl-auth                weight64  j34  batch=26.2717s durable=36.2878s make=26.2747s (40.017 Meps) q1: 1.46412s count=13305296 chk=15358396018029434308 match=yes done=- 
+[e20] lanl-auth                weight64  j35  batch=26.2311s durable=34.3654s make=26.2337s (40.079 Meps) q3: 561.626s count=331996 chk=864519020512 match=yes done=1000/1000 
+[e20] lanl-auth                weight64  j36  batch=26.3302s durable=34.5069s make=26.79s (39.247 Meps) q4: 53.1422s count=96322 chk=501897843358362 match=yes done=1000/1000 

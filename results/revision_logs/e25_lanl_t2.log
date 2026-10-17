@@ -1,0 +1,37 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[e25] core      528.63 Meps  (1.00x vs core)  rss=  21512 MB  probe=165064917
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e25] +vindex    72.51 Meps  (7.29x vs core)  rss=  46539 MB  probe=165064917
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=672.9 GB virtual
+[e25] +reverse   38.70 Meps  (13.66x vs core)  rss=  71791 MB  probe=165064917
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[Barry] property sidecar: 8 B/edge, 33.65 GB virtual
+[e25] +props8    69.86 Meps  (7.57x vs core)  rss=  55013 MB  probe=165064917  props verified
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[Barry] property sidecar: 16 B/edge, 67.29 GB virtual
+[e25] +props16   67.70 Meps  (7.81x vs core)  rss=  63426 MB  probe=165064917  props verified
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=672.9 GB virtual
+[e25] +wal       29.74 Meps  (17.78x vs core)  rss=  46530 MB  probe=165064917
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7ee21e5a0000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=672.9 GB virtual
+[Barry] property sidecar: 16 B/edge, 67.29 GB virtual
+[e25] full       16.07 Meps  (32.90x vs core)  rss=  87438 MB  probe=165064917  props verified

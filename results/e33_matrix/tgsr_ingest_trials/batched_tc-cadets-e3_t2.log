@@ -1,0 +1,8 @@
+[e33] wrote 1000 queries to results/e33_matrix/tgsr_ingest_trials/batched_t2/tc-cadets-e3.queries
+[e33] tc-cadets-e3: n=22536062 V=2855135 t=[1522706861813350340,1523655358953968696] w=9484971406183 bfs_root=67 (deg 4153868)
+[TimeMapper] span=948497140618356 edges=1048576 target_avg=64 shift=36 (window=68719476736)
+[Timeline] 14826 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.80 GB at 0x7fecdf6ca000 (huge=0 thp=0)
+[VertexIndex] 2855135 vertices, heads=22.8 MB, bucket arena=17.3 GB virtual
+[e33] tgsr      tc-cadets-e3       ingest     22536062 events      0.37 s  60.737 Meps  rss    1168 MB  
+[e33] tgsr      tc-cadets-e3       compact       0.70 s  rss    1181 MB

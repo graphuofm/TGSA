@@ -69,6 +69,9 @@ class plaingraph_manager_t {
     void run_bfs_snb(sid_t root = 1);
     void run_1hop();
     void run_window_query();
+    void run_scan_query();
+    void run_reach_query();
+    void run_asof_query();
     void run_2hop();
 };
 
@@ -529,6 +532,7 @@ void plaingraph_manager_t<T>::waitfor_archive_durable(double start)
 }
 
 #include "mem_iterative_analytics.h"
+#include "e33_queries.h"
 #include "window_query.h"
 #include "concurrent_stream.h"
 
@@ -615,13 +619,44 @@ void plaingraph_manager_t<T>::run_1hop()
     delete_static_view(snaph);
 }
 
-// Added for the Gnomon comparison; see analytics/window_query.h.
+// Added for the Gnomon comparison; see analytics/window_query.h. The view is
+// consistent (non-STALE) so a non-archived tail, if any, is visible to the
+// kernel's tail scan instead of being dropped by the view (static_view.h sets
+// edge_count = 0 under STALE_MASK).
 template <class T>
 void plaingraph_manager_t<T>::run_window_query()
 {
     pgraph_t<T>* pgraph1 = (pgraph_t<T>*)get_plaingraph();
-    snap_t<T>* snaph = create_static_view(pgraph1, STALE_MASK|V_CENTRIC);
+    snap_t<T>* snaph = create_static_view(pgraph1, V_CENTRIC);
     mem_window_query<T>(snaph);
+    delete_static_view(snaph);
+}
+
+// E33 matrix phases q1, q3, q4; see analytics/e33_queries.h.
+template <class T>
+void plaingraph_manager_t<T>::run_scan_query()
+{
+    pgraph_t<T>* pgraph1 = (pgraph_t<T>*)get_plaingraph();
+    snap_t<T>* snaph = create_static_view(pgraph1, V_CENTRIC);
+    mem_scan_query<T>(snaph);
+    delete_static_view(snaph);
+}
+
+template <class T>
+void plaingraph_manager_t<T>::run_reach_query()
+{
+    pgraph_t<T>* pgraph1 = (pgraph_t<T>*)get_plaingraph();
+    snap_t<T>* snaph = create_static_view(pgraph1, V_CENTRIC);
+    mem_reach_query<T>(snaph);
+    delete_static_view(snaph);
+}
+
+template <class T>
+void plaingraph_manager_t<T>::run_asof_query()
+{
+    pgraph_t<T>* pgraph1 = (pgraph_t<T>*)get_plaingraph();
+    snap_t<T>* snaph = create_static_view(pgraph1, V_CENTRIC);
+    mem_asof_query<T>(snaph);
     delete_static_view(snaph);
 }
 

@@ -12,7 +12,7 @@ static constexpr uint32_t kInitialBucketCap = 8;
 
 static void* try_mmap(size_t bytes) {
     return mmap(nullptr, bytes, PROT_READ | PROT_WRITE,
-                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+                MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE, -1, 0);
 }
 
 VertexIndex::VertexIndex(uint32_t num_vertices, size_t arena_reserve_bytes,

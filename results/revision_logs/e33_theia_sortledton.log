@@ -1,0 +1,2 @@
+[e33] $ nice -n 0 timeout 5400 /home/jding/Barry/build/bench_e32_sortledton --dataset /home/jding/dataset/bin/tc-theia-e3.bin --threads 8 --output /home/jding/Barry/results/e33_matrix/e31e32.csv
+[e33] sortledton tc-theia-e3          ok                           11 s

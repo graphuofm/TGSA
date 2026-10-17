@@ -1,0 +1,35 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+[e18-cost] none           13.60s   77.30 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+/home/jding/dataset/e18_wal/e18_cost.wal: No such file or directory
+[e18-cost] write_only     13.58s   77.43 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+/home/jding/dataset/e18_wal/e18_cost.wal: No such file or directory
+[e18-cost] async_64MB     13.60s   77.29 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+/home/jding/dataset/e18_wal/e18_cost.wal: No such file or directory
+[e18-cost] async_4MB      13.60s   77.31 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+/home/jding/dataset/e18_wal/e18_cost.wal: No such file or directory
+[e18-cost] sync_4MB       13.67s   76.92 Meps  wal=   0.00 GB
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 84.11 GB at 0x7f3874b47000 (huge=0 thp=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=201.9 GB virtual
+/home/jding/dataset/e18_wal/e18_cost.wal: No such file or directory
+[e18-cost] fsync_batch    13.57s   77.49 Meps  wal=   0.00 GB

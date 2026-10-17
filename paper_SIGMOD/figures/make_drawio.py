@@ -6,38 +6,124 @@ sources; a drawio file would be the wrong thing for them. The four
 figures below are drawings, so each gets a same-named .drawio that
 opens in diagrams.net and can be rearranged and re-exported to PDF.
 
-The LaTeX/TikZ originals (../fig_arch.tex, ../fig_format.tex,
-../fig_runclaim.tex) remain what the paper compiles; when you change a
-drawio and want it in the paper, export to PDF here and swap the
-\\input for an \\includegraphics, or mirror the change back into the
-TikZ.
+The originals remain what the paper compiles: fig_motivation.py
+(matplotlib) and ../fig_overview.tex, ../fig_arch.tex (whose Panel C is
+the formats strip), ../fig_runclaim.tex (TikZ). When you change a drawio and want it in the
+paper, export to PDF here and swap the \\input for an \\includegraphics,
+or mirror the change back into the source.
+
+Geometry is 1:1 with the paper at 96 dpi: 37.8 px per TikZ cm, so
+\\scriptsize (7pt) is fontSize 9 and \\footnotesize (8pt) is fontSize 11.
+Every position below is written in the source's own coordinates (cm for
+TikZ, data units for matplotlib) and mapped through a per-figure X()/Y(),
+so a change to a .tex coordinate is a one-number change here.
 
 Run: python3 make_drawio.py
 """
 import html
+import os
+import random
 
-# palette, matching the paper's macros
-QWIN, QNBR, WINS = '#0072B2', '#009E73', '#D55E00'
-PANEL, EDGEC, HDRC, REFC = '#FFF6EC', '#E6F2E6', '#DCE8FA', '#FFF3D0'
+HERE = os.path.dirname(os.path.abspath(__file__))
+CM = 37.8                     # px per cm
+MM = CM / 10
+
+# palette, matching the paper's macros and figstyle.py
+SYSC = '#0072B2'                                  # TGSA and its structures (blue)
+QWIN, QNBR, WINS = '#009E73', '#009E73', '#D55E00'  # queries (green), insert path (vermillion)
+GREY, LIGHT = '#555555', '#aaaaaa'
+BLUE, GREEN, YELLOW, BLACK = '#0000FF', '#00FF00', '#FFFF00', '#000000'
+
+def tint(hex_, pct):
+    """TikZ `<color>!<pct>`: pct % of the color mixed on white."""
+    r, g, b = (int(hex_[i:i + 2], 16) for i in (1, 3, 5))
+    f = pct / 100
+    return '#%02X%02X%02X' % tuple(round(255 - f * (255 - c)) for c in (r, g, b))
+
+HDRC  = tint(SYSC, 30)        # block / bucket header (sysc!30)
+EDGEC = tint(SYSC, 12)        # arena edge (sysc!12)
+REFC  = '#FFFFFF'             # EdgeRef (white)
+PANEL = tint(SYSC, 5)         # panel / group background (sysc!5)
+
+# ------------------------------------------------------------ primitives
+def _n(v):
+    return f'{v:.1f}'.rstrip('0').rstrip('.')
 
 def cell(cid, value, style, x, y, w, h, parent='1'):
     return (f'        <mxCell id="{cid}" value="{html.escape(value)}" '
             f'style="{style}" vertex="1" parent="{parent}">\n'
-            f'          <mxGeometry x="{x}" y="{y}" width="{w}" height="{h}" as="geometry"/>\n'
+            f'          <mxGeometry x="{_n(x)}" y="{_n(y)}" width="{_n(w)}" '
+            f'height="{_n(h)}" as="geometry"/>\n'
             f'        </mxCell>\n')
 
-def edge(cid, style, sx, sy, tx, ty):
-    return (f'        <mxCell id="{cid}" style="{style}" edge="1" parent="1">\n'
+def edge(cid, style, sx, sy, tx, ty, points=()):
+    pts = ''
+    if points:
+        pts = ('            <Array as="points">\n'
+               + ''.join(f'              <mxPoint x="{_n(px)}" y="{_n(py)}"/>\n'
+                         for px, py in points)
+               + '            </Array>\n')
+    return (f'        <mxCell id="{cid}" value="" style="{style}" edge="1" parent="1">\n'
             f'          <mxGeometry relative="1" as="geometry">\n'
-            f'            <mxPoint x="{sx}" y="{sy}" as="sourcePoint"/>\n'
-            f'            <mxPoint x="{tx}" y="{ty}" as="targetPoint"/>\n'
+            f'            <mxPoint x="{_n(sx)}" y="{_n(sy)}" as="sourcePoint"/>\n'
+            f'            <mxPoint x="{_n(tx)}" y="{_n(ty)}" as="targetPoint"/>\n'
+            + pts +
             f'          </mxGeometry>\n'
             f'        </mxCell>\n')
 
-BOX   = 'rounded=0;whiteSpace=wrap;html=1;fontSize=9;'
-TEXT  = 'text;html=1;align=left;verticalAlign=middle;fontSize=9;'
-TITLE = 'text;html=1;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;'
-ARROW = 'endArrow=block;endFill=1;html=1;rounded=0;'
+TEXT   = 'text;html=1;verticalAlign=middle;spacing=0;'
+ARROW  = 'endArrow=block;endFill=1;html=1;rounded=0;'             # TikZ Stealth
+DARROW = 'startArrow=block;startFill=1;endArrow=block;endFill=1;html=1;rounded=0;'
+LINE   = 'endArrow=none;html=1;rounded=0;'
+
+# anchor -> (align, x fraction, y fraction) of the geometry at the anchor point
+_ANCHOR = {'w': ('left', 0, .5), 'e': ('right', 1, .5), 'c': ('center', .5, .5),
+           'n': ('center', .5, 0), 's': ('center', .5, 1),
+           'nw': ('left', 0, 0), 'ne': ('right', 1, 0),
+           'sw': ('left', 0, 1), 'se': ('right', 1, 1)}
+
+def text(cid, value, x, y, w, h=14, anchor='w', fs=9, color=None,
+         bold=False, mono=False, extra=''):
+    """Text node; (x, y) is the TikZ anchor point in px, like node[anchor=..]."""
+    align, ax, ay = _ANCHOR[anchor]
+    style = TEXT + f'align={align};fontSize={fs};'
+    if color:
+        style += f'fontColor={color};'
+    if bold:
+        style += 'fontStyle=1;'
+    if mono:
+        style += 'fontFamily=Courier New;'
+    return cell(cid, value, style + extra, x - ax * w, y - ay * h, w, h)
+
+def box(cid, value, cx, cy, w, h, fill='#FFFFFF', stroke='#666666', fs=9,
+        color=None, rounded=False, align='center', extra=''):
+    """Bordered node centred at (cx, cy) in px, like node[draw] at (cx, cy)."""
+    style = ('rounded=1;absoluteArcSize=1;arcSize=3;' if rounded else 'rounded=0;')
+    style += (f'html=1;align={align};verticalAlign=middle;fontSize={fs};'
+              f'fillColor={fill};strokeColor={stroke};')
+    if color:
+        style += f'fontColor={color};'
+    return cell(cid, value, style + extra, cx - w / 2, cy - h / 2, w, h)
+
+def step(cid, n, color, cx, cy, d=11):
+    """Numbered step circle (TikZ wstep / bstep / gstep): white digit on color."""
+    return cell(cid, str(n),
+                f'ellipse;html=1;fillColor={color};strokeColor=none;fontColor=#FFFFFF;'
+                'fontSize=9;fontStyle=1;align=center;verticalAlign=middle;spacing=0;',
+                cx - d / 2, cy - d / 2, d, d)
+
+def steptext(cid, n, color, value, x, y, w, h=14):
+    """`\\stepc{..}{n}\\;text`, anchored west at (x, y)."""
+    return (step(cid + '_c', n, color, x + 5.5, y)
+            + text(cid, value, x + 15, y, w, h, 'w', 9, color))
+
+# inline markup (draw.io labels are HTML)
+def tt(s):  return f'<font face="Courier New">{s}</font>'       # \texttt
+def sm(s):  return f'<font style="font-size: 9px">{s}</font>'   # \scriptsize inside \footnotesize
+def sub(s): return f'<sub>{s}</sub>'
+def sup(s): return f'<sup>{s}</sup>'
+def it(s):  return f'<i>{s}</i>'
+def bf(s):  return f'<b>{s}</b>'
 
 def write(name, w, h, body):
     xml = ('<mxfile host="app.diagrams.net" type="device">\n'
@@ -49,168 +135,301 @@ def write(name, w, h, body):
            '        <mxCell id="1" parent="0"/>\n'
            + body +
            '      </root>\n    </mxGraphModel>\n  </diagram>\n</mxfile>\n')
-    open(name + '.drawio', 'w').write(xml)
-    print('wrote', name + '.drawio')
+    path = os.path.join(HERE, name + '.drawio')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(xml)
+    print('wrote', os.path.relpath(path))
 
-# ===================================================== fig_runclaim
-def runclaim():
+# ===================================================== fig_overview
+def overview():
+    """../fig_overview.tex: engine components and the paths between them."""
+    X = lambda x: (x + 0.85) * CM
+    Y = lambda y: (4.80 - y) * CM
+    comp = dict(fill=tint(SYSC, 8), stroke=SYSC, fs=11, rounded=True)   # comp/.style
     b = ''
-    b += cell('t1', 'Per-edge claim', TITLE, 20, 10, 160, 20)
-    b += cell('t1s', 'one fetch_add per event', TEXT + 'fontColor=#666666;', 20, 30, 200, 18)
-    b += cell('t2', 'Run claim', TITLE, 420, 10, 160, 20)
-    b += cell('t2s', 'one fetch_add per run', TEXT + 'fontColor=#666666;', 420, 30, 200, 18)
-    b += cell('div', '', 'line;direction=north;strokeColor=#BBBBBB;', 395, 10, 10, 320)
-    for k, y in enumerate((60, 110, 160)):
-        b += cell(f'wl{k}', f'w{k+1}', TEXT, 20, y, 26, 24)
-        for i in range(3):
-            b += cell(f'e{k}{i}', '', BOX + f'fillColor={EDGEC};', 55 + i*60, y, 52, 24)
-            b += edge(f'a{k}{i}', ARROW + f'strokeColor={WINS};strokeWidth=1;',
-                      81 + i*60, y + 24, 175, 250)
-        b += cell(f'rl{k}', f'w{k+1}', TEXT, 420, y, 26, 24)
-        b += cell(f'run{k}', '', 'rounded=1;whiteSpace=wrap;html=1;fillColor=none;'
-                  f'strokeColor={QNBR};strokeWidth=2;', 450, y - 4, 188, 32)
-        for i in range(3):
-            b += cell(f'f{k}{i}', '', BOX + f'fillColor={EDGEC};', 455 + i*60, y, 52, 24)
-        b += edge(f'ra{k}', ARROW + f'strokeColor={QNBR};strokeWidth=1.5;',
-                  545, y + 28, 545, 250)
-    b += cell('c1', 'count += 1', BOX + f'fillColor={HDRC};', 120, 250, 110, 28)
-    b += cell('c2', 'count += 3', BOX + f'fillColor={HDRC};', 490, 250, 110, 28)
-    b += cell('n1', '9 atomics on one cache line',
-              TEXT + f'fontColor={WINS};align=center;', 95, 284, 160, 20)
-    b += cell('n2', '3 atomics, same 9 events placed',
-              TEXT + f'fontColor={QNBR};align=center;', 465, 284, 170, 20)
-    b += cell('foot', 'wiki-talk, 8 writers:  6.1  →  73.2 M events/s',
-              TEXT + 'align=center;fontStyle=1;', 230, 318, 300, 20)
-    write('fig_runclaim', 700, 360, b)
-
-# ===================================================== fig_format
-def fmt():
-    b = ''
-    rows = [
-        ('Edge, 20 B packed, arena-resident',
-         [('src 4', EDGEC, 70), ('dst 4', EDGEC, 70),
-          ('timestamp 8 (release-published)', '#FFE0CC', 190), ('w 4', EDGEC, 55)],
-         'ts = 0 marks an unpublished slot (T5)'),
-        ('EdgeRef, 24 B, vertex-index bucket entry',
-         [('dst 4', REFC, 70), ('off 4', REFC, 70),
-          ('block ptr 8', REFC, 110), ('ts cache 8', '#FFE0CC', 110)],
-         'temporal predicates never dereference the arena (§4.3); the 16 B ablation build drops it'),
-        ('Block: one 64 B header line, then edges',
-         [('cnt 4', HDRC, 60), ('cap 4', HDRC, 60), ('next 8', HDRC, 70),
-          ('flags 4', HDRC, 65), ('pad→64', '#EFEFEF', 70),
-          ('Edge0', EDGEC, 60), ('...', EDGEC, 40), ('Edge cap-1', EDGEC, 80)],
-         'flags: PUBLISHED cleared before every cnt bump, same protocol as the bucket sorted flag'),
-    ]
-    y = 20
-    for n, (title, fields, note) in enumerate(rows):
-        b += cell(f'h{n}', title, TITLE, 20, y, 420, 20)
-        x = 20
-        for i, (lbl, fill, w) in enumerate(fields):
-            b += cell(f'r{n}f{i}', lbl, BOX + f'fillColor={fill};', x, y + 24, w, 26)
-            x += w
-        b += cell(f'n{n}', note, TEXT + 'fontColor=#666666;fontSize=8;', 20, y + 54, 620, 18)
-        y += 100
-    b += cell('sh', 'Property sidecar (dock module, §4.1)', TITLE, 20, y, 420, 20)
-    b += cell('sf', 'prop(e)  =  P_base  +  floor((&e - A_base) / 20) × prop_bytes',
-              BOX + 'fillColor=#F5F5F5;fontFamily=Courier New;', 20, y + 24, 420, 26)
-    b += cell('sn', 'pure address arithmetic: demand-paged, prefix-evicted and '
-              'replay-recovered with the arena itself; written before the timestamp '
-              'store, so T5 covers it',
-              TEXT + 'fontColor=#666666;fontSize=8;', 20, y + 54, 620, 30)
-    write('fig_format', 700, y + 110, b)
+    # groups first so they sit behind their components
+    b += box('qe', '', X(6.3), Y(2.45), 40 * MM, 21 * MM, PANEL, tint(SYSC, 70), rounded=True)
+    b += box('se', '', X(4.15), Y(0.25), 83 * MM, 16 * MM, PANEL, tint(SYSC, 70), rounded=True)
+    b += text('qet', f'{bf("Query engine")} (§5)', X(6.3), Y(3.45), 120, 16, 'n', 11)
+    b += text('set', f'{bf("Storage engine")} (§4)', X(4.15), Y(1.0), 130, 16, 'n', 11)
+    # inputs
+    b += box('stream', 'event stream', X(1.75), Y(4.25), 66, 6.5 * MM,
+             '#FFFFFF', tint(BLACK, 65), 11)
+    b += box('query', 'temporal queries Q1–Q4', X(6.3), Y(4.25), 118, 6.5 * MM,
+             '#FFFFFF', QWIN, 11, QWIN)
+    # ingest path
+    b += box('ingest', f'{bf("Ingest path")} (§4.2)<br>{sm("shift, claim run, publish")}',
+             X(1.75), Y(3.05), 32 * MM, 9 * MM, tint(SYSC, 8), WINS, 11, rounded=True,
+             extra='whiteSpace=wrap;')
+    b += edge('a_in', ARROW + f'strokeColor={WINS};', X(1.75), Y(4.25 - 0.325), X(1.75), Y(3.05 + 0.45))
+    # query engine
+    for cid, x, y, lbl, sec in (('qw', 5.35, 2.55, 'Q1 window', '§5.1'),
+                                ('qx', 7.25, 2.55, 'Q2 neighbors', '§5.2'),
+                                ('qt', 5.35, 1.72, 'Q3 traversal', '§5.3'),
+                                ('qa', 7.25, 1.72, 'Q4 as-of', '§5.2')):
+        b += box(cid, f'{lbl}<br>{sm(sec)}', X(x), Y(y), 17 * MM, 7 * MM, **comp)
+    b += edge('a_q', ARROW + f'strokeColor={QWIN};', X(6.3), Y(4.25 - 0.325), X(6.3), Y(3.5))
+    # storage engine
+    for cid, x, lbl, sec in (('tl', 1.05, 'timeline', '§4.1'), ('ar', 3.1, 'arena', '§4.1'),
+                             ('vi', 5.2, 'vertex index', '§4.3'), ('wal', 7.25, 'log', '§4.4')):
+        b += box(cid, f'{lbl}<br>{sm(sec)}', X(x), Y(0.05), 18 * MM, 7 * MM, **comp)
+    b += edge('a_is', ARROW + f'strokeColor={WINS};', X(1.75), Y(2.6), X(1.75), Y(1.05))
+    b += edge('a_qs', ARROW + f'strokeColor={QNBR};', X(6.3), Y(1.4), X(6.3), Y(1.05))
+    # lifecycle operators
+    b += box('ret', f'{bf("Retention")} (§4.4)<br>{sm("release an address prefix")}',
+             X(1.75), Y(-1.25), 31 * MM, 9 * MM, tint(SYSC, 8), tint(BLACK, 55), 11, rounded=True,
+             extra='whiteSpace=wrap;')
+    b += box('rec', f'{bf("Recovery")} (§4.4)<br>{sm("replay the log through ingest")}',
+             X(6.55), Y(-1.25), 31 * MM, 9 * MM, tint(SYSC, 8), tint(BLACK, 55), 11, rounded=True,
+             extra='whiteSpace=wrap;')
+    b += edge('a_ret', ARROW, X(1.75), Y(-0.8), X(1.75), Y(-0.55))
+    b += edge('a_rec', ARROW, X(6.55), Y(-0.8), X(6.55), Y(-0.55))
+    # the abstraction underneath
+    b += text('sub', 'every structure above is placed by Eq. (2): the timestamp is the address (§3.1)',
+              X(4.15), Y(-1.95), 380, 14, 'n', 9, tint(BLACK, 70))
+    write('fig_overview', 380, 280, b)
 
 # ===================================================== fig_arch
 def arch():
+    """../fig_arch.tex: three stacked panels; Q1 and Q2 drawn on the structures, formats below."""
+    X = lambda x: (x + 0.45) * CM
+    Y = lambda y: (9.85 - y) * CM
+    note, grey = tint(BLACK, 65), tint(BLACK, 60)
+    cst = dict(stroke=tint(BLACK, 55))                 # cell/.style border
+    pair = lambda v, t: f'({it("v")}{sub(v)},{it("t")}{sub(t)})'   # $(v_3,t_{17})$
+    ref = lambda v, t: f'{it("v")}{sub(v)} | {it("t")}{sub(t)}'    # $v_9\,|\,t_{18}$
     b = ''
-    b += cell('inA', 'event stream, never ends\ne = (src, dst, t, w), immutable',
-              BOX + 'fillColor=none;', 20, 10, 190, 38)
-    b += cell('q1', 'Q1  "all events in [t1, t2]"\ntime-keyed: touches only the timeline',
-              BOX + f'fillColor=none;strokeColor={QWIN};fontColor={QWIN};strokeWidth=2;',
-              240, 10, 240, 38)
-    b += cell('q2', 'Q2  "what did v3 touch in [t1, t2]"\nentity-keyed: index first, arena per hit',
-              BOX + f'fillColor=none;strokeColor={QNBR};fontColor={QNBR};strokeWidth=2;',
-              640, 10, 250, 38)
-    # panel A
-    b += cell('pA', '', BOX + f'fillColor={PANEL};strokeColor=#888888;', 20, 70, 590, 300)
-    b += cell('pAt', 'Time-keyed storage (§4.1–§4.2):  Timeline = tmap<block ptr>  +  Arena',
-              TITLE, 32, 78, 520, 20)
-    b += cell('eqn', '❶  A(T) = A_base + ((T − T0) >> S) × P',
-              TEXT + f'fontColor={WINS};fontStyle=1;', 32, 104, 330, 20)
+    # ---- panels (behind everything)
+    for pid, y0, hmm in (('pA', 9.7, 46), ('pB', 4.75, 45), ('pC', -0.1, 27)):
+        b += cell(pid, '', f'rounded=1;absoluteArcSize=1;arcSize=3;html=1;'
+                  f'fillColor={PANEL};strokeColor={tint(SYSC, 70)};', X(-0.25), Y(y0), 176 * MM, hmm * MM)
+    b += text('pAt', f'{bf("Time-keyed storage")} (§4.1, §4.2): {tt("Timeline")} = '
+              f'{tt("tmap")}⟨block ptr⟩ and {tt("Arena")} of 20 B edges',
+              X(-0.1), Y(9.65), 540, 16, 'nw', 11)
+    b += text('pBt', f'{bf("Vertex index")} (§4.3): per-vertex append chains of 24 B '
+              f'references, sorted only by {tt("compact()")}',
+              X(-0.1), Y(4.7), 560, 16, 'nw', 11)
+
+    # ======================= Panel A: time-keyed storage
+    # stream and the insert path
+    b += box('stream', f'event stream, never ends<br>{it("e")} = ({it("src")}, {it("dst")}, '
+             f'{it("t")}, {it("w")}), immutable',
+             X(1.55), Y(8.35), 148, 32, 'none', grey, 9, align='left', extra='spacingLeft=4;')
+    b += text('arn', 'one anonymous reservation;<br>arena: 20 B packed edges,<br>never sorted on insert',
+              X(-0.05), Y(7.45), 160, 36, 'w', 9, note)
+    b += steptext('st2', 2, WINS, f'one {tt("fetch_add")} claims the run', X(-0.05), Y(6.5), 170)
+    b += steptext('st3', 3, WINS, f'payload first, {it("t")} last<br>(release, T5)',
+                  X(-0.05), Y(5.95), 150, 26)
+    # insert step 1: the address computation
+    b += steptext('eq', 1, WINS, f'{it("A")}({it("T")}) = {it("A")}{sub("base")} + '
+                  f'(({it("T")} − {it("T")}{sub("0")}) ≫ {it("S")}) × {it("P")}',
+                  X(3.55), Y(8.75), 200)
+    b += edge('a_eq', ARROW + f'strokeColor={WINS};', X(1.55) + 74, Y(8.35), X(3.6), Y(8.5))
+    # timeline slot array
+    fills = {0: tint(BLACK, 25), 1: tint(BLACK, 25), 2: tint(BLACK, 25),
+             4: '#FFFFFF', 5: tint(WINS, 40), 7: '#FFFFFF', 10: '#FFFFFF'}
     for i in range(12):
-        fill = '#D9D9D9' if i < 3 else ('#FFE0CC' if i == 5 else ('#FFFFFF' if i in (4, 7, 9, 11) else '#F0F0F0'))
-        val = '0' if i in (4, 7, 9, 11) else ''
-        b += cell(f's{i}', val, BOX + f'fillColor={fill};fontSize=8;', 34 + i*44, 140, 42, 26)
-    b += cell('slab', 'W0 .. W11, one slot per 2^S ticks', TEXT + 'fontSize=8;', 34, 172, 250, 16)
-    b += cell('ev', 'evicted: madvise prefix (T3)', TEXT + 'fontSize=8;fontColor=#666666;', 34, 190, 180, 16)
-    b += cell('t2n', '0 = never faulted, costs nothing (T2)', TEXT + 'fontSize=8;fontColor=#666666;', 300, 190, 230, 16)
-    blocks = [('b1', 40, [('cnt 4\nflags', HDRC, 58), ('(v3,t17)', EDGEC, 62), ('(v9,t18)', EDGEC, 62), ('(v3,t21)', EDGEC, 62)]),
-              ('b2', 290, [('cnt 4\nflags', HDRC, 58), ('(v1,t40)', EDGEC, 62), ('(v3,t41)', EDGEC, 62), ('(v8,t42)', '#FFE0CC', 62)])]
-    for bid, bx, fields in blocks:
-        x = bx
-        for i, (lbl, fill, w) in enumerate(fields):
-            b += cell(f'{bid}_{i}', lbl, BOX + f'fillColor={fill};fontSize=8;', x, 236, w, 30)
-            x += w
-    b += cell('b3_0', 'cnt 4\nflags', BOX + f'fillColor={HDRC};fontSize=8;', 540, 236, 58, 30)
-    b += edge('ar1', ARROW + 'strokeColor=#777777;', 145, 166, 130, 236)
-    b += edge('ar2', ARROW + 'strokeColor=#777777;', 275, 166, 380, 236)
-    b += cell('st2', '❷ one fetch_add claims the run', TEXT + f'fontColor={WINS};fontSize=8;', 40, 276, 240, 16)
-    b += cell('st3', '❸ payload first, t last (release, T5)', TEXT + f'fontColor={WINS};fontSize=8;', 40, 294, 260, 16)
-    b += cell('arn', '20 B packed edges, never sorted on insert', TEXT + 'fontSize=8;fontColor=#666666;', 40, 340, 280, 16)
-    b += cell('q1s', '❶ map t1,t2   ❷ walk W6..W9', TEXT + f'fontColor={QWIN};fontSize=8;', 240, 118, 220, 16)
-    b += cell('q1t', '❸ interior blocks copied comparison-free', TEXT + f'fontColor={QWIN};fontSize=8;', 330, 208, 260, 16)
-    # panel B
-    b += cell('pB', '', BOX + f'fillColor={PANEL};strokeColor=#888888;', 630, 70, 330, 300)
-    b += cell('pBt', 'Vertex index (§4.3): append chains,\nsorted only by compact()', TITLE, 642, 78, 300, 32)
-    for i in range(4):
-        fill = f'{QNBR}20' if i == 2 else '#FFFFFF'
-        b += cell(f'h{i}', f'v{i+1}', BOX + ('fillColor=#CCEDE0;' if i == 2 else 'fillColor=#FFFFFF;') + 'fontSize=8;',
-                  646 + i*48, 122, 44, 24)
-    b += cell('hn', 'heads, one per vertex', TEXT + 'fontSize=8;', 846, 122, 120, 24)
-    b += cell('k1', 'cnt 3\nsorted 1', BOX + f'fillColor={HDRC};fontSize=8;', 646, 170, 62, 30)
-    for i, lbl in enumerate(['v9 | t18', 'v3 | t21', 'v1 | t40']):
-        b += cell(f'r1{i}', lbl, BOX + f'fillColor={REFC};fontSize=8;', 708 + i*66, 170, 66, 30)
-    b += cell('k2', 'cnt 2\nsorted 0', BOX + f'fillColor={HDRC};fontSize=8;', 646, 226, 62, 30)
-    b += cell('r20', 'v3 | t44', BOX + f'fillColor={REFC};fontSize=8;', 708, 226, 66, 30)
-    b += cell('r21', 'appending…', BOX + 'fillColor=#FFFBEA;fontSize=8;', 774, 226, 76, 30)
-    b += edge('be1', ARROW + 'strokeColor=#777777;', 668, 146, 668, 170)
-    b += edge('be2', ARROW + 'strokeColor=#777777;', 660, 200, 660, 226)
-    b += cell('q2a', '❶ head of v3', TEXT + f'fontColor={QNBR};fontSize=8;', 862, 150, 100, 16)
-    b += cell('q2b', '❷ binary-search on inline ts', TEXT + f'fontColor={QNBR};fontSize=8;', 862, 178, 100, 30)
-    b += cell('q2c', '❸ arena only per hit', TEXT + f'fontColor={QNBR};fontSize=8;', 862, 226, 100, 30)
-    b += cell('refn', '24 B EdgeRef: {dst, blk, off, ts inline}', TEXT + 'fontSize=8;fontFamily=Courier New;', 646, 280, 300, 16)
-    b += cell('refn2', 'appends clear sorted BEFORE bumping cnt (Thm 4.4)', TEXT + 'fontSize=8;fontColor=#666666;', 646, 300, 300, 16)
-    b += edge('cross', ARROW + f'strokeColor={QNBR};strokeWidth=2;', 700, 256, 220, 266)
-    write('fig_arch', 1000, 400, b)
+        b += box(f's{i}', '0' if i in (4, 7, 10) else '', X(4.1 + i * 0.72), Y(7.75),
+                 7 * MM, 5.2 * MM, fills.get(i, tint(BLACK, 10)), **cst)
+    b += text('wl', f'W{sub("0")} .. W{sub("11")}, 2{sup(it("S"))} ticks each',
+              X(12.55), Y(7.95), 170, 14, 'w', 9, mono=True)
+    b += text('t2', '0 = never faulted, costs nothing (T2)', X(12.55), Y(7.55), 190, 14, 'w', 9, note)
+    b += edge('evl', LINE + f'strokeColor={tint(BLACK, 50)};', X(3.75), Y(7.49), X(5.89), Y(7.49))
+    b += text('evt', f'evicted prefix: {tt("madvise")} (T3)', X(4.82), Y(7.42), 140, 14, 'n', 9, note)
+    b += edge('a_s5', ARROW + f'strokeColor={WINS};', X(5.35), Y(8.55), X(7.7), Y(8.01))
+    # arena blocks: header then edge cells chained to the right
+    for bid, x0, evs in (('b1', 4.3, ((3, 17), (9, 18), (3, 21))),
+                         ('b2', 9.0, ((1, 40), (3, 41), (8, 42))),
+                         ('b3', 14.25, ((3, 44),))):
+        b += box(f'{bid}h', 'cnt 4<br>flags', X(x0), Y(6.35), 11 * MM, 5.2 * MM, HDRC, **cst)
+        x = x0 + 0.55
+        for k, (v, t) in enumerate(evs):
+            fill = tint(WINS, 25) if (bid, k) == ('b2', 2) else EDGEC
+            b += box(f'{bid}e{k}', pair(v, t), X(x + 0.575), Y(6.35), 11.5 * MM, 5.2 * MM, fill, **cst)
+            x += 1.15
+    b += box('b3e1', f'{it("t")}=0', X(16.35), Y(6.35), 8 * MM, 5.2 * MM, EDGEC, **cst)
+    b += edge('a_b1', ARROW + f'strokeColor={grey};', X(6.26), Y(7.49), X(6.575), Y(6.61))
+    b += edge('a_b2', ARROW + f'strokeColor={grey};', X(7.7), Y(7.49), X(10.125), Y(6.61))
+    b += edge('a_cas', ARROW + f'strokeColor={grey};dashed=1;', X(13.0), Y(6.35), X(13.7), Y(6.35))
+    b += text('cas', 'CAS chain', X(13.35), Y(6.29), 60, 14, 'n', 9, note)
+    # Q1 on the timeline
+    b += box('q1', f'{bf("Q1")} “all events in [{it("t")}{sub("1")}, {it("t")}{sub("2")}]”<br>'
+             'touches only the timeline',
+             X(15.55), Y(8.75), 132, 32, 'none', QWIN, 9, QWIN, align='left',
+             extra='strokeWidth=2;spacingLeft=4;')
+    b += edge('q1w', DARROW + f'strokeColor={QWIN};strokeWidth=2;', X(8.07), Y(8.13), X(10.93), Y(8.13))
+    b += steptext('q1s1', 1, QWIN, f'map {it("t")}{sub("1")}, {it("t")}{sub("2")}', X(9.3), Y(8.75), 50)
+    b += steptext('q1s2', 2, QWIN, f'walk W{sub("6")} .. W{sub("9")}', X(9.3) + 72, Y(8.75), 62)
+    b += edge('a_q1', ARROW + f'strokeColor={QWIN};', X(15.55) - 66, Y(8.75), X(9.3) + 152, Y(8.75))
+    b += steptext('q1s3', 3, QWIN, 'interior blocks copied comparison-free', X(12.3), Y(5.55), 175)
+    b += edge('a_q1b', ARROW + f'strokeColor={QWIN};curved=1;', X(9.86), Y(7.49), X(15.375), Y(6.61),
+              [(X(12.64), Y(7.29))])                    # to[bend left=10]
+
+    # ======================= Panel B: vertex index
+    for i in range(1, 5):
+        b += box(f'h{i}', f'{it("v")}{sub(i)}', X(0.45 + i * 0.8), Y(3.75), 8 * MM, 5.2 * MM,
+                 tint(QNBR, 30) if i == 3 else tint(SYSC, 12), **cst)
+    b += text('hn', 'heads, one per vertex', X(4.05), Y(3.35), 150, 14, 'w', 9, mono=True)
+    # bucket 1: sorted prefix
+    b += box('k1', f'cnt 3<br>{bf("sorted 1")}', X(1.1), Y(2.75), 13 * MM, 5.2 * MM, HDRC, **cst)
+    for k, (v, t) in enumerate(((9, 18), (3, 21), (1, 40))):
+        b += box(f'r{k + 1}', ref(v, t), X(2.45 + k * 1.4), Y(2.75), 14 * MM, 5.2 * MM, REFC, **cst)
+    # bucket 2: arrival-order tail
+    b += box('k2', f'cnt 2<br>{bf("sorted 0")}', X(1.1), Y(1.6), 13 * MM, 5.2 * MM, HDRC, **cst)
+    b += box('r4', ref(3, 44), X(2.45), Y(1.6), 14 * MM, 5.2 * MM, REFC, **cst)
+    b += box('r5', 'appending…', X(3.85), Y(1.6), 14 * MM, 5.2 * MM, tint(SYSC, 4), **cst)
+    b += edge('a_h3', ARROW + f'strokeColor={grey};curved=1;', X(2.85), Y(3.49), X(1.1), Y(3.01),
+              [(X(1.95), Y(3.34))])                     # to[bend right=12]
+    b += edge('a_k2', ARROW + f'strokeColor={grey};curved=1;', X(1.1), Y(2.49), X(0.45), Y(1.6),
+              [(X(0.68), Y(2.12))])                     # to[bend right=25]
+    b += text('refn', f'24 B EdgeRef = {{dst, block, offset, {bf("ts inline")}}} (formats below)',
+              X(-0.05), Y(0.9), 320, 14, 'w', 9, mono=True)
+    b += text('refn2', f'an append clears {it("sorted")} {bf("before")} it bumps {it("cnt")} (Theorem 4)',
+              X(-0.05), Y(0.5), 320, 14, 'w', 9, note)
+    # Q2 on the index
+    b += box('q2', f'{bf("Q2")} “what did {it("v")}{sub("3")} touch in [{it("t")}{sub("1")}, '
+             f'{it("t")}{sub("2")}]”<br>index first, arena only per hit',
+             X(14.9), Y(3.75), 160, 32, 'none', QNBR, 9, QNBR, align='left',
+             extra='strokeWidth=2;spacingLeft=4;')
+    b += steptext('q2s1', 1, QNBR, f'head of {it("v")}{sub("3")}', X(7.6), Y(3.75), 80)
+    b += edge('a_q2', ARROW + f'strokeColor={QNBR};', X(14.9) - 80, Y(3.75), X(9.75), Y(3.75))
+    b += edge('a_q2h', ARROW + f'strokeColor={QNBR};', X(7.55), Y(3.75), X(3.0), Y(3.75))
+    b += edge('q2w', DARROW + f'strokeColor={QNBR};strokeWidth=2;', X(1.75), Y(2.37), X(5.95), Y(2.37))
+    b += steptext('q2s2', 2, QNBR, 'binary-search the sorted prefix on the inline timestamps',
+                  X(7.6), Y(2.75), 300)
+    b += steptext('q2s3', 3, QNBR, 'dereference the arena only for references that pass the window test',
+                  X(7.6), Y(1.6), 340)
+    b += edge('a_x', ARROW + f'strokeColor={QNBR};strokeWidth=2;curved=1;', X(2.45), Y(1.86),
+              X(7.725), Y(6.09), [(X(4.27), Y(4.12)), (X(6.48), Y(5.23))])   # .. controls ..
+
+    # ======================= Panel C: formats
+    b += text('pCt', f'{bf("Formats")}: cell widths proportional to bytes; the release-published timestamp '
+              f'(<font color="{WINS}">vermillion</font>) is the only synchronization either read path needs',
+              X(-0.1), Y(-0.15), 660, 16, 'nw', 11)
+    W22 = tint(WINS, 22)
+
+    def frow(prefix, y, x0, fields):
+        """Cells chained right=0mm of each other; the first is centred at x0 (cm)."""
+        out, x = '', x0 - fields[0][1] / 20             # left edge of the first cell, cm
+        for k, (lbl, w_mm, fill) in enumerate(fields):
+            w = w_mm * MM
+            out += box(f'{prefix}{k + 1}', lbl, X(x) + w / 2, Y(y), w, 5.2 * MM, fill, **cst)
+            x += w_mm / 10
+        return out
+
+    # Edge, 20 B at 3.0 mm/B (the two "stored last" cells are widened to fit their labels
+    # in Helvetica, 26/29 mm instead of 24; the notes after them move right by the same amount)
+    b += text('fl1', f'{tt("Edge")} 20 B', X(-0.1), Y(-1.0), 70, 14, 'w', 9, bold=True)
+    b += frow('fe', -1.0, 2.0, [('src 4', 12, EDGEC), ('dst 4', 12, EDGEC),
+                                ('timestamp 8, stored last', 26, W22), ('w 4', 12, EDGEC)])
+    b += text('fn1', f'{it("t")}=0 marks an unpublished slot (T5)', X(7.7), Y(-1.0), 190, 14, 'w', 9, note)
+    # EdgeRef, 24 B at 3.0 mm/B
+    b += text('fl2', f'{tt("EdgeRef")} 24 B', X(-0.1), Y(-1.75), 70, 14, 'w', 9, bold=True)
+    b += frow('fr', -1.75, 2.0, [('dst 4', 12, REFC), ('offset 4', 12, REFC),
+                                 ('block pointer 8, stored last', 29, REFC), (bf('timestamp copy 8'), 24, W22)])
+    b += text('fn2', 'predicates read the copy, never the arena (§4.3)', X(9.25), Y(-1.75), 230, 14, 'w', 9, note)
+    # Block header, one 64 B line
+    b += text('fl3', f'{tt("Block")} header 64 B', X(-0.1), Y(-2.5), 90, 14, 'w', 9, bold=True)
+    b += frow('fh', -2.5, 2.65, [('cnt 4', 9, HDRC), ('cap 4', 9, HDRC), ('next 8', 11, HDRC),
+                                 ('flags 4', 10, HDRC), ('pad to 64', 14, tint(BLACK, 6)),
+                                 (f'Edge{sub("0")}', 11, EDGEC), (f'Edge{sub(it("cap") + "−1")}', 13, EDGEC)])
+    b += text('fn3', f'property sidecar: prop({it("e")}) = {it("P")}{sub("base")} + ⌊(&amp;{it("e")} − '
+              f'{it("A")}{sub("base")})/20⌋ × {tt("prop_bytes")} (§4.1)',
+              X(9.95), Y(-2.5), 295, 14, 'w', 9, note)
+    write('fig_arch', 690, 490, b)
+
+# ===================================================== fig_runclaim
+def runclaim():
+    """../fig_runclaim.tex: per-event claim vs run claim, three writers."""
+    X = lambda x: (x + 1.0) * CM
+    Y = lambda y: (3.05 - y) * CM
+    note = tint(BLACK, 65)
+    rows = ((1, 1.85), (2, 1.25), (3, 0.65))
+    EV = dict(fill=EDGEC, stroke=tint(BLACK, 60))       # ev/.style
+    b = ''
+    # ================= left: per-event claim
+    b += text('t1', 'Per-event claim', X(-0.2), Y(2.7), 120, 16, 'w', 11, bold=True)
+    b += text('t1s', f'one {tt("fetch_add")} per event', X(-0.2), Y(2.33), 150, 14, 'w', 9, note)
+    for w, y in rows:
+        b += text(f'wl{w}', f'writer {it("w")}{sub(w)}', X(0.35), Y(y), 50, 14, 'e', 9)
+        for i in range(3):
+            b += box(f'e{w}{i}', '', X(0.85 + i * 0.72), Y(y), 6.4 * MM, 4.2 * MM, **EV)
+    b += box('c1', f'{tt("count")} +=1', X(1.57), Y(-0.2), 16 * MM, 5 * MM, HDRC, tint(BLACK, 70))
+    for w, y in rows:
+        for i in range(3):
+            b += edge(f'a{w}{i}', ARROW + f'strokeColor={WINS};endSize=4;',
+                      X(0.85 + i * 0.72), Y(y - 0.21), X(1.57), Y(0.05))
+    b += text('n1', '9 atomics on one cache line', X(1.57), Y(-0.55), 140, 14, 'n', 9, WINS)
+    # ================= right: run claim
+    b += text('t2', 'Run claim', X(4.1), Y(2.7), 120, 16, 'w', 11, bold=True)
+    b += text('t2s', f'one {tt("fetch_add")} per run', X(4.1), Y(2.33), 140, 14, 'w', 9, note)
+    for w, y in rows:
+        b += text(f'rl{w}', f'writer {it("w")}{sub(w)}', X(4.65), Y(y), 50, 14, 'e', 9)
+        b += cell(f'run{w}', '', f'rounded=1;absoluteArcSize=1;arcSize=3;html=1;fillColor=none;'
+                  f'strokeColor={SYSC};strokeWidth=1.5;', X(4.78), Y(y + 0.27), 2.22 * CM, 0.54 * CM)
+        for i in range(3):
+            b += box(f'f{w}{i}', '', X(5.17 + i * 0.72), Y(y), 6.4 * MM, 4.2 * MM, **EV)
+    b += box('c2', f'{tt("count")} +=3', X(5.89), Y(-0.2), 16 * MM, 5 * MM, HDRC, tint(BLACK, 70))
+    for w, y in rows:
+        b += edge(f'ra{w}', ARROW + f'strokeColor={SYSC};endSize=4;', X(5.89), Y(y - 0.29), X(5.89), Y(0.05))
+    b += text('n2', '3 atomics, same 9 events placed', X(5.89), Y(-0.55), 140, 14, 'n', 9, SYSC)
+    b += edge('div', LINE + f'strokeColor={tint(BLACK, 35)};', X(3.85), Y(-1.0), X(3.85), Y(2.9))
+    write('fig_runclaim', 340, 165, b)
 
 # ===================================================== fig_motivation
 def motivation():
+    """fig_motivation.py: the CADETS chain, two Q3 questions, retention horizon.
+
+    matplotlib data coordinates x in [0, 11], y in [-0.44, 1.22]; drawn at
+    1.25x the paper's 3.34 x 1.72 in so the 5.8pt labels can be fontSize 9.
+    """
+    KX, KY = 400 / 11, 206 / 1.66
+    X = lambda x: 10 + x * KX
+    Y = lambda y: 10 + (1.22 - y) * KY
+    G = QNBR
     b = ''
-    b += cell('tl', '', 'line;strokeWidth=1.5;html=1;', 30, 250, 640, 10)
-    b += edge('tla', ARROW + 'strokeWidth=1.5;', 30, 255, 680, 255)
-    b += cell('tlab', 'time (11 days)', TEXT + 'fontStyle=2;align=right;', 560, 262, 120, 18)
-    b += cell('ret', '', BOX + 'fillColor=#EDEDED;strokeColor=none;opacity=60;', 30, 60, 150, 190)
-    b += cell('retl', 'retention horizon\n(evidence deleted)',
-              TEXT + 'align=center;fontStyle=2;fontColor=#666666;', 40, 20, 130, 34)
-    b += edge('reta', ARROW + 'strokeColor=#888888;', 120, 45, 190, 45)
-    chain = [('implant\ndrop', 215, 190), ('privilege\nescalation', 315, 150),
-             ('C&C\ntraffic', 415, 190), ('process\ninjection', 515, 150),
-             ('alert', 615, 170)]
-    for i, (lbl, x, y) in enumerate(chain):
-        last = (i == len(chain) - 1)
-        col = WINS if last else QWIN
-        b += cell(f'n{i}', '', f'ellipse;html=1;fillColor={col};strokeColor=#FFFFFF;', x - 7, y - 7, 14, 14)
-        b += cell(f'l{i}', lbl, TEXT + 'align=center;fontSize=8;', x - 45, y - 42, 90, 30)
-        b += edge(f'd{i}', 'endArrow=none;dashed=1;html=1;strokeColor=#AACCEE;', x, y + 8, x, 250)
-        if i:
-            px, py = chain[i-1][1], chain[i-1][2]
-            b += edge(f'c{i}', ARROW + f'strokeColor={QWIN};strokeWidth=1.5;curved=1;', px + 9, py, x - 9, y)
-    b += edge('fwd', ARROW + f'strokeColor={WINS};dashed=1;strokeWidth=1.5;', 215, 95, 640, 95)
-    b += cell('fwdl', 'forward: what did the implant touch?',
-              TEXT + f'fontColor={WINS};align=center;', 280, 72, 300, 18)
-    b += edge('bwd', ARROW + f'strokeColor={QNBR};dashed=1;strokeWidth=1.5;', 615, 225, 215, 225)
-    b += cell('bwdl', 'backward: what caused the alert?',
-              TEXT + f'fontColor={QNBR};align=center;', 290, 228, 280, 18)
-    write('fig_motivation', 720, 300, b)
+    # (3) retention: the oldest prefix is deleted (axvspan, 7 % black, axes fractions .17-.93)
+    b += cell('ret', '', f'rounded=0;html=1;fillColor={tint(BLACK, 7)};strokeColor=none;',
+              X(0.05), Y(-0.44 + 0.93 * 1.66), 2.4 * KX, 0.76 * 1.66 * KY)
+    # (1) the stream: event ticks in arrival order along the time axis (same seed as the .py)
+    random.seed(7)
+    for k, x in enumerate(random.uniform(0.3, 10.6) for _ in range(130)):
+        b += edge(f'tick{k}', LINE + f'strokeColor={LIGHT};strokeWidth=0.6;', X(x), Y(0.02), X(x), Y(0.10))
+    b += edge('axis', ARROW + 'strokeColor=#000000;strokeWidth=1.5;', X(0.05), Y(0), X(10.95), Y(0))
+    b += text('time', 'time', X(10.9), Y(-0.1), 40, 14, 'e', 9, extra='fontStyle=2;')
+    b += text('s1', f'{bf("1")} events arrive in time order, never change', X(0.05), Y(-0.265), 260, 14, 'sw', 9)
+    b += edge('reta', ARROW + f'strokeColor={GREY};', X(1.85), Y(0.98), X(2.95), Y(0.98))
+    b += text('retl', f'{bf("3")} retention<br>horizon', X(1.25), Y(1.03), 70, 26, 's', 9, GREY)
+    # the attack chain: a time-respecting path through the stream
+    chain = [(3.4, 0.42, 'implant<br>drop', True), (5.1, 0.62, 'privilege<br>escalation', False),
+             (6.9, 0.42, 'C&amp;C<br>traffic', True), (8.6, 0.62, 'process<br>injection', False),
+             (10.1, 0.50, 'alert', True)]
+    for k, (x, y, lbl, up) in enumerate(chain):
+        b += edge(f'drop{k}', LINE + f'strokeColor={SYSC};strokeWidth=0.7;dashed=1;dashPattern=1 2;',
+                  X(x), Y(0.02), X(x), Y(y - 0.045))
+    for k in range(len(chain) - 1):
+        (x0, y0), (x1, y1) = chain[k][:2], chain[k + 1][:2]
+        sx, sy, tx, ty = X(x0 + 0.13), Y(y0), X(x1 - 0.13), Y(y1)
+        dx, dy = tx - sx, ty - sy
+        wp = ((sx + tx) / 2 + 0.09 * dy, (sy + ty) / 2 - 0.09 * dx)    # arc3, rad=-0.18
+        b += edge(f'c{k}', ARROW + f'strokeColor={SYSC};strokeWidth=1.2;curved=1;', sx, sy, tx, ty, [wp])
+    for k, (x, y, lbl, up) in enumerate(chain):
+        if lbl == 'alert':                              # the star marker
+            b += text(f'm{k}', '★', X(x), Y(y), 20, 20, 'c', 16)
+        else:
+            b += cell(f'm{k}', '', f'ellipse;html=1;fillColor={SYSC};strokeColor=#FFFFFF;',
+                      X(x) - 5, Y(y) - 5, 10, 10)
+        b += text(f'l{k}', lbl, X(x), Y(y + 0.09) if up else Y(y - 0.09), 70,
+                  14 if lbl == 'alert' else 24, 's' if up else 'n', 9, extra='fillColor=#FFFFFF;')
+    # (2) the two questions: traversals along the time axis, both Q3
+    b += edge('bwd', ARROW + f'strokeColor={G};strokeWidth=1.2;dashed=1;dashPattern=5 3;',
+              X(9.9), Y(0.24), X(3.6), Y(0.24))
+    b += text('bwdl', 'Q3 backward: which earlier events caused the alert?', X(6.7), Y(0.17), 260, 14, 'c', 9, G)
+    b += edge('fwd', ARROW + f'strokeColor={G};strokeWidth=1.2;', X(3.6), Y(0.90), X(10.3), Y(0.90))
+    b += text('fwdl', 'Q3 forward: what did the implant touch afterwards?', X(7.0), Y(0.99), 260, 14, 'c', 9, G)
+    b += text('s2', f'{bf("2")} the questions walk the time axis; {bf("3")} retention deletes its oldest end',
+              X(0.05), Y(-0.415), 380, 14, 'sw', 9, G)
+    write('fig_motivation', 420, 230, b)
 
 if __name__ == '__main__':
-    runclaim(); fmt(); arch(); motivation()
+    overview(); arch(); runclaim(); motivation()

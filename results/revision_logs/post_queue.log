@@ -1,0 +1,15 @@
+[16:27:27] start theia_tgsr
+[16:29:39] end   theia_tgsr rc=0
+[16:29:39] start nots_wiki
+[16:29:41] end   nots_wiki rc=0
+[16:29:41] start nots_cadets
+[16:30:17] end   nots_cadets rc=0
+[16:30:17] start nots_theia
+[16:32:16] end   nots_theia rc=0
+[16:32:16] start nots_lanl
+[16:45:14] end   nots_lanl rc=0
+[16:45:14] start e27_theia
+[16:48:06] end   e27_theia rc=0
+[16:48:06] start ingest_trials
+[16:55:46] end   ingest_trials rc=0
+[16:55:46] post-queue finished
