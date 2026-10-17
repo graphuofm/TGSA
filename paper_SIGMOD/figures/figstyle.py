@@ -9,15 +9,14 @@ CSV loaders, name maps.
 Color legend (identical to the \\definecolor block in main.tex; change both
 or neither). A color means one thing in every figure of the paper:
 
-    systems (evaluation plots)            paths (architecture drawings only)
-    TGSA        blue    #0072B2           insert path (writes)  vermillion #D55E00
-    GraphOne    orange  #E69F00           queries Q1..Q4 (reads) green     #009E73
-    LiveGraph   purple  #CC79A7
-    RocksDB     brown   #8C564B
-    DuckDB      yellow  #F0E442 (black edge)
-    Stinger     grey    #aaaaaa
-    Sortledton  grey    #555555 (hatched)
-    static CSR  white bar, black hatch (a reference, not a system)
+    systems (evaluation plots): one blue family, TGSA saturated, the rest
+    lighter and hatched so they stay apart in print
+    TGSA        #0072B2 solid          RocksDB     #C9D6E6 hatched ///
+    GraphOne    #5B84B1 solid          DuckDB      white   hatched xxx
+    LiveGraph   #9DB4D0 solid          Stinger     #E6E6E6 hatched ...
+    Sortledton  #A6A6A6 hatched \\\\     static CSR  white   hatched ++
+    paths (architecture drawings only): insert path vermillion #D55E00,
+    queries Q1..Q4 green #009E73
 
 Blue is the paper's tone: TGSA and its structures are blue in every figure,
 and TGSA-only variants use shades of the same blue (BLUES). The two accent
@@ -54,14 +53,14 @@ plt.rcParams.update({
 # Canonical system keys are the `system` column values of results/e33_matrix.
 SYS = {
     'tgsr':       dict(c='#0072B2', m='o', ls='-',            hatch='',     lbl='TGSA'),
-    'graphone':   dict(c='#E69F00', m='s', ls='--',           hatch='',     lbl='GraphOne'),
-    'livegraph':  dict(c='#CC79A7', m='^', ls='-.',           hatch='',     lbl='LiveGraph'),
-    'rocksdb':    dict(c='#8C564B', m='D', ls=(0, (3, 1, 1, 1)), hatch='', lbl='RocksDB'),
-    'duckdb':     dict(c='#F0E442', m='v', ls=(0, (1, 1)),    hatch='',     lbl='DuckDB'),
-    'stinger':    dict(c='#aaaaaa', m='P', ls=(0, (4, 2)),    hatch='',     lbl='Stinger'),
-    'sortledton': dict(c='#555555', m='X', ls=(0, (2, 2)),    hatch='///',  lbl='Sortledton'),
-    'csr':        dict(c='#ffffff', m='x', ls='--',           hatch='xxx',  lbl='static CSR (reference)'),
-    'tva':        dict(c='#ffffff', m='+', ls=':',            hatch='...',  lbl='TVA'),
+    'graphone':   dict(c='#5B84B1', m='s', ls='--',           hatch='',     lbl='GraphOne'),
+    'livegraph':  dict(c='#9DB4D0', m='^', ls='-.',           hatch='',     lbl='LiveGraph'),
+    'rocksdb':    dict(c='#C9D6E6', m='D', ls=(0, (3, 1, 1, 1)), hatch='///', lbl='RocksDB'),
+    'duckdb':     dict(c='#FFFFFF', m='v', ls=(0, (1, 1)),    hatch='xxx',  lbl='DuckDB'),
+    'stinger':    dict(c='#E6E6E6', m='P', ls=(0, (4, 2)),    hatch='...',  lbl='Stinger'),
+    'sortledton': dict(c='#A6A6A6', m='X', ls=(0, (2, 2)),    hatch='\\\\',  lbl='Sortledton'),
+    'csr':        dict(c='#FFFFFF', m='x', ls='--',           hatch='++',   lbl='static CSR (reference)'),
+    'tva':        dict(c='#FFFFFF', m='+', ls=':',            hatch='--',   lbl='TVA'),
 }
 # Shades of the paper's blue for TGSA variants (durability modes, modules,
 # corpora in a TGSA-only sweep), dark to light.
@@ -82,7 +81,7 @@ def sysk(name):
 def bar_kw(system):
     """Keyword arguments for ax.bar so every system looks the same everywhere."""
     s = SYS[sysk(system)]
-    return dict(facecolor=s['c'], edgecolor='black', linewidth=0.5, hatch=s['hatch'])
+    return dict(facecolor=s['c'], edgecolor='#1F3F5F', linewidth=0.5, hatch=s['hatch'])
 
 def line_kw(system):
     s = SYS[sysk(system)]

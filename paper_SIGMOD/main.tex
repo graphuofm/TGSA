@@ -12,6 +12,8 @@
 \usepackage[capitalise,noabbrev]{cleveref}
 % a little extra stretch keeps two-column lines inside the margin
 \setlength{\emergencystretch}{1em}
+% columns end where the text ends; no stretched gaps around a top float
+\raggedbottom
 
 % ---- the one color legend of the paper (figures/figstyle.py holds the same
 % values; change both or neither). Blue is the paper's tone: \sys and its
@@ -78,12 +80,12 @@ queries stay correct \emph{during} lock-free multi-writer ingestion and
 correctness does not depend on arrival order. Third, because a time
 prefix is an address prefix and engine state is a pure function of the
 appended multiset, retention is a page release and recovery is a
-replay. On four event corpora from \nSmallEvents{} to \nLanlEvents{}
+replay. On four event datasets from \nSmallEvents{} to \nLanlEvents{}
 events, \sys ingests \nIngestGapLo{} to \nIngestGapHi{} times faster
-than the fastest competing store on three corpora and matches it on
+than the fastest competing store on three datasets and matches it on
 the fourth, and \nIngestRestLo{} to \nIngestRestHi{} times faster than
 every other system; it answers window scans and time-respecting
-traversals faster than every system on every corpus, by 3 to 15{,}000
+traversals faster than every system on every dataset, by 3 to 15{,}000
 times, and windowed-neighbor and as-of queries faster in 27 of 32
 cells, the remaining five being hub-dominated cells where GraphOne's
 archived adjacency leads by 1.5 to 4.7 times. On whole-graph
@@ -193,7 +195,7 @@ temporal address space as a contract that any client appending into its
 slots inherits. (3)~A run-claiming lock-free ingestion path under a
 per-slot publication protocol, with a proof that no reader observes
 partial state during concurrent multi-writer ingestion. (4)~An
-evaluation against seven systems on the same four corpora of
+evaluation against seven systems on the same four datasets of
 \nSmallEvents{} to \nLanlEvents{} events and the same four queries,
 with every answer verified element-wise before timing, recovery tested
 by fault injection, and every design decision measured on both sides.
@@ -466,7 +468,7 @@ $\mu = E/W \ge E/(D+1) \ge \tau/2$ and $\mu < 2E/D < 4\tau$.
 later prefix changes only future windows, because \cref{eq:mapping} is
 evaluated per edge at insert time. The two factors of two in the bound
 come from rounding the window width up to a power of two and from the
-ceiling on the window count; across our corpora the bound holds at
+ceiling on the window count; across our datasets the bound holds at
 per-window densities from 32 to 32{,}768 edges.
 
 \subsection{Lock-Free Ingestion}\label{sec:storage-ingest}
@@ -777,7 +779,7 @@ allocation, and
 knob that interacts with this choice is the page size. Transparent
 huge pages (THP) replace a 4\,KB fault by a 2\,MB one, and on a sparse
 timeline a window that holds a handful of events then costs 2\,MB of
-resident memory, which defeats clause T2: on the corpus that motivated
+resident memory, which defeats clause T2: on the dataset that motivated
 the experiment THP cost $28\%$ of ingestion throughput and $69\%$ more
 resident memory, so the engine disables it on its mappings.
 
@@ -803,7 +805,7 @@ same code is correct and the release stores become real barriers.
 
 \emph{SIMD Boundary Filter.} Only the two boundary slots of a Q1 range
 compare timestamps, which invites vectorization: an AVX2 gather path
-filters eight timestamps per iteration. Across four corpora and five
+filters eight timestamps per iteration. Across four datasets and five
 window widths it never won, because a 64-bit gather at a 20-byte
 stride is slower than scalar loads and a range scan only ever filters
 its two boundary slots; it ships disabled.
@@ -823,25 +825,25 @@ exercised by every ordinary ingest.
 \section{Evaluation}\label{sec:eval}
 The evaluation answers three questions in order, and the order is the
 paper's argument. (1)~Ingestion: \sys ingests faster than every system
-we compare against, on every corpus but one, where the closest
+we compare against, on every dataset but one, where the closest
 competitor matches it. (2)~Temporal queries: on the four queries of
 \cref{tab:queries}, \sys answers faster than the same systems on the
 same data in 59 of 64 cells, and the margin grows with temporal
 selectivity; the five cells it loses are named and explained.
 (3)~Structural algorithms: \sys pays a bounded constant against a
 static layout. Every comparison in this section uses the same four
-corpora, the same four queries, and the same verification protocol; a
+datasets, the same four queries, and the same verification protocol; a
 system that cannot express a query is shown as such.
 
 \subsection{Experiment Setup}\label{sec:eval-setup}
 \textbf{Hardware.} One machine: a 10-core Intel Xeon W-2255 (20
 hardware threads, 3.7\,GHz), 188\,GB of memory, a 2\,TB SATA hard
-disk (7{,}200\,rpm) that holds the corpora and the logs, Ubuntu 20.04.
+disk (7{,}200\,rpm) that holds the datasets and the logs, Ubuntu 20.04.
 All systems run in the same process or on the same machine, with eight
 worker threads unless a system's own write path is single-threaded,
 which the text notes.
 
-\textbf{Datasets.} Four event corpora, large to small, chosen to span
+\textbf{Datasets.} Four event datasets, large to small, chosen to span
 three orders of magnitude of volume and the three workload families of
 \S\ref{sec:intro} (\cref{tab:breadth}). LANL is 58 days of enterprise
 authentication events from the Los Alamos National Laboratory
@@ -851,9 +853,9 @@ provenance traces from the DARPA Transparent Computing
 program~\cite{darpa2020tc}, Linux and FreeBSD hosts respectively, with
 documented intrusions inside (\cref{ex:cadets}). wiki-talk is the
 Wikipedia user-talk interaction stream from SNAP~\cite{leskovec2014snap}
-and the corpus TVA's own evaluation uses. Every result in this section
+and the dataset TVA's own evaluation uses. Every result in this section
 is on these four; the \sys-only measurements were also run on eleven
-further public corpora, including LDBC-SNB~\cite{erling2015ldbc} at
+further public datasets, including LDBC-SNB~\cite{erling2015ldbc} at
 scale factor~10, with the same conclusions.
 
 \input{table_breadth}
@@ -878,8 +880,8 @@ its own harness with our query jobs added. A time-sorted static CSR,
 which cannot ingest, appears as a reference where informative.
 
 \textbf{Queries and Measurement.} The query set is \cref{tab:queries},
-with a window width of 1\% of the corpus span; Q1 is the trailing
-window, and Q2 to Q4 use 1{,}000 queries per corpus drawn uniformly
+with a window width of 1\% of the dataset span; Q1 is the trailing
+window, and Q2 to Q4 use 1{,}000 queries per dataset drawn uniformly
 over events, so that each targets an entity at a time it was active,
 handed to every system in the same order. Every system's answer is
 compared element-wise against \sys's through a checksum over the
@@ -909,7 +911,7 @@ measurement needs them, and \S\ref{sec:eval-analysis} prices each.
 \cref{fig:ingest}(a) is the paper's first claim. \sys ingests 72.5M
 events/s on LANL, 60.3M on CADETS, 54.2M on wiki-talk, and 33.3M on
 THEIA. Against the fastest competitor, GraphOne, that is $1.6$ to
-$1.9\times$ on three corpora and a tie on THEIA ($33.3$ against
+$1.9\times$ on three datasets and a tie on THEIA ($33.3$ against
 $34.8$M); against the rest it is $4$ to $13\times$ (LiveGraph),
 $11$ to $39\times$ (RocksDB and DuckDB), and $20$ to $2{,}400\times$
 (Sortledton and Stinger). The bars are like for like: every system ingests the same events in
@@ -918,10 +920,10 @@ system must do before its reads are correct (\sys's publication,
 GraphOne's archive into its adjacency, RocksDB's memtable flush,
 DuckDB's index build). The arrival protocol, not the graph, sets \sys's rate on THEIA: each 64K-event batch forks eight threads over a 6.9M-vertex
 index and hands run claiming short runs, and the rate halves against
-the other corpora; fed as one batch, the same engine ingests THEIA at
-79M events/s, and all four corpora at \nSingleCallLo{} to
+the other datasets; fed as one batch, the same engine ingests THEIA at
+79M events/s, and all four datasets at \nSingleCallLo{} to
 \nSingleCallHi{}M (\S\ref{sec:eval-analysis}).
-Every competitor finished the billion-event corpus within the budget.
+Every competitor finished the billion-event dataset within the budget.
 
 \textbf{Streaming graph stores.} GraphOne is the closest competitor:
 its edge log absorbs events at memory speed and its archive thread
@@ -958,7 +960,7 @@ operation where its design is the stronger one.
 
 \textbf{Ingestion under Concurrent Queries.}\label{sec:eval-concurrent}
 A streaming store's real task is both at once, so one protocol drives
-\sys, GraphOne, and LiveGraph identically: preload half the corpus,
+\sys, GraphOne, and LiveGraph identically: preload half the dataset,
 stream the rest through eight writers at full speed, and have four
 readers answer Q2 over settled windows continuously, every answer
 checked against a quiescent reference. \cref{fig:ingest}(b) reports
@@ -966,7 +968,7 @@ what the writers sustain under that pressure: \sys holds $57.9$ to
 $74.0$M events/s, which is $3.0$ to $4.7\times$ GraphOne and $3.6$ to
 $10.7\times$ LiveGraph. The readers' side is split: \sys answers
 $3.0\times$ more queries per second than GraphOne on wiki-talk, and
-GraphOne answers $1.5$ to $2.5\times$ more on the three corpora whose
+GraphOne answers $1.5$ to $2.5\times$ more on the three datasets whose
 sampled queries land on hub vertices, for the reason
 \S\ref{sec:eval-temporal} gives for Q2 on THEIA. Across all recorded
 runs the mismatch count is zero. LiveGraph earns its bars only after
@@ -987,7 +989,7 @@ their footprint is not drawn.
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\textwidth]{figures/fig_queries.pdf}
-  \caption{Temporal queries Q1 to Q4 (rows) on the four corpora
+  \caption{Temporal queries Q1 to Q4 (rows) on the four datasets
   (columns), every answer verified against \sys's. A missing bar is a
   query the system cannot express; a bar marked with a fraction is the
   prefix the system completed within the budget.}
@@ -996,7 +998,7 @@ their footprint is not drawn.
 
 \subsection{Temporal Query Performance}\label{sec:eval-temporal}
 \cref{fig:queries} is the second claim. Each row is one query of
-\cref{tab:queries}, each column one corpus, each bar one system, and
+\cref{tab:queries}, each column one dataset, each bar one system, and
 the vertical scale within a row is shared, so a bar can be compared in
 both directions. The claim holds in full for Q1 and Q3 and in most
 cells for Q2 and Q4; the cells where it does not are the two paragraphs
@@ -1052,7 +1054,7 @@ in time proportional to the distinct neighbors, where an event store
 must reduce every event up to $t$. \sys answers in $23$\,$\mu$s
 (wiki-talk) to $9.2$\,ms (LANL) at the median: faster than LiveGraph
 by $1.25$ to $1.8\times$ and than DuckDB by $1.3$ to $81\times$ on
-every corpus, faster than GraphOne on CADETS and wiki-talk ($1.2$ and
+every dataset, faster than GraphOne on CADETS and wiki-talk ($1.2$ and
 $3.0\times$), and slower than GraphOne on THEIA and LANL ($2.8$ and
 $4.7\times$). The last two cells are the hub effect again, on the
 reduction rather than the search: \cref{alg:asof} sorts the surviving
@@ -1094,7 +1096,7 @@ inside its own harness and is left out of the shared protocol). \sys
 is $2.0$ to $2.5\times$ faster than LiveGraph, because a reference
 chain is a linear walk and a version chain is a pointer chase per edge,
 and pays a median \nStructuralGap{} times against the static CSR across
-BFS, PageRank, and label propagation on the four corpora (range $1.4$
+BFS, PageRank, and label propagation on the four datasets (range $1.4$
 to $2.3\times$): the price of resolving a destination through a
 24-byte reference instead of reading it from a packed array. The
 constant is bounded because delivery is a linear walk of reference
@@ -1115,9 +1117,9 @@ within one to two analyses.
 
 \subsection{Persistence and Recovery}\label{sec:eval-recovery}
 \textbf{Durability Overhead.} \cref{fig:recovery} prices durability
-on the four corpora, from no log through asynchronous group commit to
+on the four datasets, from no log through asynchronous group commit to
 an \texttt{fsync} per batch, on the 7{,}200\,rpm disk that also holds
-the corpora. Writing the log without waiting for it costs
+the datasets. Writing the log without waiting for it costs
 \nDurWriteLo{} to \nDurWriteHi{}\% of peak ingestion; an asynchronous
 4\,MB group commit sustains \nDurDiskLo{} to \nDurDiskHi{}M events/s
 and an \texttt{fsync} per batch $1.1$ to $5.2$M, the device's bound,
@@ -1154,7 +1156,7 @@ multiset.
 \subsection{Performance Analysis of \sys}\label{sec:eval-analysis}
 One mechanism per panel of \cref{fig:analysis}; both settings of every
 switch deliver identical results before timing counts. The sweeps feed
-each corpus as one batch, the engine's ceiling: \nSingleCallLo{} to
+each dataset as one batch, the engine's ceiling: \nSingleCallLo{} to
 \nSingleCallHi{}M events/s on eight threads against the $33$ to $73$M
 of the 64K-event arrival protocol of \cref{fig:ingest}, the difference
 being the per-batch fork and join and the shorter runs handed to run
@@ -1162,7 +1164,7 @@ claiming.
 
 \textbf{Run Claiming.} The switch decides whether the engine scales
 (\cref{fig:analysis}(a)). With it, ingestion climbs from one thread to
-eight on every corpus: $21.9$ to $76.5$M events/s on LANL, $33.6$ to
+eight on every dataset: $21.9$ to $76.5$M events/s on LANL, $33.6$ to
 $84.6$M on THEIA, $34.2$ to $85.4$M on CADETS, $21.4$ to $73.2$M on
 wiki-talk. Without it, scaling \emph{inverts} and one thread beats
 eight ($14.6$ to $7.0$M on CADETS), because time-ordered arrival
@@ -1176,7 +1178,7 @@ structure that ordered arrival supplies.
 \textbf{Parameters.} Neither of the engine's two parameters needs
 tuning. Across granularity targets $\tau$ spanning two orders of
 magnitude, realized mean occupancy landed inside
-Theorem~\ref{thm:shift}'s $[\tau/2, 4\tau)$ in every corpus/target run
+Theorem~\ref{thm:shift}'s $[\tau/2, 4\tau)$ in every dataset/target run
 with query cost flat across the sweep; the search threshold shows a
 plateau and then a cliff, every value from 1 to 256 within noise and
 removing the mechanism costing $2.8\times$ on wiki-talk and $26\times$
@@ -1199,7 +1201,7 @@ attached, because entity-keyed access, not time-keyed storage,
 dominates the write path. A deployment that asks only time-axis
 questions, windows, aggregation, retention, and replay, gets the core
 rate. The property sidecar rides with the index for free, within $9\%$
-of the vertex-index configuration on every corpus, while the reverse
+of the vertex-index configuration on every dataset, while the reverse
 index costs about as much again as the forward one. Every configuration
 answered the same window count, so modules change cost and never
 answers.
@@ -1211,7 +1213,7 @@ while wiki-talk's query throughput rises from 40K to 402K queries/s,
 with zero mismatches at every mix.
 
 \textbf{Sharding.} With $S$ shards in one process under a 16-thread
-budget, entity sharding scales a live stream on every corpus ($1.1$ to
+budget, entity sharding scales a live stream on every dataset ($1.1$ to
 $1.36\times$ at eight shards) and time sharding degrades it on three
 of four ($0.54$ to $0.85\times$), because a time-ordered stream keeps
 one shard hot; a distributed \sys therefore partitions entities across
@@ -1277,7 +1279,7 @@ standard lock-free append~\cite{michael1996nonblocking}.
 Graph workloads moved their center of gravity from structure to time,
 and \sys moves the storage layout with them: the timestamp is the
 address, so the index becomes a shift, ingestion a lock-free append,
-retention a page release, and recovery a replay. On the same corpora
+retention a page release, and recovery a replay. On the same datasets
 and queries for every system, \sys ingests \nIngestGapLo{} to
 \nIngestGapHi{} times faster than the closest competitor where it
 leads, answers the temporal queries faster in 59 of 64 cells, and pays
