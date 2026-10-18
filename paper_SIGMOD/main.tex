@@ -65,7 +65,7 @@ shen2026dcsr}, and has evaluated them largely with structural queries
 and whole-graph analytics~\cite{malewicz2010pregel, shun2013ligra, kyrola2012graphchi, zhu2016gemini}.
 For an important class of modern workloads, however, time rather than
 structure determines the critical path. Network flow
-analysis~\cite{lakhina2004anomalies, cranor2003gigascope, gupta2018sonata}, system
+analysis~\cite{lakhina2004anomalies, cranor2003gigascope}, system
 provenance~\cite{king2003backtracker, pasquier2017camflow, hossain2017sleuth, han2020unicorn}, execution
 traces~\cite{hassan2020omegalog, milajerdi2019holmes}, and interaction
 logs~\cite{leskovec2014snap, paranjape2017motifs} build graphs from \emph{events}: a flow
@@ -1252,7 +1252,7 @@ and a time-encoded key gives contiguous time ranges;
 not entity expansion, and pays merge amplification that arithmetic
 placement never incurs. Columnar engines~\cite{raasveldt2019duckdb} own
 predictable range-filter tails and lose traversal by a scan per hop;
-time-series databases~\cite{pelkonen2015gorilla, andersen2016btrdb}
+time-series databases~\cite{pelkonen2015gorilla}
 partition by time but store scalar streams, not adjacency, and \tmap imports their partitioning discipline into a
 layout that still owns a graph's entity axis.
 
