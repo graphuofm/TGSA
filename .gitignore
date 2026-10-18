@@ -21,3 +21,5 @@ usenix_cfp.txt
 results/e26_concurrent/go_convert/
 *.zip
 overleaf-upload/
+build_notscache/
+build_fix/

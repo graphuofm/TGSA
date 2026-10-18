@@ -1,1 +1,0 @@
-/usr/bin/c++   -Wall -Wextra -Wno-unused-parameter -O3 -march=native -DNDEBUG   CMakeFiles/barry_demo.dir/tools/demo.cpp.o  -o barry_demo  libbarry.a -lpthread -lz /usr/lib/gcc/x86_64-linux-gnu/9/libgomp.so /usr/lib/x86_64-linux-gnu/libpthread.so 

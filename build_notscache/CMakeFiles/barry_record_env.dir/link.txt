@@ -1,1 +1,0 @@
-/usr/bin/c++   -Wall -Wextra -Wno-unused-parameter -O3 -march=native -DNDEBUG   CMakeFiles/barry_record_env.dir/tools/record_env.cpp.o  -o barry_record_env 
