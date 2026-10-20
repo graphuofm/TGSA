@@ -1,0 +1,75 @@
+% USENIX Security draft. Style: usenix2019_v3 (replace with the year's official
+% file when the CfP is out). Body limit at USENIX Security: 13 pages excluding
+% references and appendices. See PLAN.md for the evidence map.
+\documentclass[letterpaper,twocolumn,10pt]{article}
+\usepackage[hidelinks]{hyperref}
+\usepackage{usenix2019_v3}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage[capitalise,noabbrev]{cleveref}
+\newcommand{\sys}{TGSA\xspace}
+
+\begin{document}
+\date{}
+\title{\Large \bf What Log Reduction Costs an Investigation:\\
+Lossless Provenance Storage at Collection Rate}
+\author{{\rm Anonymous submission}}
+\maketitle
+
+\begin{abstract}
+% The claim in one paragraph. Draft target: 200 words.
+Provenance-based intrusion detection and investigation rest on log
+reduction: a host emits far more security-relevant events than any
+published system stores, and the reduction applied before storage is
+validated only against detection accuracy. We measure what it costs an
+investigation. On 58 days of enterprise authentication (1.05 billion
+events, 749 labelled red-team actions) and on two whole-system
+provenance traces with documented intrusions, causality-preserving
+reduction at the ratios these systems operate at deletes up to 44\% of
+the attacker's own actions while the field's accuracy metric, recall of
+compromised hosts, does not move. We then show that the reduction is
+unnecessary: a storage layer that keys provenance on time ingests the
+unreduced stream at the rate it is produced, answers forward and
+backward causal queries in microseconds to milliseconds, and retains
+under a time horizon at the cost of a page release. [Placeholder.]
+\end{abstract}
+
+\section{Introduction}
+% 1. Provenance graphs are the substrate of attack investigation (BackTracker ... HOLMES, UNICORN).
+% 2. Every deployed pipeline reduces the log before storage; reduction is validated by detection accuracy.
+% 3. Question: what does reduction cost the investigation, not the detector?
+% 4. Findings (E8, E14): attack-edge survival vs node recall; infrastructure reuse erased; granularity.
+% 5. The storage pressure that forces reduction is a layout problem (SIGMOD paper, cited as [anonymous]).
+% 6. Contributions.
+
+\section{Background and Threat Model}
+% provenance graphs; reduction families (CPR, LogGC, NodeMerge, sampling); the investigation workflow; attacker model.
+
+\section{Measuring What Reduction Removes}
+% 3.1 metric: attack-edge survival vs node-level recall (E8 Finding 1)
+% 3.2 the investigation horizon (E8 Finding 2)
+% 3.3 cross-corpus: LANL vs CADETS vs THEIA (E14)
+% 3.4 infrastructure reuse (CADETS attack 4)
+
+\section{Lossless Retention at Collection Rate}
+% the storage substrate, summarized from the SIGMOD paper: time-keyed addressing,
+% forward/backward taint as operators, retention as prefix release; only what the
+% security reader needs.
+
+\section{Evaluation}
+% E1 ingestion at collection rate (per-host event rates vs engine rate)
+% E2 investigation latency on unreduced logs (forward/backward, LANL + TC)
+% E3 retention under policy; what a horizon of N days costs
+% E4 end-to-end: run a published detector/investigation on reduced vs unreduced input
+
+\section{Discussion: Operating Under Known Contamination}
+% the recovery-semantics question from docs/log_reduction_findings.pdf
+
+\section{Related Work}
+\section{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
