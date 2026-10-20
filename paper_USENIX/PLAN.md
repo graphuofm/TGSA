@@ -37,3 +37,19 @@ this one is the security claim built on it.
   evaluation badges. Replace usenix2019_v3.sty with the year's official style file.
 - Never cite the SIGMOD submission by name while it is under review; cite as
   "[anonymous, under submission]" and put the engine summary in §4.
+
+## Work in flight (2026-10-20)
+| gap | owner | output |
+|---|---|---|
+| 1 THEIA ground truth + E14 | agent | data/tc_theia_groundtruth.tsv, results/e14_tc/e14_theia.csv, NOTES_THEIA.md |
+| 2 reduction policies (loggc, nodemerge, dedup, sample_pa) | agent | benchmark/reduction_policies.hpp, results/e8_attack/e8_lanl_policies.csv, results/e14_tc/e14_policies.csv |
+| 3 UNICORN on reduced streams | agent | baselines/unicorn (ignored), results/unicorn/README.md |
+| 4 collector event rate (no root: strace proxy) | scripts/collector_rate.sh | results/e36_collector/rate.csv |
+| 5 retention under a storage budget | agent | benchmark/bench_e34_budget.cpp, results/e34_budget/ |
+| 6 Elasticsearch / Kafka baseline | agent | benchmark/bench_e35_siem.py, results/e35_siem/README.md |
+
+## Cleanup list (run when the above finish)
+- /home/jding/dataset/es_data, /home/jding/dataset/kafka_data, /home/jding/dataset/graphone, e33_rocksdb_*, e18_wal
+- baselines/unicorn parsed graphs and sketches (keep the clone, drop outputs)
+- build_rate/, any *.tgz under build dirs, results/revision_logs/*.time
+- results/e33_matrix/smoke if recreated; scratch dumps under /tmp are session-local
