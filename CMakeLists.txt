@@ -270,3 +270,8 @@ if(E33_RPATH)
     list(JOIN E33_RPATH ";" E33_RPATH_STR)
     set_target_properties(bench_e33_matrix PROPERTIES BUILD_RPATH "${E33_RPATH_STR}")
 endif()
+
+# E34: retention under a fixed storage budget, measured at investigation time.
+add_executable(bench_e34_budget benchmark/bench_e34_budget.cpp)
+target_include_directories(bench_e34_budget PRIVATE ${CMAKE_SOURCE_DIR}/benchmark)
+target_link_libraries(bench_e34_budget PRIVATE barry)

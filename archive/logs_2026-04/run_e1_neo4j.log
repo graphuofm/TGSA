@@ -1,0 +1,49 @@
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 1000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 1000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 100000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 100000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 1000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 1000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 100000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 100000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 1000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 1000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 100000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 100000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 1000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 1000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 100000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 100000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 1000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 1000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 100000 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 100000 --threads 1 --trial 1 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10 --threads 1 --trial 0 --reset 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+Traceback (most recent call last):
+  File "/home/jding/Barry/scripts/run_all.py", line 444, in <module>
+    main()
+  File "/home/jding/Barry/scripts/run_all.py", line 437, in main
+    {"e1": run_e1, "e2": run_e2, "e3": run_e3,
+  File "/home/jding/Barry/scripts/run_all.py", line 157, in run_e1_neo4j
+    subprocess.run(cmd, timeout=args.timeout or 600,
+  File "/usr/lib/python3.8/subprocess.py", line 495, in run
+    stdout, stderr = process.communicate(input, timeout=timeout)
+  File "/usr/lib/python3.8/subprocess.py", line 1028, in communicate
+    stdout, stderr = self._communicate(input, endtime, timeout)
+  File "/usr/lib/python3.8/subprocess.py", line 1894, in _communicate
+    self.wait(timeout=self._remaining_time(endtime))
+  File "/usr/lib/python3.8/subprocess.py", line 1083, in wait
+    return self._wait(timeout=timeout)
+  File "/usr/lib/python3.8/subprocess.py", line 1798, in _wait
+    raise TimeoutExpired(self.args, timeout)
+subprocess.TimeoutExpired: Command '['python3', '/home/jding/Barry/baselines/neo4j/bench_neo4j.py', 'ingest', '--dataset', '/home/jding/dataset/bin/sx-superuser.bin', '--batch', '10', '--threads', '1', '--trial', '0', '--reset', '1', '--output', '/home/jding/Barry/results/e1_ingest/e1.csv']' timed out after 599.9999187923968 seconds

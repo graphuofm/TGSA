@@ -1,0 +1,42 @@
+MEM 40/188 GB used
+[e12] lanl-auth: 1051430459 edges over 58.0 days => 210 events/s
+      split at 0.9990 -> prefix 1050379028, suffix 1051431
+MEM 60/188 GB used
+MEM 64/188 GB used
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 63.09 GB at 0x7f20c7055000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=50.5 GB virtual
+MEM 70/188 GB used
+MEM 78/188 GB used
+MEM 94/188 GB used
+MEM 109/188 GB used
+MEM 116/188 GB used
+MEM 121/188 GB used
+MEM 129/188 GB used
+MEM 137/188 GB used
+MEM 144/188 GB used
+MEM 151/188 GB used
+MEM 155/188 GB used
+MEM 159/188 GB used
+MEM 163/188 GB used
+MEM 167/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 170/188 GB used
+MEM 171/188 GB used
+MEM 171/188 GB used
+MEM 170/188 GB used
+MEM 100/188 GB used
+MEM 67/188 GB used
+[e12] CSR rebuild: 36.12s  =>  7578 events arrive unindexed during it
+      Barry ingests the same 1051431 events incrementally in 182.46s (0.01 Meps)
+      of 100 queries, 64 returned an incomplete answer; avg loss 0.2%, worst 0.3%
+      red team: 0/749 events fall in the unindexed window
+EXIT CODE: 0

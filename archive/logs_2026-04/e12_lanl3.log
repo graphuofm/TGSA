@@ -1,0 +1,10 @@
+[e12] lanl-auth: 1051430459 edges over 58.0 days => 210 events/s
+      split at 0.9900 -> prefix 1040916154, suffix 10514305
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 63.09 GB at 0x7f7c2c8ae000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB, bucket arena=50.5 GB virtual
+[e12] CSR rebuild: 28.76s (Barry compaction: 75.86s)  =>  6034 events unindexed
+      Barry ingests the same 10514305 events incrementally in 3.21s (3.28 Meps)
+      of 100 queries, 68 returned an incomplete answer; avg loss 33.2%, worst 99.5%
+      red team: 0/749 events fall in the unindexed window

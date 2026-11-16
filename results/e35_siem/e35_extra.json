@@ -1,0 +1,384 @@
+{
+ "es.tc-cadets-e3.index_settings": {
+  "mappings": {
+   "dynamic": "strict",
+   "properties": {
+    "dst": {
+     "type": "keyword"
+    },
+    "src": {
+     "type": "keyword"
+    },
+    "ts": {
+     "type": "long"
+    },
+    "w": {
+     "type": "float"
+    }
+   }
+  },
+  "settings": {
+   "index": {
+    "number_of_replicas": 0,
+    "number_of_shards": 4,
+    "refresh_interval": "-1"
+   }
+  }
+ },
+ "es.tc-cadets-e3.ingest": {
+  "batch": 5000,
+  "bytes_per_event": 56.877659326638344,
+  "client_fmt_seconds_max": 3.9793810844421387,
+  "clients": 8,
+  "compact_seconds": 10.926817893981934,
+  "docs": 22536062,
+  "du_bytes": 1308884992,
+  "es_cores_busy": 2.120778905774582,
+  "expected": 22536062,
+  "ingest_seconds": 268.6937325000763,
+  "retries": 0,
+  "rss_mb": 9810.53515625,
+  "segments": 101,
+  "store_bytes": 1281798457
+ },
+ "es.tc-cadets-e3.q2": {
+  "chk": 4512028163337490221,
+  "count": 12571155,
+  "done": 1000,
+  "es_took_ms_median": 29.0,
+  "es_took_ms_p95": 363.0,
+  "es_took_ms_total": 95572,
+  "median_us": 74301.48124694824,
+  "note": "MATCH; every hit via PIT + search_after, 10000/page; es-reported took median 29 ms p95 363 ms",
+  "ok": 1,
+  "p95_us": 666236.8178367614,
+  "seconds": 186.03307223320007
+ },
+ "es.tc-cadets-e3.q2_count": {
+  "chk": 0,
+  "count": 12571155,
+  "done": 1000,
+  "es_took_ms_median": null,
+  "es_took_ms_p95": null,
+  "es_took_ms_total": 0,
+  "median_us": 4735.9466552734375,
+  "note": "count MATCH; _count only (no events delivered)",
+  "ok": 1,
+  "p95_us": 6313.145160675049,
+  "seconds": 4.7270119190216064
+ },
+ "es.tc-cadets-e3.q3": {
+  "chk": 12251051713994587062,
+  "count": 534991,
+  "done": 337,
+  "es_took_ms_median": 657.0,
+  "es_took_ms_p95": 4685.4,
+  "es_took_ms_total": 400388,
+  "median_us": 1972458.6009979248,
+  "note": "MATCH (prefix 337); budget: projected 3058 s for 1000 queries; running 588; deadline inside query 338; client-side earliest-arrival search, one term+range call per expanded vertex: 535328 calls over 337 queries, median 332 p95 6916 max 13713 calls/query, median depth 4 max 97 hops; es-reported took median 657 ms p95 4685 ms",
+  "ok": 1,
+  "p95_us": 27217301.464080807,
+  "seconds": 2250.0635561943054
+ },
+ "es.tc-cadets-e3.q3_calls": {
+  "calls_max": 13713,
+  "calls_median": 332.0,
+  "calls_p95": 6915.5999999999985,
+  "calls_total": 535328,
+  "depth_max": 97,
+  "depth_median": 4.0
+ },
+ "es.tc-cadets-e3.q4": {
+  "chk": 13790888739405956536,
+  "count": 21292086,
+  "done": 1000,
+  "es_took_ms_median": 52.5,
+  "es_took_ms_p95": 762.2499999999998,
+  "es_took_ms_total": 162195,
+  "median_us": 85659.14630889893,
+  "note": "count MATCH, checksum differs (double-rounded ns timestamps); composite terms(dst) 10000/page + max(ts): the max aggregation returns a double, exact only below 2^53; es-reported took median 52 ms p95 762 ms",
+  "ok": 0,
+  "p95_us": 1511119.711399078,
+  "seconds": 291.5671923160553
+ },
+ "es.tc-cadets-e3.q4_exact": {
+  "chk": 13790888740093751363,
+  "count": 21292086,
+  "done": 1000,
+  "es_took_ms_median": 168.0,
+  "es_took_ms_p95": 3972.699999999995,
+  "es_took_ms_total": 727673,
+  "median_us": 223588.7050628662,
+  "note": "MATCH; composite terms(dst) 10000/page + top_hits(1, ts desc): exact 64-bit max; es-reported took median 168 ms p95 3973 ms",
+  "ok": 1,
+  "p95_us": 5314187.610149384,
+  "seconds": 946.0263586044312
+ },
+ "es.wiki-talk-temporal.index_settings": {
+  "mappings": {
+   "dynamic": "strict",
+   "properties": {
+    "dst": {
+     "type": "keyword"
+    },
+    "src": {
+     "type": "keyword"
+    },
+    "ts": {
+     "type": "long"
+    },
+    "w": {
+     "type": "float"
+    }
+   }
+  },
+  "settings": {
+   "index": {
+    "number_of_replicas": 0,
+    "number_of_shards": 4,
+    "refresh_interval": "-1"
+   }
+  }
+ },
+ "es.wiki-talk-temporal.ingest": {
+  "batch": 5000,
+  "bytes_per_event": 91.36577094243177,
+  "client_fmt_seconds_max": 1.365976095199585,
+  "clients": 8,
+  "compact_seconds": 7.87020206451416,
+  "docs": 7833140,
+  "du_bytes": 1955012608,
+  "es_cores_busy": 2.01107120925974,
+  "expected": 7833140,
+  "ingest_seconds": 89.80288672447205,
+  "retries": 0,
+  "rss_mb": 10800.546875,
+  "segments": 70,
+  "store_bytes": 715680875
+ },
+ "es.wiki-talk-temporal.q2": {
+  "chk": 1700791533380746,
+  "count": 1441186,
+  "done": 1000,
+  "es_took_ms_median": 2.0,
+  "es_took_ms_p95": 78.09999999999991,
+  "es_took_ms_total": 13065,
+  "median_us": 5387.663841247559,
+  "note": "MATCH; every hit via PIT + search_after, 10000/page; es-reported took median 2 ms p95 78 ms",
+  "ok": 1,
+  "p95_us": 151304.47149276728,
+  "seconds": 26.22010612487793
+ },
+ "es.wiki-talk-temporal.q2_count": {
+  "chk": 0,
+  "count": 1441186,
+  "done": 1000,
+  "es_took_ms_median": null,
+  "es_took_ms_p95": null,
+  "es_took_ms_total": 0,
+  "median_us": 3446.340560913086,
+  "note": "count MATCH; _count only (no events delivered)",
+  "ok": 1,
+  "p95_us": 4698.526859283447,
+  "seconds": 3.530341625213623
+ },
+ "es.wiki-talk-temporal.q3": {
+  "chk": 528381444040719,
+  "count": 450742,
+  "done": 23,
+  "es_took_ms_median": 4284.0,
+  "es_took_ms_p95": 8412.5,
+  "es_took_ms_total": 93069,
+  "median_us": 71198032.14073181,
+  "note": "MATCH (prefix 23); budget: projected 77583 s for 1000 queries; running 23; client-side earliest-arrival search, one term+range call per expanded vertex: 450765 calls over 23 queries, median 19984 p95 43830 max 45845 calls/query, median depth 15 max 22 hops; es-reported took median 4284 ms p95 8412 ms",
+  "ok": 1,
+  "p95_us": 156501909.5659256,
+  "seconds": 1602.117428779602
+ },
+ "es.wiki-talk-temporal.q3_calls": {
+  "calls_max": 45845,
+  "calls_median": 19984.0,
+  "calls_p95": 43830.299999999996,
+  "calls_total": 450765,
+  "depth_max": 22,
+  "depth_median": 15.0
+ },
+ "es.wiki-talk-temporal.q4": {
+  "chk": 2172262231193549779,
+  "count": 5001951,
+  "done": 1000,
+  "es_took_ms_median": 2.0,
+  "es_took_ms_p95": 170.24999999999977,
+  "es_took_ms_total": 26012,
+  "median_us": 6092.190742492676,
+  "note": "MATCH; composite terms(dst) 10000/page + max(ts): the max aggregation returns a double, exact only below 2^53; es-reported took median 2 ms p95 170 ms",
+  "ok": 1,
+  "p95_us": 395015.3946876525,
+  "seconds": 58.70352029800415
+ },
+ "es.wiki-talk-temporal.q4_exact": {
+  "chk": 2172262231193549779,
+  "count": 5001951,
+  "done": 1000,
+  "es_took_ms_median": 8.0,
+  "es_took_ms_p95": 1015.6999999999994,
+  "es_took_ms_total": 147661,
+  "median_us": 12675.881385803223,
+  "note": "MATCH; composite terms(dst) 10000/page + top_hits(1, ts desc): exact 64-bit max; es-reported took median 8 ms p95 1016 ms",
+  "ok": 1,
+  "p95_us": 1345890.2597427354,
+  "seconds": 200.1860854625702
+ },
+ "kafka.tc-cadets-e3.ingest": {
+  "acks": "1",
+  "alloc_bytes": 631922688,
+  "batch_size": "default",
+  "broker_cores_busy": 1.854057235582069,
+  "bytes_per_event": 28.010119114865766,
+  "du_bytes": 644485120,
+  "end_offsets": 22536062,
+  "errors": 0,
+  "events": 22536062,
+  "expected": 22536062,
+  "linger_ms": "default",
+  "log_bytes": 631237781,
+  "rate": 6840620.0,
+  "rss_mb": 1781.8671875,
+  "seconds": 3.294447,
+  "sent": 22536062,
+  "threads": 8
+ },
+ "kafka.tc-cadets-e3.ingest_tuned": {
+  "acks": "1",
+  "alloc_bytes": 647921664,
+  "batch_size": "1048576",
+  "broker_cores_busy": 0.9396666360180601,
+  "bytes_per_event": 28.7424276255541,
+  "du_bytes": 1292484608,
+  "end_offsets": 22536062,
+  "errors": 0,
+  "events": 22536062,
+  "expected": 22536062,
+  "linger_ms": "50",
+  "log_bytes": 647741131,
+  "rate": 8477563.3,
+  "rss_mb": 2496.26171875,
+  "seconds": 2.658318,
+  "sent": 22536062,
+  "threads": 8
+ },
+ "kafka.tc-cadets-e3.q1": {
+  "checksum": "5061283283283802387",
+  "count": 310976,
+  "mode": "q1",
+  "partitions": 8,
+  "queries": 1,
+  "scan_rate": 18869000.3,
+  "scanned": 22536062,
+  "seconds": 1.194343
+ },
+ "kafka.tc-cadets-e3.q2": {
+  "checksum": "4512028163337490221",
+  "count": 12571155,
+  "mode": "q2",
+  "partitions": 8,
+  "queries": 1000,
+  "scan_rate": 12544044.0,
+  "scanned": 22536062,
+  "seconds": 1.796555
+ },
+ "kafka.tc-cadets-e3.q2_single": {
+  "checksum": "8181466507733000113",
+  "count": 16342,
+  "mode": "q2",
+  "partitions": 8,
+  "queries": 1,
+  "scan_rate": 18624616.3,
+  "scanned": 22536062,
+  "seconds": 1.210015
+ },
+ "kafka.wiki-talk-temporal.ingest": {
+  "acks": "1",
+  "alloc_bytes": 219664384,
+  "batch_size": "default",
+  "broker_cores_busy": 0.973466785850107,
+  "bytes_per_event": 28.00236890953053,
+  "du_bytes": 864657408,
+  "end_offsets": 7833140,
+  "errors": 0,
+  "events": 7833140,
+  "expected": 7833140,
+  "linger_ms": "default",
+  "log_bytes": 219346476,
+  "rate": 4951788.1,
+  "rss_mb": 3193.2734375,
+  "seconds": 1.581881,
+  "sent": 7833140,
+  "threads": 8
+ },
+ "kafka.wiki-talk-temporal.ingest_tuned": {
+  "acks": "1",
+  "alloc_bytes": 224993280,
+  "batch_size": "1048576",
+  "broker_cores_busy": 0.43954018208154266,
+  "bytes_per_event": 28.69963360797841,
+  "du_bytes": 1089654784,
+  "end_offsets": 7833140,
+  "errors": 0,
+  "events": 7833140,
+  "expected": 7833140,
+  "linger_ms": "50",
+  "log_bytes": 224808248,
+  "rate": 4804184.3,
+  "rss_mb": 3199.375,
+  "seconds": 1.630483,
+  "sent": 7833140,
+  "threads": 8
+ },
+ "kafka.wiki-talk-temporal.q1": {
+  "checksum": "3594989818021826228",
+  "count": 283276,
+  "mode": "q1",
+  "partitions": 8,
+  "queries": 1,
+  "scan_rate": 11846991.6,
+  "scanned": 7833140,
+  "seconds": 0.661192
+ },
+ "kafka.wiki-talk-temporal.q2": {
+  "checksum": "1700791533380746",
+  "count": 1441186,
+  "mode": "q2",
+  "partitions": 8,
+  "queries": 1000,
+  "scan_rate": 11384717.0,
+  "scanned": 7833140,
+  "seconds": 0.68804
+ },
+ "kafka.wiki-talk-temporal.q2_single": {
+  "checksum": "325672759301",
+  "count": 277,
+  "mode": "q2",
+  "partitions": 8,
+  "queries": 1,
+  "scan_rate": 10166291.8,
+  "scanned": 7833140,
+  "seconds": 0.770501
+ },
+ "meta.tc-cadets-e3": {
+  "n": 22536062,
+  "q1_hi": 1523655358953968696,
+  "q1_lo": 1523645873982562513,
+  "t_max": 1523655358953968696,
+  "t_min": 1522706861813350340,
+  "w": 9484971406183
+ },
+ "meta.wiki-talk-temporal": {
+  "n": 7833140,
+  "q1_hi": 1199614728,
+  "q1_lo": 1197609890,
+  "t_max": 1199614728,
+  "t_min": 999130846,
+  "w": 2004838
+ }
+}

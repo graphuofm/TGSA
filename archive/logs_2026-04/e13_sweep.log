@@ -1,0 +1,781 @@
+[TimeMapper] span=16736181 edges=1048576 target_avg=64 shift=10 (window=1024)
+[Timeline] 17367 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f923a4dc000 (huge=0)
+[VertexIndex] 1899 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0002s (48.9%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (56.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0002s (59.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0004s storage=  0.0003s (64.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0002s (49.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (56.3%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0002s (58.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0004s storage=  0.0002s (63.1%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (47.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (57.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0002s (59.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0004s storage=  0.0002s (61.0%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             pr     csr    total=  0.0014s storage=  0.0008s (55.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0013s storage=  0.0007s (54.9%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0011s storage=  0.0006s (55.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0013s storage=  0.0008s (62.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0010s storage=  0.0006s (54.4%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0005s (53.2%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0011s storage=  0.0006s (58.4%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0012s storage=  0.0008s (62.6%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0010s storage=  0.0006s (54.4%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0006s (55.7%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0011s storage=  0.0006s (55.7%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0012s storage=  0.0008s (62.0%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (58.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (56.2%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0003s (57.0%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (62.9%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (57.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (54.7%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0004s (59.5%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (64.5%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (58.2%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (54.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0004s (59.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (62.7%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (49.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s ( 8.3%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (35.3%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (44.4%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (46.0%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s ( 0.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (38.5%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (20.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (46.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s (11.1%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (38.5%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (10.0%)  edges=0  chk=df7e9337ceabc6f6
+[TimeMapper] span=16736181 edges=1048576 target_avg=64 shift=10 (window=1024)
+[Timeline] 17367 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f5795333000 (huge=0)
+[VertexIndex] 1899 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (49.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0002s storage=  0.0001s (57.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0002s storage=  0.0001s (61.7%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (68.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (52.0%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0002s storage=  0.0001s (58.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0002s storage=  0.0001s (58.3%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (62.0%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (50.2%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (59.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0002s storage=  0.0001s (60.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (59.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             pr     csr    total=  0.0010s storage=  0.0006s (55.9%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0006s (55.5%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0010s storage=  0.0006s (56.5%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0011s storage=  0.0007s (60.7%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0010s storage=  0.0006s (57.4%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0005s (53.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0010s storage=  0.0006s (55.6%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0011s storage=  0.0007s (59.7%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0010s storage=  0.0005s (53.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0006s (54.7%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0010s storage=  0.0006s (55.3%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0011s storage=  0.0007s (58.9%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (56.4%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (53.7%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0003s (56.2%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (59.3%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (58.5%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (54.0%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0003s (58.6%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (61.8%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0006s storage=  0.0003s (59.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0006s storage=  0.0003s (56.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0006s storage=  0.0003s (58.9%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0005s storage=  0.0003s (60.5%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (47.3%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s (10.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (40.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (26.7%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (46.8%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s (10.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (30.8%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (10.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             bfs    csr    total=  0.0002s storage=  0.0001s (44.2%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0000s storage=  0.0000s ( 0.0%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0000s storage=  0.0000s (30.8%)  edges=0  chk=df7e9337ceabc6f6
+[e13] CollegeMsg             twbfs  barry  total=  0.0000s storage=  0.0000s (10.0%)  edges=0  chk=df7e9337ceabc6f6
+[TimeMapper] span=16736181 edges=1048576 target_avg=64 shift=10 (window=1024)
+[Timeline] 17367 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fcbd08ab000 (huge=0)
+[VertexIndex] 1899 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] CollegeMsg             bfs    csr    total=  0.0004s storage=  0.0002s (50.3%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (55.2%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0002s (57.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (61.4%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (47.1%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (53.3%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0001s (54.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (58.7%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (48.0%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    tcsr   total=  0.0003s storage=  0.0002s (56.1%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    ucsr   total=  0.0003s storage=  0.0002s (58.1%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             bfs    barry  total=  0.0003s storage=  0.0002s (60.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             pr     csr    total=  0.0013s storage=  0.0007s (55.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0013s storage=  0.0007s (53.5%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0013s storage=  0.0008s (58.1%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0013s storage=  0.0008s (57.1%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0013s storage=  0.0007s (55.6%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0010s storage=  0.0006s (55.0%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0010s storage=  0.0006s (55.9%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0018s storage=  0.0010s (58.1%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     csr    total=  0.0020s storage=  0.0011s (55.4%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     tcsr   total=  0.0021s storage=  0.0011s (53.8%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     ucsr   total=  0.0021s storage=  0.0012s (56.3%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             pr     barry  total=  0.0020s storage=  0.0011s (52.9%)  edges=299175  chk=4b9a720237ad2a64
+[e13] CollegeMsg             cc     csr    total=  0.0012s storage=  0.0007s (56.4%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0012s storage=  0.0006s (54.4%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0012s storage=  0.0007s (55.7%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0008s storage=  0.0004s (54.1%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0013s storage=  0.0007s (57.2%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0012s storage=  0.0006s (55.3%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0011s storage=  0.0006s (56.8%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0006s storage=  0.0003s (57.7%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     csr    total=  0.0008s storage=  0.0005s (59.1%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     tcsr   total=  0.0007s storage=  0.0004s (56.9%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     ucsr   total=  0.0008s storage=  0.0005s (57.6%)  edges=179505  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             cc     barry  total=  0.0006s storage=  0.0003s (55.7%)  edges=119670  chk=2b3d890bfed03bd7
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (47.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0001s storage=  0.0001s (65.9%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0001s storage=  0.0001s (70.7%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  barry  total=  0.0003s storage=  0.0002s (85.8%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (48.6%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0001s storage=  0.0001s (67.4%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0001s storage=  0.0001s (73.8%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  barry  total=  0.0003s storage=  0.0002s (86.1%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             bfs    csr    total=  0.0003s storage=  0.0001s (48.5%)  edges=59673  chk=54e4bd02d287445d
+[e13] CollegeMsg             twbfs  tcsr   total=  0.0001s storage=  0.0001s (64.1%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  ucsr   total=  0.0001s storage=  0.0001s (73.1%)  edges=5542  chk=8b7750226f9dc664
+[e13] CollegeMsg             twbfs  barry  total=  0.0002s storage=  0.0002s (84.0%)  edges=5542  chk=8b7750226f9dc664
+[TimeMapper] span=69459254 edges=1048576 target_avg=64 shift=13 (window=8192)
+[Timeline] 9502 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f2e6f353000 (huge=0)
+[VertexIndex] 986 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (55.9%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0009s storage=  0.0006s (69.3%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0008s storage=  0.0006s (73.3%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0006s (68.0%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0008s storage=  0.0004s (55.3%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (66.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0008s storage=  0.0006s (72.9%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (66.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (55.6%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (66.5%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0007s storage=  0.0005s (70.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (65.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal pr     csr    total=  0.0032s storage=  0.0020s (63.2%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0036s storage=  0.0022s (60.4%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (62.1%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0034s storage=  0.0020s (59.3%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0033s storage=  0.0020s (62.7%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0035s storage=  0.0022s (61.0%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (62.0%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0034s storage=  0.0020s (59.1%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0033s storage=  0.0020s (62.8%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0036s storage=  0.0021s (60.2%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (61.6%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0035s storage=  0.0020s (59.0%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal cc     csr    total=  0.0021s storage=  0.0014s (67.0%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0012s (66.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0021s storage=  0.0013s (64.2%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0021s storage=  0.0013s (65.3%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0020s storage=  0.0014s (68.5%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0013s (67.4%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0013s (66.2%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0020s storage=  0.0013s (64.3%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0020s storage=  0.0014s (69.7%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0013s (65.7%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0013s (67.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0021s storage=  0.0014s (65.9%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0008s storage=  0.0004s (53.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (85.9%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0003s storage=  0.0003s (94.0%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0004s storage=  0.0004s (96.4%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (53.2%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (82.3%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0003s storage=  0.0003s (94.5%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0003s storage=  0.0003s (95.2%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (51.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (78.2%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0003s storage=  0.0002s (92.8%)  edges=1574  chk=0e2535933a57219b
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0002s storage=  0.0002s (93.2%)  edges=1574  chk=0e2535933a57219b
+[TimeMapper] span=69459254 edges=1048576 target_avg=64 shift=13 (window=8192)
+[Timeline] 9502 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f1b6c5df000 (huge=0)
+[VertexIndex] 986 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (55.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0006s (69.0%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0008s storage=  0.0006s (73.0%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (67.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0008s storage=  0.0004s (54.9%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (66.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0007s storage=  0.0005s (71.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (65.7%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (54.4%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (66.2%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0007s storage=  0.0005s (70.7%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0007s storage=  0.0004s (62.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal pr     csr    total=  0.0032s storage=  0.0020s (63.2%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0035s storage=  0.0021s (60.7%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (61.9%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0033s storage=  0.0019s (57.1%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0033s storage=  0.0021s (63.5%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0036s storage=  0.0022s (60.8%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (62.3%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0033s storage=  0.0019s (57.6%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0033s storage=  0.0020s (62.7%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0035s storage=  0.0021s (60.6%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0036s storage=  0.0023s (62.1%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0032s storage=  0.0019s (57.6%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal cc     csr    total=  0.0021s storage=  0.0014s (67.1%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0018s storage=  0.0012s (66.4%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0019s storage=  0.0013s (68.4%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0019s storage=  0.0012s (62.7%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0020s storage=  0.0014s (67.7%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0018s storage=  0.0012s (66.8%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0014s (68.8%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0020s storage=  0.0012s (60.8%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0020s storage=  0.0014s (68.8%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0012s (66.7%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0013s (68.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0020s storage=  0.0013s (63.9%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (53.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (77.8%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0004s storage=  0.0003s (89.7%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0006s storage=  0.0006s (94.2%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (53.3%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (79.0%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0004s storage=  0.0003s (89.6%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0005s storage=  0.0005s (93.2%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (53.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0001s storage=  0.0001s (73.2%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0003s storage=  0.0003s (91.6%)  edges=13755  chk=39b249e3223a2ae9
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0004s storage=  0.0003s (91.3%)  edges=13755  chk=39b249e3223a2ae9
+[TimeMapper] span=69459254 edges=1048576 target_avg=64 shift=13 (window=8192)
+[Timeline] 9502 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f21bcd46000 (huge=0)
+[VertexIndex] 986 vertices, heads=0.0 MB, bucket arena=0.3 GB virtual
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (54.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0009s storage=  0.0006s (67.8%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0008s storage=  0.0006s (72.6%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (67.2%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (54.9%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (67.7%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0008s storage=  0.0006s (72.6%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0008s storage=  0.0005s (66.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (54.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    tcsr   total=  0.0008s storage=  0.0005s (66.0%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    ucsr   total=  0.0007s storage=  0.0005s (71.1%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal bfs    barry  total=  0.0007s storage=  0.0005s (63.7%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal pr     csr    total=  0.0033s storage=  0.0021s (63.5%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0036s storage=  0.0022s (60.8%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (63.0%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0035s storage=  0.0021s (60.3%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0032s storage=  0.0020s (63.1%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0036s storage=  0.0022s (60.6%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (62.7%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0035s storage=  0.0020s (58.0%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     csr    total=  0.0032s storage=  0.0021s (63.4%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     tcsr   total=  0.0035s storage=  0.0022s (61.4%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     ucsr   total=  0.0037s storage=  0.0023s (62.3%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal pr     barry  total=  0.0034s storage=  0.0020s (59.5%)  edges=1661670  chk=505da4fa25522af3
+[e13] email-Eu-core-temporal cc     csr    total=  0.0021s storage=  0.0014s (66.9%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0012s (66.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0014s (69.1%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0020s storage=  0.0013s (64.1%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0021s storage=  0.0014s (65.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0012s (66.8%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0020s storage=  0.0014s (68.0%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0021s storage=  0.0014s (64.3%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     csr    total=  0.0021s storage=  0.0014s (66.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     tcsr   total=  0.0019s storage=  0.0013s (67.6%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     ucsr   total=  0.0021s storage=  0.0014s (66.5%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal cc     barry  total=  0.0021s storage=  0.0014s (65.3%)  edges=997002  chk=93ed600a2201da1b
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (54.2%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0005s storage=  0.0004s (76.9%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0006s storage=  0.0005s (73.1%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0022s storage=  0.0021s (93.8%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0008s storage=  0.0004s (54.9%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0005s storage=  0.0004s (76.4%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0007s storage=  0.0005s (74.2%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0016s storage=  0.0015s (91.6%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal bfs    csr    total=  0.0007s storage=  0.0004s (52.3%)  edges=332204  chk=d8c94423627d3d7c
+[e13] email-Eu-core-temporal twbfs  tcsr   total=  0.0005s storage=  0.0004s (77.1%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  ucsr   total=  0.0007s storage=  0.0005s (73.9%)  edges=152962  chk=79bee7e300e86d91
+[e13] email-Eu-core-temporal twbfs  barry  total=  0.0014s storage=  0.0013s (90.9%)  edges=152962  chk=79bee7e300e86d91
+[TimeMapper] span=203069367 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13418 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f8bc4a25000 (huge=0)
+[VertexIndex] 24818 vertices, heads=0.2 MB, bucket arena=0.3 GB virtual
+[e13] sx-mathoverflow        bfs    csr    total=  0.0027s storage=  0.0015s (57.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0035s storage=  0.0024s (68.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0033s storage=  0.0024s (71.2%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0044s storage=  0.0033s (75.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0015s (55.3%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0031s storage=  0.0021s (66.0%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0031s storage=  0.0021s (68.0%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0039s storage=  0.0028s (72.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0025s storage=  0.0014s (54.7%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0031s storage=  0.0020s (65.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0030s storage=  0.0021s (67.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0039s storage=  0.0028s (71.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        pr     csr    total=  0.0106s storage=  0.0060s (56.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0110s storage=  0.0061s (55.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0113s storage=  0.0064s (56.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0155s storage=  0.0106s (68.2%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0105s storage=  0.0059s (55.7%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0107s storage=  0.0059s (55.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0113s storage=  0.0064s (57.2%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0155s storage=  0.0107s (68.6%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0104s storage=  0.0058s (56.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0107s storage=  0.0059s (55.4%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0110s storage=  0.0062s (56.7%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0157s storage=  0.0107s (68.2%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        cc     csr    total=  0.0064s storage=  0.0037s (56.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0065s storage=  0.0037s (57.3%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0065s storage=  0.0038s (58.3%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0100s storage=  0.0071s (71.4%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0062s storage=  0.0035s (57.2%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0063s storage=  0.0036s (56.9%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0065s storage=  0.0037s (57.1%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0099s storage=  0.0070s (71.0%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0063s storage=  0.0035s (55.9%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0063s storage=  0.0036s (56.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0064s storage=  0.0037s (57.7%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0098s storage=  0.0070s (71.0%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        bfs    csr    total=  0.0027s storage=  0.0016s (57.7%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0002s storage=  0.0001s (78.4%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0003s storage=  0.0002s (84.1%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0004s storage=  0.0003s (89.6%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        bfs    csr    total=  0.0025s storage=  0.0013s (53.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0002s storage=  0.0001s (75.7%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0003s storage=  0.0002s (85.5%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0003s storage=  0.0003s (87.1%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        bfs    csr    total=  0.0024s storage=  0.0013s (54.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0001s storage=  0.0001s (66.2%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0003s storage=  0.0002s (78.7%)  edges=1835  chk=6bfeaff80c587ae3
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0002s storage=  0.0002s (81.1%)  edges=1835  chk=6bfeaff80c587ae3
+[TimeMapper] span=203069367 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13418 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fe50c50c000 (huge=0)
+[VertexIndex] 24818 vertices, heads=0.2 MB, bucket arena=0.3 GB virtual
+[e13] sx-mathoverflow        bfs    csr    total=  0.0027s storage=  0.0015s (55.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0035s storage=  0.0024s (68.5%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0034s storage=  0.0024s (71.0%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0042s storage=  0.0031s (74.4%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0014s (54.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0032s storage=  0.0021s (65.6%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0030s storage=  0.0021s (68.3%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0035s storage=  0.0024s (69.4%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0025s storage=  0.0014s (55.0%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0030s storage=  0.0019s (64.5%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0029s storage=  0.0019s (65.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0034s storage=  0.0024s (68.6%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        pr     csr    total=  0.0105s storage=  0.0059s (56.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0109s storage=  0.0060s (55.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0112s storage=  0.0064s (56.6%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0149s storage=  0.0101s (67.7%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0101s storage=  0.0057s (56.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0108s storage=  0.0060s (55.2%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0109s storage=  0.0062s (56.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0148s storage=  0.0100s (67.4%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0102s storage=  0.0057s (56.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0105s storage=  0.0058s (55.4%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0108s storage=  0.0062s (57.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0148s storage=  0.0099s (67.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        cc     csr    total=  0.0063s storage=  0.0036s (56.7%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0062s storage=  0.0036s (57.3%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0064s storage=  0.0037s (57.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0101s storage=  0.0072s (71.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0064s storage=  0.0036s (56.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0063s storage=  0.0036s (57.1%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0065s storage=  0.0038s (58.3%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0098s storage=  0.0069s (71.2%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0063s storage=  0.0036s (57.5%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0063s storage=  0.0036s (56.6%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0064s storage=  0.0037s (58.3%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0098s storage=  0.0070s (71.2%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        bfs    csr    total=  0.0027s storage=  0.0016s (57.4%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0007s storage=  0.0005s (81.0%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0009s storage=  0.0007s (84.8%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0015s storage=  0.0014s (91.1%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0014s (54.6%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0006s storage=  0.0005s (79.5%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0008s storage=  0.0007s (83.5%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0013s storage=  0.0011s (89.1%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0014s (54.4%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0005s storage=  0.0004s (77.9%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0007s storage=  0.0006s (82.2%)  edges=22474  chk=4d9349629996a925
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0010s storage=  0.0009s (87.7%)  edges=22474  chk=4d9349629996a925
+[TimeMapper] span=203069367 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13418 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f0906b3e000 (huge=0)
+[VertexIndex] 24818 vertices, heads=0.2 MB, bucket arena=0.3 GB virtual
+[e13] sx-mathoverflow        bfs    csr    total=  0.0027s storage=  0.0015s (55.7%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0034s storage=  0.0023s (68.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0033s storage=  0.0024s (72.3%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0040s storage=  0.0030s (73.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0014s (53.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0031s storage=  0.0021s (65.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0030s storage=  0.0020s (68.4%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0034s storage=  0.0024s (68.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    csr    total=  0.0025s storage=  0.0014s (54.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    tcsr   total=  0.0029s storage=  0.0019s (63.9%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    ucsr   total=  0.0028s storage=  0.0019s (66.8%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        bfs    barry  total=  0.0034s storage=  0.0023s (69.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        pr     csr    total=  0.0101s storage=  0.0056s (55.7%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0104s storage=  0.0057s (55.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0109s storage=  0.0062s (56.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0145s storage=  0.0097s (66.9%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0102s storage=  0.0057s (55.9%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0106s storage=  0.0059s (55.5%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0108s storage=  0.0062s (57.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0145s storage=  0.0098s (67.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     csr    total=  0.0101s storage=  0.0057s (56.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     tcsr   total=  0.0105s storage=  0.0058s (55.0%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     ucsr   total=  0.0108s storage=  0.0061s (56.7%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        pr     barry  total=  0.0144s storage=  0.0097s (67.1%)  edges=2532750  chk=812ed0cfc931b621
+[e13] sx-mathoverflow        cc     csr    total=  0.0062s storage=  0.0035s (56.6%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0062s storage=  0.0035s (57.1%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0064s storage=  0.0036s (56.9%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0097s storage=  0.0068s (70.4%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0061s storage=  0.0035s (57.4%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0062s storage=  0.0035s (57.1%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0064s storage=  0.0037s (57.9%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0096s storage=  0.0068s (70.5%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     csr    total=  0.0062s storage=  0.0035s (56.8%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     tcsr   total=  0.0062s storage=  0.0035s (56.7%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     ucsr   total=  0.0063s storage=  0.0037s (58.6%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        cc     barry  total=  0.0096s storage=  0.0068s (71.1%)  edges=1519650  chk=fddf306e5ca87c36
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0015s (58.3%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0018s storage=  0.0014s (77.6%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0019s storage=  0.0014s (76.4%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0044s storage=  0.0039s (90.1%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0015s (56.3%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0018s storage=  0.0014s (77.7%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0019s storage=  0.0014s (75.4%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0034s storage=  0.0030s (87.1%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        bfs    csr    total=  0.0026s storage=  0.0014s (55.1%)  edges=502308  chk=69adfc33caf464f4
+[e13] sx-mathoverflow        twbfs  tcsr   total=  0.0017s storage=  0.0013s (76.0%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  ucsr   total=  0.0018s storage=  0.0013s (74.0%)  edges=144040  chk=e844baffd9556e3e
+[e13] sx-mathoverflow        twbfs  barry  total=  0.0033s storage=  0.0029s (86.3%)  edges=144040  chk=e844baffd9556e3e
+[TimeMapper] span=225834462 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 14807 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fc194136000 (huge=0)
+[VertexIndex] 159316 vertices, heads=1.3 MB, bucket arena=0.3 GB virtual
+[e13] sx-askubuntu           bfs    csr    total=  0.0140s storage=  0.0087s (62.3%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0172s storage=  0.0119s (69.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0169s storage=  0.0121s (71.7%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0227s storage=  0.0175s (77.3%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0084s (62.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0167s storage=  0.0114s (68.7%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0164s storage=  0.0117s (71.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0220s storage=  0.0169s (76.6%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0134s storage=  0.0083s (62.4%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0168s storage=  0.0115s (68.8%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0167s storage=  0.0119s (71.1%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0222s storage=  0.0169s (76.4%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           pr     csr    total=  0.0468s storage=  0.0244s (52.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0485s storage=  0.0252s (52.0%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0499s storage=  0.0265s (53.1%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0905s storage=  0.0653s (72.1%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0465s storage=  0.0241s (51.8%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0484s storage=  0.0251s (51.8%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0505s storage=  0.0269s (53.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0909s storage=  0.0655s (72.1%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0468s storage=  0.0242s (51.7%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0508s storage=  0.0267s (52.5%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0516s storage=  0.0278s (53.9%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0921s storage=  0.0668s (72.5%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           cc     csr    total=  0.0543s storage=  0.0283s (52.2%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0602s storage=  0.0325s (54.0%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0579s storage=  0.0306s (52.8%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1101s storage=  0.0814s (73.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0546s storage=  0.0287s (52.5%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0780s storage=  0.0404s (51.8%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0588s storage=  0.0310s (52.8%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1112s storage=  0.0823s (73.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0545s storage=  0.0285s (52.3%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0583s storage=  0.0312s (53.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0582s storage=  0.0308s (52.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1119s storage=  0.0829s (74.0%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           bfs    csr    total=  0.0137s storage=  0.0086s (62.9%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0004s storage=  0.0002s (48.7%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0004s storage=  0.0002s (56.2%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  barry  total=  0.0007s storage=  0.0005s (71.3%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           bfs    csr    total=  0.0111s storage=  0.0060s (54.3%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0003s storage=  0.0001s (42.7%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0004s storage=  0.0002s (54.9%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  barry  total=  0.0006s storage=  0.0004s (66.9%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           bfs    csr    total=  0.0110s storage=  0.0059s (53.8%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0003s storage=  0.0001s (29.9%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0004s storage=  0.0002s (49.4%)  edges=2949  chk=3ba64825f8d48830
+[e13] sx-askubuntu           twbfs  barry  total=  0.0005s storage=  0.0003s (60.9%)  edges=2949  chk=3ba64825f8d48830
+[TimeMapper] span=225834462 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 14807 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f7ab1688000 (huge=0)
+[VertexIndex] 159316 vertices, heads=1.3 MB, bucket arena=0.3 GB virtual
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0083s (61.5%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0174s storage=  0.0121s (69.6%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0169s storage=  0.0121s (71.4%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0227s storage=  0.0174s (77.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0134s storage=  0.0084s (62.6%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0167s storage=  0.0115s (68.6%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0167s storage=  0.0119s (71.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0221s storage=  0.0169s (76.5%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0084s (62.3%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0168s storage=  0.0116s (69.1%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0168s storage=  0.0119s (71.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0222s storage=  0.0170s (76.7%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           pr     csr    total=  0.0457s storage=  0.0235s (51.4%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0496s storage=  0.0261s (52.6%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0501s storage=  0.0268s (53.5%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0911s storage=  0.0658s (72.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0458s storage=  0.0235s (51.3%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0490s storage=  0.0256s (52.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0499s storage=  0.0266s (53.4%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0910s storage=  0.0657s (72.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0471s storage=  0.0244s (51.7%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0500s storage=  0.0263s (52.7%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0517s storage=  0.0279s (54.0%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0987s storage=  0.0722s (73.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           cc     csr    total=  0.0553s storage=  0.0290s (52.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0586s storage=  0.0313s (53.5%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0582s storage=  0.0308s (52.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1118s storage=  0.0827s (74.0%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0540s storage=  0.0283s (52.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0586s storage=  0.0313s (53.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0582s storage=  0.0310s (53.3%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1103s storage=  0.0814s (73.8%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0542s storage=  0.0284s (52.5%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0588s storage=  0.0315s (53.6%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0581s storage=  0.0308s (53.0%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1122s storage=  0.0832s (74.1%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           bfs    csr    total=  0.0137s storage=  0.0086s (63.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0009s storage=  0.0006s (66.8%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0010s storage=  0.0007s (69.5%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  barry  total=  0.0020s storage=  0.0017s (84.8%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           bfs    csr    total=  0.0113s storage=  0.0062s (55.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0008s storage=  0.0006s (66.3%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0010s storage=  0.0006s (67.3%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  barry  total=  0.0016s storage=  0.0013s (81.6%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           bfs    csr    total=  0.0111s storage=  0.0061s (54.7%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0008s storage=  0.0005s (60.8%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0009s storage=  0.0006s (64.7%)  edges=24724  chk=f0de7453ff5e729c
+[e13] sx-askubuntu           twbfs  barry  total=  0.0014s storage=  0.0011s (77.9%)  edges=24724  chk=f0de7453ff5e729c
+[TimeMapper] span=225834462 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 14807 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f0019ede000 (huge=0)
+[VertexIndex] 159316 vertices, heads=1.3 MB, bucket arena=0.3 GB virtual
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0084s (62.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0172s storage=  0.0120s (69.4%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0168s storage=  0.0121s (71.9%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0226s storage=  0.0175s (77.1%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0085s (62.5%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0169s storage=  0.0117s (69.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0166s storage=  0.0118s (71.0%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0220s storage=  0.0167s (76.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    csr    total=  0.0135s storage=  0.0084s (62.7%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    tcsr   total=  0.0168s storage=  0.0116s (69.2%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    ucsr   total=  0.0167s storage=  0.0119s (71.4%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           bfs    barry  total=  0.0218s storage=  0.0166s (76.1%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           pr     csr    total=  0.0459s storage=  0.0235s (51.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0494s storage=  0.0257s (52.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0503s storage=  0.0267s (53.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0912s storage=  0.0653s (71.5%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0460s storage=  0.0236s (51.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0485s storage=  0.0253s (52.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0500s storage=  0.0266s (53.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0931s storage=  0.0670s (72.0%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     csr    total=  0.0457s storage=  0.0234s (51.2%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     tcsr   total=  0.0487s storage=  0.0253s (52.1%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     ucsr   total=  0.0499s storage=  0.0265s (53.1%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           pr     barry  total=  0.0962s storage=  0.0698s (72.6%)  edges=4822185  chk=5348dff9aebfcc77
+[e13] sx-askubuntu           cc     csr    total=  0.0552s storage=  0.0288s (52.2%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0601s storage=  0.0324s (53.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0590s storage=  0.0313s (53.1%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1105s storage=  0.0816s (73.9%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0540s storage=  0.0283s (52.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0585s storage=  0.0312s (53.2%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0582s storage=  0.0310s (53.1%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1107s storage=  0.0819s (74.0%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     csr    total=  0.0541s storage=  0.0284s (52.5%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     tcsr   total=  0.0585s storage=  0.0312s (53.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     ucsr   total=  0.0590s storage=  0.0315s (53.4%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           cc     barry  total=  0.1111s storage=  0.0819s (73.7%)  edges=5786622  chk=07d3dc5fcff94096
+[e13] sx-askubuntu           bfs    csr    total=  0.0136s storage=  0.0085s (62.9%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0068s storage=  0.0049s (72.1%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0069s storage=  0.0050s (72.2%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  barry  total=  0.0151s storage=  0.0130s (86.6%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           bfs    csr    total=  0.0133s storage=  0.0082s (61.6%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0065s storage=  0.0047s (72.3%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0068s storage=  0.0048s (71.1%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  barry  total=  0.0141s storage=  0.0121s (85.6%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           bfs    csr    total=  0.0132s storage=  0.0081s (61.5%)  edges=911225  chk=8b0e0d8d06338a5c
+[e13] sx-askubuntu           twbfs  tcsr   total=  0.0066s storage=  0.0047s (71.8%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  ucsr   total=  0.0069s storage=  0.0049s (71.2%)  edges=306563  chk=720daaeee4fba6f9
+[e13] sx-askubuntu           twbfs  barry  total=  0.0142s storage=  0.0122s (85.8%)  edges=306563  chk=720daaeee4fba6f9
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fb5cc5f6000 (huge=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=0.5 GB virtual
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1107s storage=  0.0650s (58.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1282s storage=  0.0799s (62.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1225s storage=  0.0806s (65.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1459s storage=  0.1008s (69.1%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1098s storage=  0.0654s (59.5%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1281s storage=  0.0799s (62.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1227s storage=  0.0806s (65.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1464s storage=  0.1009s (68.9%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1098s storage=  0.0655s (59.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1291s storage=  0.0804s (62.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1225s storage=  0.0806s (65.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1535s storage=  0.1059s (69.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     pr     csr    total=  0.3392s storage=  0.1702s (50.2%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3589s storage=  0.1868s (52.0%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3711s storage=  0.1995s (53.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5577s storage=  0.3611s (64.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3381s storage=  0.1698s (50.2%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3623s storage=  0.1877s (51.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3749s storage=  0.2013s (53.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5569s storage=  0.3607s (64.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3385s storage=  0.1700s (50.2%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3568s storage=  0.1862s (52.2%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3759s storage=  0.2014s (53.6%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5586s storage=  0.3613s (64.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2097s storage=  0.1039s (49.5%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2208s storage=  0.1135s (51.4%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2220s storage=  0.1142s (51.5%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3301s storage=  0.2180s (66.0%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2100s storage=  0.1040s (49.5%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2208s storage=  0.1137s (51.5%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2264s storage=  0.1157s (51.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3303s storage=  0.2182s (66.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2102s storage=  0.1042s (49.6%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2217s storage=  0.1140s (51.4%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2221s storage=  0.1144s (51.5%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3295s storage=  0.2179s (66.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1090s storage=  0.0648s (59.5%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.0%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1075s storage=  0.0627s (58.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (19.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.8%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1065s storage=  0.0619s (58.1%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (19.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.8%)  edges=0  chk=b78679241010ccde
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7fa298651000 (huge=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=0.5 GB virtual
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1130s storage=  0.0667s (59.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1303s storage=  0.0815s (62.6%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1240s storage=  0.0815s (65.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1478s storage=  0.1021s (69.1%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1116s storage=  0.0667s (59.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1319s storage=  0.0827s (62.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1335s storage=  0.0887s (66.4%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1479s storage=  0.1013s (68.5%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1122s storage=  0.0670s (59.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1303s storage=  0.0814s (62.4%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1247s storage=  0.0823s (66.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1478s storage=  0.1019s (69.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     pr     csr    total=  0.3410s storage=  0.1705s (50.0%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3606s storage=  0.1871s (51.9%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3773s storage=  0.2022s (53.6%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5691s storage=  0.3680s (64.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3409s storage=  0.1702s (49.9%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3602s storage=  0.1872s (52.0%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3770s storage=  0.2020s (53.6%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5633s storage=  0.3648s (64.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3450s storage=  0.1715s (49.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3635s storage=  0.1883s (51.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3778s storage=  0.2022s (53.5%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5621s storage=  0.3645s (64.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2115s storage=  0.1042s (49.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2246s storage=  0.1152s (51.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2269s storage=  0.1167s (51.4%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3434s storage=  0.2244s (65.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2129s storage=  0.1050s (49.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2248s storage=  0.1153s (51.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2260s storage=  0.1166s (51.6%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3335s storage=  0.2199s (66.0%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2126s storage=  0.1048s (49.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2245s storage=  0.1151s (51.2%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2251s storage=  0.1161s (51.6%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3401s storage=  0.2237s (65.8%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1122s storage=  0.0670s (59.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.8%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1089s storage=  0.0642s (58.9%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.5%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.8%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1108s storage=  0.0652s (58.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0016s storage=  0.0003s (20.0%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.8%)  edges=0  chk=b78679241010ccde
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f11dfdff000 (huge=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=0.5 GB virtual
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1234s storage=  0.0751s (60.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1350s storage=  0.0845s (62.6%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1264s storage=  0.0833s (65.9%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1471s storage=  0.1015s (69.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1136s storage=  0.0681s (60.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1330s storage=  0.0828s (62.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1245s storage=  0.0819s (65.8%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1467s storage=  0.1012s (69.0%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1143s storage=  0.0688s (60.2%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    tcsr   total=  0.1301s storage=  0.0813s (62.5%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    ucsr   total=  0.1251s storage=  0.0824s (65.9%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     bfs    barry  total=  0.1475s storage=  0.1018s (69.1%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     pr     csr    total=  0.3396s storage=  0.1694s (49.9%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3694s storage=  0.1900s (51.4%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3819s storage=  0.2029s (53.1%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5634s storage=  0.3648s (64.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3412s storage=  0.1700s (49.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3592s storage=  0.1863s (51.9%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3757s storage=  0.2004s (53.3%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5710s storage=  0.3693s (64.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     csr    total=  0.3420s storage=  0.1701s (49.7%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     tcsr   total=  0.3614s storage=  0.1871s (51.8%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     ucsr   total=  0.3762s storage=  0.2007s (53.4%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     pr     barry  total=  0.5738s storage=  0.3704s (64.6%)  edges=39165700  chk=8276776e9fc28dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2164s storage=  0.1062s (49.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2226s storage=  0.1141s (51.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2235s storage=  0.1146s (51.3%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3342s storage=  0.2205s (66.0%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2114s storage=  0.1039s (49.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2224s storage=  0.1138s (51.2%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2242s storage=  0.1149s (51.2%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3379s storage=  0.2221s (65.7%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     csr    total=  0.2131s storage=  0.1045s (49.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     tcsr   total=  0.2254s storage=  0.1151s (51.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     ucsr   total=  0.2256s storage=  0.1155s (51.2%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     cc     barry  total=  0.3339s storage=  0.2207s (66.1%)  edges=23499420  chk=2f67f5ce75993dbc
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1113s storage=  0.0665s (59.7%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.8%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1105s storage=  0.0654s (59.2%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.1%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.5%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.9%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     bfs    csr    total=  0.1075s storage=  0.0627s (58.3%)  edges=7617497  chk=38674474a20fa374
+[e13] wiki-talk-temporal     twbfs  tcsr   total=  0.0012s storage=  0.0000s ( 0.0%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  ucsr   total=  0.0015s storage=  0.0003s (20.7%)  edges=0  chk=b78679241010ccde
+[e13] wiki-talk-temporal     twbfs  barry  total=  0.0012s storage=  0.0000s ( 0.9%)  edges=0  chk=b78679241010ccde
+E13 SWEEP DONE

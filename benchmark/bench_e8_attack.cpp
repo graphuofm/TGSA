@@ -16,11 +16,12 @@
 // has deleted evidence an investigator needed.
 //
 // Usage:
-//   bench_e8_attack --graph <prefix> --policy <full|cpr|random>
+//   bench_e8_attack --graph <prefix> --policy <full|cpr|random|loggc|nodemerge|dedup|sample_pa:D>
 //                   --param <window_sec|drop_pct> --classes <csv of edge classes>
 //                   --trial i --output csv
 
 #include "common.hpp"
+#include "reduction_policies.hpp"
 #include "barry/engine.hpp"
 
 #include <fstream>
@@ -75,7 +76,7 @@ int main(int argc, char** argv) {
     int         threads = static_cast<int>(args.getl("threads", 0));
     std::string out_csv = args.get("output", "");
     if (prefix.empty() || out_csv.empty()) {
-        std::fprintf(stderr, "usage: %s --graph <prefix> --policy <full|cpr|random> "
+        std::fprintf(stderr, "usage: %s --graph <prefix> --policy <full|cpr|random|loggc|nodemerge|dedup|sample_pa:D> "
                      "--param P --classes 1,2,3 --trial i --output csv\n", args.prog().c_str());
         return 1;
     }
@@ -114,36 +115,30 @@ int main(int argc, char** argv) {
     for (const RedTeamEvent& e : rt) gt_edge_key.insert(edge_key(e.src, e.dst, e.t));
 
     // ---- apply the reduction policy ---------------------------------------
+    // Policies live in reduction_policies.hpp (shared with E14). Each sees the
+    // in-scope stream once in a pre-pass, then decides edge by edge.
     std::vector<Edge> kept;
     kept.reserve(ef.count / 2);
-    std::mt19937_64 rng(0xE8 ^ trial);
-    std::uniform_real_distribution<double> unit(0.0, 1.0);
+    auto class_ok = [&](const Edge& e) {
+        return keep_class.empty() || keep_class.count(static_cast<int>(e.weight)) > 0;
+    };
+    std::unique_ptr<reduction::Policy> pol =
+        reduction::make_policy(policy, param, 0xE8 ^ static_cast<uint64_t>(trial));
+    if (!pol) return 1;
+    pol->prepare(ef.edges, ef.count, class_ok);
 
-    // CPR: within a time window, a repeated (src,dst) pair carries no new causal
-    // information, so only the first occurrence is retained.
-    std::unordered_map<uint64_t, uint64_t> last_seen;   // (src,dst) -> window index
     size_t dropped_class = 0;
     size_t gt_edges_present = 0, gt_edges_kept = 0;
     std::unordered_set<uint64_t> seen_gt_present, seen_gt_kept;
 
     for (size_t i = 0; i < ef.count; ++i) {
         const Edge& e = ef.edges[i];
-        int cls = static_cast<int>(e.weight);
         uint64_t ek = edge_key(e.src, e.dst, e.timestamp);
         bool is_gt = gt_edge_key.count(ek) > 0;
         if (is_gt && seen_gt_present.insert(ek).second) ++gt_edges_present;
 
-        if (!keep_class.empty() && !keep_class.count(cls)) { ++dropped_class; continue; }
-
-        if (policy == "cpr" && param > 0) {
-            uint64_t key = (static_cast<uint64_t>(e.src) << 32) | e.dst;
-            uint64_t win = e.timestamp / static_cast<uint64_t>(param);
-            auto it = last_seen.find(key);
-            if (it != last_seen.end() && it->second == win) continue;   // redundant
-            last_seen[key] = win;
-        } else if (policy == "random" && param > 0) {
-            if (unit(rng) < param / 100.0) continue;
-        }
+        if (!class_ok(e)) { ++dropped_class; continue; }
+        if (!pol->keep(e)) continue;
         kept.push_back(e);
         if (is_gt && seen_gt_kept.insert(ek).second) ++gt_edges_kept;
     }

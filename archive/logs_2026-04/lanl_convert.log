@@ -1,0 +1,37 @@
+=== auth-only graph (lateral movement; the red team channel) ===
+[lanl] loaded 749 red team events
+[lanl] reading auth ...
+  ... auth 100M, 13125 nodes
+  ... auth 200M, 14195 nodes
+  ... auth 300M, 15071 nodes
+  ... auth 400M, 15581 nodes
+  ... auth 500M, 16061 nodes
+  ... auth 600M, 16377 nodes
+  ... auth 700M, 16752 nodes
+  ... auth 800M, 17068 nodes
+  ... auth 900M, 17235 nodes
+  ... auth 1000M, 17498 nodes
+[lanl] 1051430459 edges (auth=1051430459 flows=0 dns=0 proc=0)
+       17666 nodes (computer=17666 user=0 process=0)
+       t=[1, 5011199] span=58.0 days, out-of-order=0 (0.000%)
+       redteam: 749 events, 749 resolved to node ids, 706 matched an auth edge
+=== CONVERSION DONE 2026-08-21T20:41:44Z ===
+{
+  "edges": 1051430459,
+  "auth": 1051430459,
+  "flows": 0,
+  "dns": 0,
+  "proc": 0,
+  "nodes": 17666,
+  "nodes_computer": 17666,
+  "nodes_user": 0,
+  "nodes_process": 0,
+  "t_min": 1,
+  "t_max": 5011199,
+  "t_span_sec": 5011198,
+  "out_of_order": 0,
+  "user_nodes": false,
+  "redteam_events": 749,
+  "redteam_resolved": 749,
+  "redteam_matched_in_auth": 706
+}

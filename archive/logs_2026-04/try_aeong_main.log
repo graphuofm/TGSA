@@ -1,0 +1,3 @@
+[aeong] installing memgraph deps via conda...
+[aeong] deps install exit 0
+/home/jding/miniconda3/envs/mgbld/etc/conda/activate.d/activate-gcc_linux-64.sh: line 114: SYS_SYSROOT: unbound variable

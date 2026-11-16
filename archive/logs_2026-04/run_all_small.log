@@ -1,0 +1,405 @@
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/CollegeMsg.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/act-mooc.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-askubuntu.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/sx-superuser.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 1000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 1000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 1000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 100000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 100000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 100000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10000000 --threads 16 --trial 0 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10000000 --threads 16 --trial 1 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] $ /home/jding/Barry/build/bench_e1_ingest --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --batch 10000000 --threads 16 --trial 2 --output /home/jding/Barry/results/e1_ingest/e1.csv
+[run] finished run_e1 in 27.9s
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/act-mooc.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/sx-superuser.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q1 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q2 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q3 --num_samples 5 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q4 --num_samples 100 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q5 --num_samples 200 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ /home/jding/Barry/build/bench_e2_query --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --query q6 --num_samples 10 --threads 16 --trial 2 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] finished run_e2 in 96.9s
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/CollegeMsg.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/act-mooc.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-askubuntu.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/sx-superuser.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo bfs --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo pr --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system barry --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system barry --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system barry --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system csr --threads 16 --trial 0 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system csr --threads 16 --trial 1 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] $ /home/jding/Barry/build/bench_e3_compute --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --algo tc --system csr --threads 16 --trial 2 --output /home/jding/Barry/results/e3_compute/e3.csv
+[run] finished run_e3 in 49.0s
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 1 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 2 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 4 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 8 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 16 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000000 --trial 0 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000000 --trial 1 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] $ /home/jding/Barry/build/bench_e4_scale --dataset /home/jding/dataset/bin/sx-stackoverflow.bin --threads 20 --batch 1000000 --trial 2 --output /home/jding/Barry/results/e4_scale/e4.csv
+[run] finished run_e4 in 339.0s
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/CollegeMsg.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/CollegeMsg.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/act-mooc.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/act-mooc.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-askubuntu.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-askubuntu.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-superuser.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/sx-superuser.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --threads 16 --trial 0 --vidx 1 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] $ /home/jding/Barry/build/bench_e5_memory --dataset /home/jding/dataset/bin/wiki-talk-temporal.bin --threads 16 --trial 0 --vidx 0 --output /home/jding/Barry/results/e5_memory/e5.csv
+[run] finished run_e5 in 3.9s
+[run] perf not found in PATH; collecting timing only (no cache events).
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase ingest --huge_pages 0 --threads 16 --trial 0 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase ingest --huge_pages 0 --threads 16 --trial 1 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase ingest --huge_pages 0 --threads 16 --trial 2 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase scan --huge_pages 0 --threads 16 --trial 0 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase scan --huge_pages 0 --threads 16 --trial 1 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/sx-superuser.bin --phase scan --huge_pages 0 --threads 16 --trial 2 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase ingest --huge_pages 0 --threads 16 --trial 0 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase ingest --huge_pages 0 --threads 16 --trial 1 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase ingest --huge_pages 0 --threads 16 --trial 2 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase scan --huge_pages 0 --threads 16 --trial 0 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase scan --huge_pages 0 --threads 16 --trial 1 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] $ /home/jding/Barry/build/bench_e6_cache --dataset /home/jding/dataset/bin/cit-Patents.bin --phase scan --huge_pages 0 --threads 16 --trial 2 --output /home/jding/Barry/results/e6_cache/e6.csv
+[run] finished run_e6 in 18.9s

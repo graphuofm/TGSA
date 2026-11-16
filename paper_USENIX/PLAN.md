@@ -53,3 +53,30 @@ this one is the security claim built on it.
 - baselines/unicorn parsed graphs and sketches (keep the clone, drop outputs)
 - build_rate/, any *.tgz under build dirs, results/revision_logs/*.time
 - results/e33_matrix/smoke if recreated; scratch dumps under /tmp are session-local
+
+## Gap 1 result (THEIA, 2026-10-20)
+- Ground truth: attacks 1-3 resolved (23/24/13 node ids at cap 6); attack 4 (4.8, failed
+  phishing executable) has no trace in the data and cannot be run.
+- Chain recall full graph 91/100/85%; CPR ceiling 8.9x (CADETS 5.6x); attack 3 loses 3 of 13
+  entities from a 10-minute CPR window up, the same infrastructure-reuse mechanism as CADETS attack 4.
+- Taint union is 21-59% of the graph (CADETS 0.3-1.6%): exploit traffic is charged to
+  fluxbox and to address-less NA:0 flow nodes, so the "granularity determines
+  actionability" claim must be restated as "attribution quality determines actionability".
+- Follow-ups before writing: (a) seed forward taint at the gatech exploit flow, which
+  succeeded, rather than the earliest (crashed) allstate flow, and rerun attack 1;
+  (b) decide whether the cap of 6 ids per row stays (it drops the thread that made the
+  phishing connections in attack 3); report the uncapped control alongside.
+- Commit note: data/ is gitignored; add data/tc_theia_groundtruth.tsv and
+  data/tc-theia-e3.seeds.tsv with git add -f.
+
+## Status after cleanup (2026-11-16)
+| gap | result | notes |
+|---|---|---|
+| 1 THEIA | done | results/e14_tc/NOTES_THEIA.md; follow-ups: reseed attack 1, cap-6 question |
+| 2 reduction policies | done (LANL + CADETS) | results/e8_attack/NOTES_POLICIES.md, results/e14_tc/NOTES.md |
+| 3 UNICORN | interrupted at sketching (167/388) | results/unicorn/README.md |
+| 4 collector rate | not run | scripts/collector_rate.sh |
+| 5 storage budget | done | results/e34_budget/NOTES.md; reduced-long beats lossless-short at equal storage on LANL |
+| 6 ES / Kafka | done | results/e35_siem/README.md |
+Cleanup done: go_convert (26 GB), ES/Kafka data, download tarballs, Neo4j store,
+build_notscache, overleaf-upload, old zips, scratch. Freed 84 GB.

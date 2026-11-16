@@ -1,0 +1,61 @@
+attack	kind	match	node_id	node_kind	label
+1	process	/home/admin/clean	2827214	process	/home/admin/clean
+1	process	/home/admin/clean	2827227	process	/home/admin/clean
+1	process	/home/admin/clean	2827240	process	/home/admin/clean
+1	process	/home/admin/clean	2827276	process	/home/admin/clean
+1	process	/home/admin/clean	2827278	process	/home/admin/clean
+1	process	/home/admin/clean	2827282	process	/home/admin/clean
+1	process	/home/admin/profile	2857884	process	/home/admin/profile
+1	process	/home/admin/profile	2857897	process	/home/admin/profile
+1	process	/home/admin/profile	2858573	process	/home/admin/profile
+1	process	/home/admin/profile	2858577	process	/home/admin/profile
+1	process	/home/admin/profile	2859151	process	/home/admin/profile
+1	process	/home/admin/profile	2859163	process	/home/admin/profile
+1	netflow	61.130.69.232	2823944	netflow	61.130.69.232:80
+1	netflow	141.43.176.203	2826553	netflow	141.43.176.203:80
+1	netflow	141.43.176.203	2854541	netflow	141.43.176.203:80
+1	netflow	141.43.176.203	6472933	netflow	141.43.176.203:80
+1	netflow	141.43.176.203	6474362	netflow	141.43.176.203:80
+1	netflow	146.153.68.151	2826593	netflow	146.153.68.151:80
+1	netflow	146.153.68.151	2854579	netflow	146.153.68.151:80
+1	netflow	146.153.68.151	6474383	netflow	146.153.68.151:80
+1	netflow	161.116.88.72	2827224	netflow	161.116.88.72:80
+1	netflow	161.116.88.72	2857894	netflow	161.116.88.72:80
+1	netflow	7.149.198.40	5185549	netflow	7.149.198.40:80
+2	process	pass_mgr	6474364	process	/etc/firefox/native-messaging-hosts/pass_mgr /home/admin/.mozilla/native-messaging-hosts/pass_mgr.json
+2	process	gtcache	6474371	process	/bin/sh -c ./gtcache &>/dev/null &
+2	process	gtcache	6474372	process	/bin/sh -c ./gtcache &>/dev/null &
+2	process	gtcache	6474387	process	./gtcache
+2	process	gtcache	6474451	process	./gtcache
+2	process	gtcache	6474455	process	./gtcache
+2	process	gtcache	6474481	process	./gtcache
+2	process	/var/log/mail	6486272	process	/var/log/mail
+2	process	/var/log/mail	6486283	process	/var/log/mail
+2	process	/var/log/mail	6486768	process	/var/log/mail
+2	netflow	141.43.176.203	2826553	netflow	141.43.176.203:80
+2	netflow	141.43.176.203	2854541	netflow	141.43.176.203:80
+2	netflow	141.43.176.203	6472933	netflow	141.43.176.203:80
+2	netflow	141.43.176.203	6474362	netflow	141.43.176.203:80
+2	netflow	146.153.68.151	2826593	netflow	146.153.68.151:80
+2	netflow	146.153.68.151	2854579	netflow	146.153.68.151:80
+2	netflow	146.153.68.151	6474383	netflow	146.153.68.151:80
+2	netflow	149.52.198.23	6486282	netflow	149.52.198.23:80
+2	netflow	128.55.12.110	6486451	netflow	128.55.12.110:22
+2	netflow	128.55.12.110	6486453	netflow	128.55.12.110:80
+2	netflow	128.55.12.110	6486516	netflow	128.55.12.110:111
+2	netflow	128.55.12.110	6486527	netflow	128.55.12.110:48245
+2	netflow	128.55.12.110	6486530	netflow	128.55.12.110:54331
+2	netflow	128.55.12.110	6486532	netflow	128.55.12.110:39715
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805685	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805694	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805752	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805753	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805826	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/	2805829	process	/home/admin/Downloads/firefox/firefox http://www.nasa.ng/
+3	netflow	208.75.117.3	2806654	netflow	208.75.117.3:80
+3	netflow	208.75.117.3	2806842	netflow	208.75.117.3:80
+3	netflow	208.75.117.3	2806854	netflow	208.75.117.3:80
+3	netflow	208.75.117.3	2809611	netflow	208.75.117.3:80
+3	netflow	208.75.117.3	2809647	netflow	208.75.117.3:80
+3	netflow	208.75.117.3	2809843	netflow	208.75.117.3:80
+3	netflow	208.75.117.2	2808090	netflow	208.75.117.2:80

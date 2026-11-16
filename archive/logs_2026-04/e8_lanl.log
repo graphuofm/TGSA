@@ -1,0 +1,31 @@
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 83.09 GB at 0x7f3e56fd5000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=132.9 GB virtual
+[e8] full     p=0        kept=1038590151/1038590151 ( 1.00x)  ATTACK-EDGE survival=699/699 (100.0%)  |T|=5121 (29.0% of V) recall=97.7%  18857684us
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 25.38 GB at 0x7f175cb64000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=40.6 GB virtual
+[e8] cpr      p=60       kept=317189157/1038590151 ( 3.27x)  ATTACK-EDGE survival=646/699 ( 92.4%)  |T|=5121 (29.0% of V) recall=97.7%  4389245us
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 5.90 GB at 0x7f037d57d000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=9.4 GB virtual
+[e8] cpr      p=3600     kept= 73773508/1038590151 (14.08x)  ATTACK-EDGE survival=490/699 ( 70.1%)  |T|=5118 (29.0% of V) recall=97.7%  662936us
+[TimeMapper] span=5011196 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f9b615c2000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=1.0 GB virtual
+[e8] cpr      p=86400    kept=  7897372/1038590151 (131.51x)  ATTACK-EDGE survival=391/699 ( 55.9%)  |T|=5106 (28.9% of V) recall=97.7%  74131us
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 41.54 GB at 0x7f75afdfd000 (huge=0)
+[VertexIndex] 17666 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=66.5 GB virtual
+[e8] random   p=50       kept=519299613/1038590151 ( 2.00x)  ATTACK-EDGE survival=344/699 ( 49.2%)  |T|=4426 (25.1% of V) recall=85.9%  8821916us
+[TimeMapper] span=5011198 edges=1048576 target_avg=64 shift=9 (window=512)
+[Timeline] 10811 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 8.31 GB at 0x7fc42e33a000 (huge=0)
+[VertexIndex] 17663 vertices, heads=0.1 MB x2 (reverse index on), bucket arena=13.3 GB virtual
+[e8] random   p=90       kept=103869395/1038590151 (10.00x)  ATTACK-EDGE survival= 60/699 (  8.6%)  |T|=2758 (15.6% of V) recall=58.4%  1478768us
+E8 LANL DONE

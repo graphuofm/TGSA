@@ -7,13 +7,16 @@
 // reach after reduction" is a discriminating measurement, not a saturated one.
 //
 //   bench_e14_tc --graph <prefix> --seeds <seeds.tsv> --attack 1
-//                --policy <full|cpr|random> --param P --trial i --output csv
+//                --policy <full|cpr|random|loggc|nodemerge|dedup|sample_pa:D> --param P --trial i --output csv
+//                [--report-ids <tsv>]   (optional; appends one hit/miss line per
+//                                        ground-truth node id, for diagnosis)
 //
 // Seed file: attack \t kind \t match \t node_id \t node_kind \t label
 // The earliest-timestamped netflow seed of the attack is the taint source;
 // recall is measured over ALL that attack's resolved node ids.
 
 #include "common.hpp"
+#include "reduction_policies.hpp"
 #include "barry/engine.hpp"
 
 #include <fstream>
@@ -36,9 +39,10 @@ int main(int argc, char** argv) {
     int trial = static_cast<int>(args.getl("trial", 0));
     int threads = static_cast<int>(args.getl("threads", 8));
     std::string out_csv = args.get("output", "");
+    std::string report_ids = args.get("report-ids", "");   // optional diagnostic
     if (prefix.empty() || seeds_p.empty() || out_csv.empty()) {
         std::fprintf(stderr, "usage: %s --graph p --seeds s.tsv --attack N "
-                     "--policy full|cpr|random --param P --trial i --output csv\n",
+                     "--policy full|cpr|random|loggc|nodemerge|dedup|sample_pa:D --param P --trial i --output csv\n",
                      args.prog().c_str());
         return 1;
     }
@@ -46,6 +50,7 @@ int main(int argc, char** argv) {
     // ---- ground-truth ids for this attack ----
     std::unordered_set<uint32_t> gt_ids;
     std::vector<uint32_t> netflow_seeds;
+    std::vector<std::pair<uint32_t, std::string>> gt_desc;   // id -> "kind\tmatch\tnode_kind\tlabel"
     {
         std::ifstream f(seeds_p);
         std::string line; std::getline(f, line);
@@ -57,7 +62,8 @@ int main(int argc, char** argv) {
             std::getline(ss, nkind, '\t');std::getline(ss, label);
             if (a != attack) continue;
             uint32_t id = static_cast<uint32_t>(std::strtoul(nid.c_str(), nullptr, 10));
-            gt_ids.insert(id);
+            if (gt_ids.insert(id).second)
+                gt_desc.emplace_back(id, kind + "\t" + match + "\t" + nkind + "\t" + label);
             if (nkind == "netflow") netflow_seeds.push_back(id);
         }
     }
@@ -80,22 +86,18 @@ int main(int argc, char** argv) {
     }
 
     // ---- reduction ----
+    // Policies live in reduction_policies.hpp (shared with E8). No class filter
+    // here: every CADETS flow edge is in scope.
     std::vector<Edge> kept;
     kept.reserve(ef.count);
-    std::mt19937_64 rng(0xE14 ^ trial);
-    std::uniform_real_distribution<double> unit(0.0, 1.0);
-    std::unordered_map<uint64_t, uint64_t> last_seen;
+    auto in_scope = [](const Edge&) { return true; };
+    std::unique_ptr<reduction::Policy> pol =
+        reduction::make_policy(policy, param, 0xE14 ^ static_cast<uint64_t>(trial));
+    if (!pol) return 1;
+    pol->prepare(ef.edges, ef.count, in_scope);
     for (size_t i = 0; i < ef.count; ++i) {
         const Edge& e = ef.edges[i];
-        if (policy == "cpr" && param > 0) {
-            uint64_t key = (static_cast<uint64_t>(e.src) << 32) | e.dst;
-            uint64_t win = e.timestamp / static_cast<uint64_t>(param);
-            auto it = last_seen.find(key);
-            if (it != last_seen.end() && it->second == win) continue;
-            last_seen[key] = win;
-        } else if (policy == "random" && param > 0) {
-            if (unit(rng) < param / 100.0) continue;
-        }
+        if (!pol->keep(e)) continue;
         kept.push_back(e);
     }
 
@@ -123,6 +125,13 @@ int main(int argc, char** argv) {
     double q_us = (now_sec() - q0) * 1e6;
     size_t hit = 0;
     for (uint32_t v : gt_ids) if (reached.count(v)) ++hit;
+    if (!report_ids.empty()) {   // diagnostic only; never changes the CSV
+        std::ofstream r(report_ids, std::ios::app);
+        for (const auto& d : gt_desc)
+            r << attack << '\t' << policy << '\t' << param << '\t' << trial << '\t'
+              << d.first << '\t' << (reached.count(d.first) ? "hit" : "miss") << '\t'
+              << d.second << '\n';
+    }
 
     CsvWriter w(out_csv,
         {"corpus","attack","policy","param","trial","edges_kept","reduction",

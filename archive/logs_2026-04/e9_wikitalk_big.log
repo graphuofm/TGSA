@@ -1,0 +1,7 @@
+[TimeMapper] span=200483882 edges=1048576 target_avg=64 shift=14 (window=16384)
+[Timeline] 13260 slots = 0.00 GB virtual (huge=0)
+[Arena] reserved 1.07 GB at 0x7f9b20698000 (huge=0)
+[VertexIndex] 1140149 vertices, heads=9.1 MB, bucket arena=1.0 GB virtual
+[e9] traverse  barry  median=       8.8 us  p95=      12.7 us  avg|R|=      1.0
+[e9] traverse  duckdb median=    4874.2 us  p95=    5958.4 us  avg|R|=      1.0
+[e9] load: barry=1.25s  duckdb=1.66s (index=1)

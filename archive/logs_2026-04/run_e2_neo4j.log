@@ -1,0 +1,35 @@
+[run] [neo4j-e2] loading CollegeMsg into Neo4j...
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q1 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q1 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q2 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q2 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q5 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/CollegeMsg.bin --query q5 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] [neo4j-e2] loading email-Eu-core-temporal into Neo4j...
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q1 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q1 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q2 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q2 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q5 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/email-Eu-core-temporal.bin --query q5 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] [neo4j-e2] loading sx-mathoverflow into Neo4j...
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q1 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q1 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q2 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q2 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q5 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-mathoverflow.bin --query q5 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] [neo4j-e2] loading act-mooc into Neo4j...
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q1 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q1 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q2 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q2 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q5 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/act-mooc.bin --query q5 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] [neo4j-e2] loading sx-askubuntu into Neo4j...
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q1 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q1 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q2 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q2 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q5 --num_samples 30 --threads 1 --trial 0 --output /home/jding/Barry/results/e2_query/e2.csv
+[run] $ python3 /home/jding/Barry/baselines/neo4j/bench_neo4j.py query --dataset /home/jding/dataset/bin/sx-askubuntu.bin --query q5 --num_samples 30 --threads 1 --trial 1 --output /home/jding/Barry/results/e2_query/e2.csv
